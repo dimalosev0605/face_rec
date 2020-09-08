@@ -3,6 +3,7 @@ import QtQuick.Window 2.12
 import QtQuick.Controls 2.15
 
 import Left_vertical_menu_bar_model_qml 1.0
+import MenuBarActionNamespace_qml 1.0
 
 Window {
     visible: true
@@ -98,6 +99,21 @@ Window {
                     hoverEnabled: true
                     onClicked: {
                         left_vertical_menu_list_view.currentIndex = index
+                        switch(model.menu_option_action)
+                        {
+                        case MenuBarAction.ADD_PEOPLE:
+                            console.log("Add people")
+                            break;
+                        case MenuBarAction.RECOGNITION:
+                            console.log("Recognition")
+                            break;
+                        case MenuBarAction.EXIT:
+                            console.log("Exit")
+                            break;
+                        case MenuBarAction.HELP:
+                            console.log("Help")
+                            break;
+                        }
                     }
                 }
             }
