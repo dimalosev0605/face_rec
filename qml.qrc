@@ -1,5 +1,9 @@
 <RCC>
     <qresource prefix="/">
-        <file>main.qml</file>
+        <file>qml/main.qml</file>
+        <file>left_vertical_menu_bar_icons/help.jpg</file>
+        <file>left_vertical_menu_bar_icons/exit.png</file>
+        <file>left_vertical_menu_bar_icons/people.png</file>
+        <file>left_vertical_menu_bar_icons/recognition.png</file>
     </qresource>
 </RCC>
