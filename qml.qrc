@@ -5,5 +5,8 @@
         <file>left_vertical_menu_bar_icons/exit.png</file>
         <file>left_vertical_menu_bar_icons/people.png</file>
         <file>left_vertical_menu_bar_icons/recognition.png</file>
+        <file>qml/Help_page.qml</file>
+        <file>qml/People_page.qml</file>
+        <file>qml/People_page_items/add_new_icon.png</file>
     </qresource>
 </RCC>

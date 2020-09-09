@@ -7,8 +7,8 @@ import MenuBarActionNamespace_qml 1.0
 
 Window {
     visible: true
-    width: 640
-    height: 480
+    width: 1000
+    height: 800
 
     Left_vertical_menu_bar_model {
         id: left_vertical_menu_bar_model
@@ -102,21 +102,52 @@ Window {
                         switch(model.menu_option_action)
                         {
                         case MenuBarAction.ADD_PEOPLE:
-                            console.log("Add people")
+                            console.log("Add people clicked")
+                            if(page_loader.sourceComponent !== null) {
+                                if(page_loader.item.objectName === "People_page") {
+                                    console.log("DON'T LOAD")
+                                    return
+                                }
+                            }
+                            page_loader.source = "People_page.qml"
                             break;
                         case MenuBarAction.RECOGNITION:
-                            console.log("Recognition")
+                            console.log("Recognition clicked")
                             break;
                         case MenuBarAction.EXIT:
-                            console.log("Exit")
+                            console.log("Exit clicked")
+                            Qt.quit()
                             break;
                         case MenuBarAction.HELP:
-                            console.log("Help")
+                            console.log("Help clicked")
+                            if(page_loader.sourceComponent !== null) {
+                                if(page_loader.item.objectName === "Help_page") {
+                                    console.log("DON'T LOAD!")
+                                    return
+                                }
+                            }
+                            page_loader.source = "Help_page.qml"
                             break;
                         }
                     }
                 }
             }
+        }
+    }
+    Loader {
+        id: page_loader
+        anchors {
+            left: left_vertical_menu_bar.right
+            right: parent.right
+            top: parent.top
+            bottom: parent.bottom
+        }
+    }
+    Shortcut {
+        sequence: "Esc"
+        onActivated: {
+            console.log("Escape pressed")
+            page_loader.source = ""
         }
     }
 }
