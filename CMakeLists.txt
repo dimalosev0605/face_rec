@@ -24,6 +24,9 @@ add_executable(face_rec
     left_vertical_menu_bar_model.h
     left_vertical_menu_bar_model.cpp
 
+    selected_images_model.h
+    selected_images_model.cpp
+
     qml.qrc)
 
 target_compile_definitions(face_rec

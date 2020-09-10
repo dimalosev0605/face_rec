@@ -2,6 +2,8 @@ import QtQuick 2.12
 import QtQuick.Controls 2.15
 
 Item {
+    id: people_page_item
+    property alias loader: loader
     objectName: "People_page"
     SplitView {
         id: split_view
@@ -62,6 +64,8 @@ Item {
                     anchors.fill: parent
                     hoverEnabled: true
                     onClicked: {
+//                        people_list.visible = false
+                        loader.source = "qrc:/qml/People_page_items/Add_new_person_page.qml"
                     }
                 }
             }

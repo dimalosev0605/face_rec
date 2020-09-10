@@ -2,6 +2,7 @@
 #include <QQmlApplicationEngine>
 
 #include "left_vertical_menu_bar_model.h"
+#include "selected_images_model.h"
 
 int main(int argc, char *argv[])
 {
@@ -10,6 +11,7 @@ int main(int argc, char *argv[])
     QGuiApplication app(argc, argv);
 
     qmlRegisterType<Left_vertical_menu_bar_model>("Left_vertical_menu_bar_model_qml", 1, 0, "Left_vertical_menu_bar_model");
+    qmlRegisterType<Selected_images_model>("Selected_images_model_qml", 1, 0, "Selected_images_model");
 
     qmlRegisterUncreatableMetaObject(MenuBarAction::staticMetaObject, "MenuBarActionNamespace_qml", 1, 0, "MenuBarAction", "Error, only enums!");
 
