@@ -119,12 +119,17 @@ Item {
                 ListView {
                     id: selected_photos_list_view
                     anchors.fill: parent
+                    cacheBuffer: 0
                     model: selected_images_model
                     spacing: 3
                     clip: true
+                    currentIndex: -1
                     delegate: Rectangle {
+                        id: delegate
                         width: selected_photos_list_view.width
                         height: 50
+                        color: ListView.isCurrentItem ? "blue" : delegate_body_m_area.containsMouse ? delegate_body_m_area.pressed ? "blue" : "gray" : "white"
+                        property alias img: img
                         Image {
                             id: img
                             height: parent.height
@@ -150,6 +155,18 @@ Item {
                             elide: Text.ElideRight
                             wrapMode: Text.WordWrap
                             text: String(model.file_name)
+                        }
+                        MouseArea {
+                            id: delegate_body_m_area
+                            anchors {
+                                left: parent.left
+                                right: img_filename.right
+                            }
+                            height: parent.height
+                            hoverEnabled: true
+                            onClicked: {
+                                selected_photos_list_view.currentIndex = index
+                            }
                         }
                         Rectangle {
                             id: delete_btn
@@ -187,6 +204,22 @@ Item {
         }
         Rectangle {
            color: "yellow"
+           Image {
+               id: selected_img
+               anchors {
+                   left: parent.left
+                   leftMargin: 10
+                   top: parent.top
+                   topMargin: 10
+                   bottom: parent.bottom
+                   bottomMargin: 10
+               }
+               width: height
+               asynchronous: true
+               mipmap: true
+               fillMode: Image.PreserveAspectFit
+               source: selected_photos_list_view.currentItem === null ? "" : selected_photos_list_view.currentItem.img.source
+           }
         }
     }
 }

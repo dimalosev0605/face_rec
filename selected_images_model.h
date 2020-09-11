@@ -4,6 +4,7 @@
 #include <QAbstractListModel>
 #include <QDebug>
 #include <QUrl>
+#include <QFile>
 
 class Selected_images_model: public QAbstractListModel
 {
@@ -26,6 +27,12 @@ public:
 public slots:
     void accept_images(const QList<QUrl>& file_urls);
     void delete_image(const int index);
+
+private slots:
+    void file_was_deleted_slot(const int index);
+
+signals:
+    void file_was_deleted(const int index) const;
 };
 
 #endif // SELECTED_IMAGES_MODEL_H

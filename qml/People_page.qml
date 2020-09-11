@@ -84,7 +84,7 @@ Item {
                 clip: true
                 delegate: Rectangle {
                     color: "blue"
-                    width: parent.width - people_list_view_scroll_bar.implicitWidth
+                    width: people_list_view.width - people_list_view_scroll_bar.implicitWidth
                     height: 35
                 }
                 ScrollBar.vertical: people_list_view_scroll_bar
