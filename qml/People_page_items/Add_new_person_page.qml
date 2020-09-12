@@ -1,6 +1,7 @@
 import QtQuick 2.12
 import QtQuick.Controls 2.15
 import QtQuick.Dialogs 1.2
+import QtGraphicalEffects 1.0
 
 import Selected_images_model_qml 1.0
 
@@ -100,7 +101,7 @@ Item {
             }
 
 
-            Rectangle {
+            Item {
                 id: selected_photos_frame
                 anchors {
                     top: new_person_nickname_input.bottom
@@ -108,9 +109,6 @@ Item {
                     left: parent.left
                     leftMargin: 5
                 }
-                border.width: 1
-                border.color: "#000000"
-                radius: 5
                 property int space_between_frames: 10
                 width: (parent.width - anchors.leftMargin - processed_photos.anchors.rightMargin - space_between_frames) / 2
                 height: parent.height - new_person_nickname_input.height - new_person_nickname_input.anchors.topMargin -
@@ -121,34 +119,54 @@ Item {
                     anchors.fill: parent
                     cacheBuffer: 0
                     model: selected_images_model
-                    spacing: 3
                     clip: true
                     currentIndex: -1
                     delegate: Rectangle {
                         id: delegate
                         width: selected_photos_list_view.width
-                        height: 50
-                        color: ListView.isCurrentItem ? "blue" : delegate_body_m_area.containsMouse ? delegate_body_m_area.pressed ? "blue" : "gray" : "white"
-                        property alias img: img
+                        height: 60
+                        radius: 2
+                        property color hovered_color: "#d4d4d4"
+                        property color default_color: "#ffffff"
+                        property color highlighted_color: "#999999"
+                        color: ListView.isCurrentItem ? highlighted_color :
+                                                        delegate_body_m_area.containsMouse ?
+                                                        delegate_body_m_area.pressed ? highlighted_color : hovered_color :
+                                                        default_color
+                        property alias selected_img_preview: selected_img_preview
                         Image {
-                            id: img
-                            height: parent.height
+                            id: selected_img_preview
+                            anchors {
+                                left: parent.left
+                                leftMargin: 5
+                                verticalCenter: parent.verticalCenter
+                            }
+                            property int space_between_top_and_bottom_of_delegate: 10
+                            height: parent.height - space_between_top_and_bottom_of_delegate
                             width: height
                             asynchronous: true
                             mipmap: true
                             fillMode: Image.PreserveAspectCrop
                             source: model.file_path
+                            layer.enabled: true
+                            layer.effect: OpacityMask {
+                                maskSource: Rectangle {
+                                    width: selected_img_preview.width
+                                    height: selected_img_preview.height
+                                    radius: 5
+                                }
+                            }
                         }
                         Text {
-                            id: img_filename
+                            id: selected_img_preview_file_name
                             anchors {
-                                left: img.right
-                                top: img.top
+                                left: selected_img_preview.right
+                                top: selected_img_preview.top
                             }
-                            height: parent.height
-                            width: parent.width - img.width - delete_btn.width
                             verticalAlignment: Text.AlignVCenter
                             horizontalAlignment: Text.AlignHCenter
+                            height: parent.height
+                            width: parent.width - selected_img_preview.width - delete_from_selected_imgs_btn.width - delete_from_selected_imgs_btn.anchors.rightMargin
                             fontSizeMode: Text.Fit
                             minimumPointSize: 1
                             font.pointSize: 10
@@ -160,7 +178,7 @@ Item {
                             id: delegate_body_m_area
                             anchors {
                                 left: parent.left
-                                right: img_filename.right
+                                right: selected_img_preview_file_name.right
                             }
                             height: parent.height
                             hoverEnabled: true
@@ -169,16 +187,27 @@ Item {
                             }
                         }
                         Rectangle {
-                            id: delete_btn
+                            id: delete_from_selected_imgs_btn
                             anchors {
                                 right: parent.right
-                                top: parent.top
+                                rightMargin: 10
+                                verticalCenter: parent.verticalCenter
                             }
-                            height: parent.height
-                            width: height
-                            color: delete_btn_m_area.pressed ? "red" : "green"
+                            height: parent.height * 0.5
+                            width: height * 0.85
+                            radius: 4
+                            property color delete_btn_pressed_color: "#9c0303"
+                            color: delete_from_selected_imgs_btn_m_area.pressed ? delete_btn_pressed_color : delegate.color
+                            Image {
+                                id: delete_from_selected_imgs_btn_img
+                                anchors.fill: parent
+                                mipmap: true
+                                asynchronous: true
+                                fillMode: Image.PreserveAspectFit
+                                source: "qrc:/qml/People_page_items/trash_icon.png"
+                            }
                             MouseArea {
-                                id: delete_btn_m_area
+                                id: delete_from_selected_imgs_btn_m_area
                                 anchors.fill: parent
                                 onClicked: {
                                     selected_images_model.delete_image(index)
@@ -195,9 +224,6 @@ Item {
                     right: parent.right
                     rightMargin: selected_photos_frame.anchors.leftMargin
                 }
-                border.width: selected_photos_frame.border.width
-                border.color: selected_photos_frame.border.color
-                radius: selected_photos_frame.radius
                 width: selected_photos_frame.width
                 height: selected_photos_frame.height
             }
@@ -218,7 +244,7 @@ Item {
                asynchronous: true
                mipmap: true
                fillMode: Image.PreserveAspectFit
-               source: selected_photos_list_view.currentItem === null ? "" : selected_photos_list_view.currentItem.img.source
+               source: selected_photos_list_view.currentItem === null ? "" : selected_photos_list_view.currentItem.selected_img_preview.source
            }
         }
     }
