@@ -4,6 +4,7 @@ import QtQuick.Dialogs 1.2
 import QtGraphicalEffects 1.0
 
 import Selected_images_model_qml 1.0
+import Image_handler_qml 1.0
 
 Item {
 
@@ -27,6 +28,9 @@ Item {
 
     Selected_images_model {
         id: selected_images_model
+    }
+    Image_handler {
+        id: image_handler
     }
 
     SplitView {
@@ -237,7 +241,7 @@ Item {
                    leftMargin: 10
                    top: parent.top
                    topMargin: 10
-                   bottom: parent.bottom
+                   bottom: hog_btn.top
                    bottomMargin: 10
                }
                width: height
@@ -245,6 +249,85 @@ Item {
                mipmap: true
                fillMode: Image.PreserveAspectFit
                source: selected_photos_list_view.currentItem === null ? "" : selected_photos_list_view.currentItem.selected_img_preview.source
+               onSourceChanged: {
+                   image_handler.update_path(source)
+               }
+           }
+           Image {
+               id: processed_img
+               anchors {
+                   right: parent.right
+                   rightMargin: 10
+                   top: parent.top
+                   topMargin: 10
+                   bottom: parent.bottom
+                   bottomMargin: 10
+               }
+               width: height
+               asynchronous: true
+               mipmap: true
+               fillMode: Image.PreserveAspectFit
+               source: "image://Processed_images_provider/" + selected_img.source
+           }
+
+           property int w: 80
+           property int h: 30
+           Rectangle {
+               id: hog_btn
+               anchors {
+                   bottom: parent.bottom
+                   left: parent.left
+               }
+               width: parent.w
+               height: parent.h
+               Text {
+                   anchors.centerIn: parent
+                   text: "HOG"
+               }
+               MouseArea {
+                   anchors.fill: parent
+                   onClicked: {
+                   }
+               }
+           }
+           Rectangle {
+               id: cnn_btn
+               anchors {
+                   bottom: parent.bottom
+                   left: hog_btn.right
+               }
+               width: parent.w
+               height: parent.h
+               Text {
+                   anchors.centerIn: parent
+                   text: "CNN"
+               }
+           }
+           Rectangle {
+               id: pyr_up
+               anchors {
+                   bottom: parent.bottom
+                   left: cnn_btn.right
+               }
+               width: parent.w
+               height: parent.h
+               Text {
+                   anchors.centerIn: parent
+                   text: "Pyr up"
+               }
+           }
+           Rectangle {
+               id: pyr_down
+               anchors {
+                   bottom: parent.bottom
+                   left: pyr_up.right
+               }
+               width: parent.w
+               height: parent.h
+               Text {
+                   anchors.centerIn: parent
+                   text: "Pyr down"
+               }
            }
         }
     }

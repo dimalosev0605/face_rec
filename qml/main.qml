@@ -7,7 +7,7 @@ import MenuBarActionNamespace_qml 1.0
 
 Window {
     visible: true
-    width: 1000
+    width: 1400
     height: 800
 
     Left_vertical_menu_bar_model {
