@@ -33,6 +33,9 @@ add_executable(face_rec
     image_handler.h
     image_handler.cpp
 
+    people_manager.h
+    people_manager.cpp
+
     qml.qrc)
 
 target_compile_definitions(face_rec

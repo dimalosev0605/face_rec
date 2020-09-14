@@ -5,8 +5,10 @@ import QtGraphicalEffects 1.0
 
 import Selected_images_model_qml 1.0
 import Image_handler_qml 1.0
+import People_manager_qml 1.0
 
 Item {
+    id: root
 
     FileDialog {
         id: file_dialog
@@ -31,6 +33,12 @@ Item {
     }
     Image_handler {
         id: image_handler
+    }
+    People_manager {
+        id: people_manager
+        onMessage: {
+            console.log("Message in QML: " + message)
+        }
     }
 
     SplitView {
@@ -58,12 +66,50 @@ Item {
             }
 
             Rectangle {
+                id: create_new_person_btn
+                anchors {
+                    left: new_person_nickname_input.right
+                    leftMargin: 10
+                    top: new_person_nickname_input.top
+                }
+                width: height * 3
+                height: new_person_nickname_input.height
+                border.width: 1
+                border.color: "black"
+                color: create_new_person_btn_m_area.pressed ? "green" : "white"
+                enabled: new_person_nickname_input.text === "" ? false : true
+                Text {
+                    anchors.centerIn: parent
+                    width: parent.width
+                    height: parent.height
+                    fontSizeMode: Text.Fit
+                    minimumPointSize: 1
+                    font.pointSize: 10
+                    elide: Text.ElideRight
+                    wrapMode: Text.WordWrap
+                    text: "Create new person"
+                }
+                MouseArea {
+                    id: create_new_person_btn_m_area
+                    anchors.fill: parent
+                    onClicked: {
+                        if(people_manager.create_nominal_folder(new_person_nickname_input.text)) {
+                            create_new_person_btn.visible = false
+                            new_person_nickname_input.focus = false
+                            new_person_nickname_input.enabled = false
+                        }
+                    }
+                }
+            }
+
+            Rectangle {
                 id: select_photos_btn
                 anchors {
                     left: new_person_nickname_input.right
                     leftMargin: 10
                     top: new_person_nickname_input.top
                 }
+                visible: !create_new_person_btn.visible
                 width: height * 3
                 height: new_person_nickname_input.height
                 color: m_area.pressed ? "green" : "blue"
@@ -88,6 +134,7 @@ Item {
                     leftMargin: 10
                     top: select_photos_btn.top
                 }
+                visible: !create_new_person_btn.visible
                 width: height * 3
                 height: new_person_nickname_input.height
                 color: "red"
@@ -99,6 +146,7 @@ Item {
                 MouseArea {
                     anchors.fill: parent
                     onClicked: {
+                        people_manager.cancel_nominal_creation()
                         people_page_item.loader.source = ""
                     }
                 }
@@ -113,6 +161,7 @@ Item {
                     left: parent.left
                     leftMargin: 5
                 }
+                visible: !create_new_person_btn.visible
                 property int space_between_frames: 10
                 width: (parent.width - anchors.leftMargin - processed_photos.anchors.rightMargin - space_between_frames) / 2
                 height: parent.height - new_person_nickname_input.height - new_person_nickname_input.anchors.topMargin -
@@ -228,12 +277,14 @@ Item {
                     right: parent.right
                     rightMargin: selected_photos_frame.anchors.leftMargin
                 }
+                visible: !create_new_person_btn.visible
                 width: selected_photos_frame.width
                 height: selected_photos_frame.height
             }
         }
         Rectangle {
            color: "yellow"
+           visible: !create_new_person_btn.visible
            Image {
                id: selected_img
                anchors {
@@ -251,6 +302,14 @@ Item {
                source: selected_photos_list_view.currentItem === null ? "" : selected_photos_list_view.currentItem.selected_img_preview.source
                onSourceChanged: {
                    image_handler.update_path(source)
+               }
+               MouseArea {
+                   anchors.fill: parent
+                   onClicked: {
+                       var comp = Qt.createComponent("Full_screen_img.qml")
+                       var win = comp.createObject(root, { img_source: selected_img.source })
+                       win.show()
+                   }
                }
            }
            Image {
@@ -280,6 +339,7 @@ Item {
                }
                width: parent.w
                height: parent.h
+               enabled: selected_img.source === "" ? false : true
                Text {
                    anchors.centerIn: parent
                    text: "HOG"
@@ -287,6 +347,7 @@ Item {
                MouseArea {
                    anchors.fill: parent
                    onClicked: {
+                       image_handler.hog()
                    }
                }
            }
@@ -296,6 +357,7 @@ Item {
                    bottom: parent.bottom
                    left: hog_btn.right
                }
+               enabled: selected_img.source === "" ? false : true
                width: parent.w
                height: parent.h
                Text {
@@ -309,6 +371,7 @@ Item {
                    bottom: parent.bottom
                    left: cnn_btn.right
                }
+               enabled: selected_img.source === "" ? false : true
                width: parent.w
                height: parent.h
                Text {
@@ -322,11 +385,26 @@ Item {
                    bottom: parent.bottom
                    left: pyr_up.right
                }
+               enabled: selected_img.source === "" ? false : true
                width: parent.w
                height: parent.h
                Text {
                    anchors.centerIn: parent
                    text: "Pyr down"
+               }
+           }
+           Rectangle {
+               id: extract_face
+               anchors {
+                   bottom: parent.bottom
+                   left: pyr_down.right
+               }
+               enabled: selected_img.source === "" ? false : true
+               width: parent.w
+               height: parent.h
+               Text {
+                   anchors.centerIn: parent
+                   text: "Extract face"
                }
            }
         }
