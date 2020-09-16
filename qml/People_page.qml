@@ -109,6 +109,8 @@ Item {
 
         Loader {
             id: loader
+//            asynchronous: true
+//            visible: status == Loader.Ready
             height: parent.height
         }
     }

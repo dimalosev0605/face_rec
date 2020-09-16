@@ -3,29 +3,19 @@
 
 #include <QAbstractListModel>
 #include <QDebug>
-#include <QDir>
-#include <QFile>
-#include <QCoreApplication>
+
+#include "individual_file_manager.h"
+
 
 class People_manager: public QAbstractListModel
 {
     Q_OBJECT
     QHash<int, QByteArray> roles;
     QVector<int> model_data;
-    QString new_person_name;
-
-    static const QString data_folder_name;
-    static const QString temp_files_folder_name;
-    static const QString processed_files_folder_name;
 
 private:
     QHash<int, QByteArray> roleNames() const override;
-
-    void create_data_folder() const;
-    QString get_path_to_data_folder() const;
-
-    bool create_folder_for_temp_files() const;
-    bool create_folder_for_processed_files() const;
+    Individual_file_manager individual_file_manager;
 
 public:
     enum class RolesNames {
@@ -35,8 +25,8 @@ public:
     virtual QVariant data(const QModelIndex& index, int role) const override;
 
 public slots:
-    bool create_nominal_folder(const QString& name);
-    void cancel_nominal_creation();
+    bool create_individual_dir(const QString& name);
+    void cancel_individual_creation();
 
 signals:
     void message(const QString& message);

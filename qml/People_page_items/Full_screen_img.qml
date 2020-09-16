@@ -7,6 +7,7 @@ Window {
     height: Screen.desktopAvailableHeight
     width: Screen.desktopAvailableWidth
     property alias img_source: img.source
+    property bool window_type // true - window for selected images, false - window for processed image.
     property real darker_factor: 1.2
 
     flags: Qt.FramelessWindowHint
@@ -75,7 +76,7 @@ Window {
         width: close_window_btn.width
         height: parent.height - close_window_btn.height * 2
         color: right_arrow_btn_m_area.containsMouse ? Qt.darker(font_rect.color, full_screen_window.darker_factor) : "transparent"
-        visible: selected_photos_list_view.currentIndex !== (selected_photos_list_view.count - 1)
+        visible: full_screen_window.window_type ? selected_photos_list_view.currentIndex !== (selected_photos_list_view.count - 1) : false
         MouseArea {
             id: right_arrow_btn_m_area
             anchors.fill: parent
@@ -119,7 +120,7 @@ Window {
         width: right_arrow_btn.width
         height: right_arrow_btn.height
         color: left_arrow_btn_m_area.containsMouse ? Qt.darker(font_rect.color, full_screen_window.darker_factor) : "transparent"
-        visible: selected_photos_list_view.currentIndex !== 0
+        visible: full_screen_window.window_type ? selected_photos_list_view.currentIndex !== 0 : false
         MouseArea {
             id: left_arrow_btn_m_area
             anchors.fill: parent
@@ -178,12 +179,14 @@ Window {
     }
     Shortcut {
         sequence: "Left"
+        enabled: full_screen_window.window_type
         onActivated: {
             left_arrow_btn_m_area.clicked(null)
         }
     }
     Shortcut {
         sequence: "Right"
+        enabled: full_screen_window.window_type
         onActivated: {
             right_arrow_btn_m_area.clicked(null)
         }

@@ -33,6 +33,9 @@ Item {
     }
     Image_handler {
         id: image_handler
+        onImg_source_changed: {
+            processed_img.source = source
+        }
     }
     People_manager {
         id: people_manager
@@ -93,10 +96,11 @@ Item {
                     id: create_new_person_btn_m_area
                     anchors.fill: parent
                     onClicked: {
-                        if(people_manager.create_nominal_folder(new_person_nickname_input.text)) {
+                        if(people_manager.create_individual_dir(new_person_nickname_input.text)) {
                             create_new_person_btn.visible = false
                             new_person_nickname_input.focus = false
                             new_person_nickname_input.enabled = false
+                            image_handler.set_current_individual_name(new_person_nickname_input.text)
                         }
                     }
                 }
@@ -146,7 +150,7 @@ Item {
                 MouseArea {
                     anchors.fill: parent
                     onClicked: {
-                        people_manager.cancel_nominal_creation()
+                        people_manager.cancel_individual_creation()
                         people_page_item.loader.source = ""
                     }
                 }
@@ -307,7 +311,7 @@ Item {
                    anchors.fill: parent
                    onClicked: {
                        var comp = Qt.createComponent("Full_screen_img.qml")
-                       var win = comp.createObject(root, { img_source: selected_img.source })
+                       var win = comp.createObject(root, { img_source: selected_img.source, window_type: true })
                        win.show()
                    }
                }
@@ -326,7 +330,15 @@ Item {
                asynchronous: true
                mipmap: true
                fillMode: Image.PreserveAspectFit
-               source: "image://Processed_images_provider/" + selected_img.source
+//               source: "image://Processed_images_provider/" + selected_img.source
+               MouseArea {
+                   anchors.fill: parent
+                   onClicked: {
+                       var comp = Qt.createComponent("Full_screen_img.qml")
+                       var win = comp.createObject(root, { img_source: processed_img.source, window_type: false })
+                       win.show()
+                   }
+               }
            }
 
            property int w: 80
