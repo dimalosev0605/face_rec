@@ -28,6 +28,19 @@ Item {
         }
     }
 
+    Shortcut {
+        sequence: "Down"
+        onActivated: {
+            selected_photos_list_view.incrementCurrentIndex()
+        }
+    }
+    Shortcut {
+        sequence: "Up"
+        onActivated: {
+            selected_photos_list_view.decrementCurrentIndex()
+        }
+    }
+
     Selected_images_model {
         id: selected_images_model
     }
@@ -295,7 +308,7 @@ Item {
                    left: parent.left
                    leftMargin: 10
                    top: parent.top
-                   topMargin: 10
+                   topMargin: 30
                    bottom: hog_btn.top
                    bottomMargin: 10
                }
@@ -316,13 +329,28 @@ Item {
                    }
                }
            }
+           Text {
+               id: selected_img_info
+               anchors {
+                   top: parent.top
+                   horizontalCenter: selected_img.horizontalCenter
+               }
+               width: 100
+               height: 20
+               fontSizeMode: Text.Fit
+               minimumPointSize: 1
+               font.pointSize: 10
+               elide: Text.ElideRight
+               wrapMode: Text.WordWrap
+               text: selected_photos_list_view.count !== 0 ? String(selected_img.sourceSize.width + " - " + selected_img.sourceSize.height) : ""
+           }
            Image {
                id: processed_img
                anchors {
                    right: parent.right
                    rightMargin: 10
                    top: parent.top
-                   topMargin: 10
+                   topMargin: 30
                    bottom: parent.bottom
                    bottomMargin: 10
                }
@@ -339,6 +367,21 @@ Item {
                        win.show()
                    }
                }
+           }
+           Text {
+               id: processed_img_info
+               anchors {
+                   top: parent.top
+                   horizontalCenter: processed_img.horizontalCenter
+               }
+               width: 100
+               height: 20
+               fontSizeMode: Text.Fit
+               minimumPointSize: 1
+               font.pointSize: 10
+               elide: Text.ElideRight
+               wrapMode: Text.WordWrap
+               text: selected_photos_list_view.count !== 0 ? String(processed_img.sourceSize.width + " - " + processed_img.sourceSize.height) : ""
            }
 
            property int w: 80
@@ -389,6 +432,12 @@ Item {
                Text {
                    anchors.centerIn: parent
                    text: "Pyr up"
+               }
+               MouseArea {
+                   anchors.fill: parent
+                   onClicked: {
+                       image_handler.pyr_up()
+                   }
                }
            }
            Rectangle {

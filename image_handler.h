@@ -40,6 +40,9 @@ class Image_handler : public QObject
     dlib::shape_predictor shape_predictor;
     Individual_file_manager individual_file_manager;
 
+private:
+    bool check_file_existense();
+
 public:
     explicit Image_handler(QObject* parent = nullptr);
 
@@ -47,6 +50,7 @@ public slots:
     void update_path(const QString& new_path);
     void set_current_individual_name(const QString& name);
     void hog();
+    void pyr_up();
 
 signals:
     void img_source_changed(const QString& source);

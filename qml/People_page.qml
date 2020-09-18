@@ -32,7 +32,7 @@ Item {
                 }
                 height: 30
                 property int space_between_items: 10
-                width: parent.width - anchors.leftMargin - add_new_people_btn.width - add_new_people_btn.anchors.rightMargin - space_between_items
+                width: parent.width - anchors.leftMargin - add_new_people_btn_canvas.width - add_new_people_btn_canvas.anchors.rightMargin - space_between_items
                 placeholderText: "Search"
                 background: Rectangle {
                     color: search_people_input.activeFocus ? "white" : "gray"
@@ -41,8 +41,8 @@ Item {
                     radius: 5
                 }
             }
-            Rectangle {
-                id: add_new_people_btn
+            Canvas {
+                id: add_new_people_btn_canvas
                 anchors {
                     topMargin: search_people_input.anchors.topMargin
                     right: parent.right
@@ -51,20 +51,30 @@ Item {
                 }
                 height: search_people_input.height * 0.9
                 width: height
-                radius: 5
-                color: m_area.containsMouse ? "#00ff00" : parent.color
-                Image {
-                    anchors.fill: parent
-                    source: "qrc:/qml/People_page_items/add_new_icon.png"
-                    antialiasing: true
-                    mipmap: true
+                onPaint: {
+                    var ctx = getContext("2d")
+                    var lw = 1.5;
+                    var delta = 3
+                    ctx.lineWidth = lw
+                    ctx.strokeStyle = add_new_people_btn_m_area.containsMouse ? "#ffffff" : parent.color
+                    ctx.fillStyle = add_new_people_btn_m_area.containsMouse ? "#00ff00" : "#ffffff"
+                    ctx.beginPath()
+                    ctx.ellipse(lw, lw, width - lw * 2, height - lw * 2)
+                    ctx.moveTo(lw + (width - lw * 2) / 2, lw + delta)
+                    ctx.lineTo(lw + (width - lw * 2) / 2, lw + height - lw * 2 - delta)
+                    ctx.moveTo(lw + delta, lw + (height - lw * 2) / 2)
+                    ctx.lineTo(lw + width - lw * 2 - delta, lw + (height - lw * 2) / 2)
+                    ctx.fill()
+                    ctx.stroke()
                 }
                 MouseArea {
-                    id: m_area
+                    id: add_new_people_btn_m_area
                     anchors.fill: parent
                     hoverEnabled: true
+                    onContainsMouseChanged: {
+                        add_new_people_btn_canvas.requestPaint()
+                    }
                     onClicked: {
-//                        people_list.visible = false
                         loader.source = "qrc:/qml/People_page_items/Add_new_person_page.qml"
                     }
                 }
