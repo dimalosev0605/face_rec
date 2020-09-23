@@ -34,6 +34,7 @@ Window {
             hoverEnabled: true
             onClicked: {
                 full_screen_window.close()
+                full_screen_window.destroy()
             }
             onContainsMouseChanged: {
                 close_window_btn_canvas.requestPaint()
@@ -167,6 +168,7 @@ Window {
             bottom: parent.bottom
             bottomMargin: 5
         }
+        cache: false
         asynchronous: true
         mipmap: true
         fillMode: Image.PreserveAspectFit
@@ -175,6 +177,7 @@ Window {
         sequence: "Esc"
         onActivated: {
             full_screen_window.close()
+            full_screen_window.destroy()
         }
     }
     Shortcut {

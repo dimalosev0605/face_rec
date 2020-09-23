@@ -50,7 +50,10 @@ public slots:
     void update_path(const QString& new_path);
     void set_current_individual_name(const QString& name);
     void hog();
+    void cnn();
     void pyr_up();
+    void pyr_down();
+    void delete_temp_files();
 
 signals:
     void img_source_changed(const QString& source);

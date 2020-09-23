@@ -19,7 +19,7 @@ Item {
         nameFilters: [ "Image files (*.jpg *.png *.jpeg)", "All files (*)" ]
         onAccepted: {
             selected_images_model.accept_images(file_dialog.fileUrls)
-            console.log("You chose: " + file_dialog.fileUrls)
+//            console.log("You chose: " + file_dialog.fileUrls)
             file_dialog.close()
         }
         onRejected: {
@@ -47,7 +47,10 @@ Item {
     Image_handler {
         id: image_handler
         onImg_source_changed: {
+            console.log("SOURCE CHANGED = " + source)
+            processed_img.source = ""
             processed_img.source = source
+            console.log("New source = " + processed_img.source)
         }
     }
     People_manager {
@@ -191,6 +194,10 @@ Item {
                     model: selected_images_model
                     clip: true
                     currentIndex: -1
+                    onCurrentIndexChanged: {
+                        image_handler.delete_temp_files()
+                        processed_img.source = ""
+                    }
                     delegate: Rectangle {
                         id: delegate
                         width: selected_photos_list_view.width
@@ -280,6 +287,8 @@ Item {
                                 id: delete_from_selected_imgs_btn_m_area
                                 anchors.fill: parent
                                 onClicked: {
+                                    image_handler.delete_temp_files()
+                                    processed_img.source = ""
                                     selected_images_model.delete_image(index)
                                 }
                             }
@@ -342,7 +351,10 @@ Item {
                font.pointSize: 10
                elide: Text.ElideRight
                wrapMode: Text.WordWrap
-               text: selected_photos_list_view.count !== 0 ? String(selected_img.sourceSize.width + " - " + selected_img.sourceSize.height) : ""
+//               text: selected_photos_list_view.count !== 0 ? String(selected_img.sourceSize.width + " - " + selected_img.sourceSize.height) : ""
+               text: String(selected_img.sourceSize.width + " - " + selected_img.sourceSize.height)
+               visible: selected_img.source.toString() === "" ? false : true
+//               visible: selected_img.sourceSize.width === 0 ? false : true
            }
            Image {
                id: processed_img
@@ -358,6 +370,7 @@ Item {
                asynchronous: true
                mipmap: true
                fillMode: Image.PreserveAspectFit
+               cache: false
 //               source: "image://Processed_images_provider/" + selected_img.source
                MouseArea {
                    anchors.fill: parent
@@ -381,7 +394,10 @@ Item {
                font.pointSize: 10
                elide: Text.ElideRight
                wrapMode: Text.WordWrap
-               text: selected_photos_list_view.count !== 0 ? String(processed_img.sourceSize.width + " - " + processed_img.sourceSize.height) : ""
+//               text: selected_photos_list_view.count !== 0 ? String(processed_img.sourceSize.width + " - " + processed_img.sourceSize.height) : ""
+               text: String(processed_img.sourceSize.width + " - " + processed_img.sourceSize.height)
+               visible: processed_img.source.toString() === "" ? false : true
+//               visible: processed_img.sourceSize.width === 0 ? false : true
            }
 
            property int w: 80
@@ -419,6 +435,12 @@ Item {
                    anchors.centerIn: parent
                    text: "CNN"
                }
+               MouseArea {
+                   anchors.fill: parent
+                   onClicked: {
+                       image_handler.cnn()
+                   }
+               }
            }
            Rectangle {
                id: pyr_up
@@ -453,6 +475,12 @@ Item {
                    anchors.centerIn: parent
                    text: "Pyr down"
                }
+               MouseArea {
+                   anchors.fill: parent
+                   onClicked: {
+                       image_handler.pyr_down()
+                   }
+               }
            }
            Rectangle {
                id: extract_face
@@ -466,6 +494,27 @@ Item {
                Text {
                    anchors.centerIn: parent
                    text: "Extract face"
+               }
+           }
+           Rectangle {
+               id: delete_pyramided_imgs
+               anchors {
+                   bottom: parent.bottom
+                   left: extract_face.right
+               }
+               enabled: selected_img.source === "" ? false : true
+               width: parent.w
+               height: parent.h
+               Text {
+                   anchors.centerIn: parent
+                   text: "Del pyr"
+               }
+               MouseArea {
+                   anchors.fill: parent
+                   onClicked: {
+                       processed_img.source = ""
+                       image_handler.delete_temp_files()
+                   }
                }
            }
         }

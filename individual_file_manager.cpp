@@ -109,3 +109,13 @@ void Individual_file_manager::cancel_individual_dir_creation() const
     QDir dir(path_to_individual_dir);
     dir.removeRecursively();
 }
+
+void Individual_file_manager::delete_temp_files() const
+{
+    const auto path = get_path_to_temp_files_dir();
+    QDir dir(path);
+    dir.setFilter(QDir::Files);
+    for(auto& file : dir.entryList()) {
+        dir.remove(file);
+    }
+}

@@ -30,6 +30,15 @@ public:
         dir_creation_error
     };
 
+    // create unum with files types!
+    /*
+     * enum class Type {
+     * source_files
+     * temp_files
+     * extracted
+     * };
+     */
+
     Individual_file_manager();
     Status create_individual_dir() const;
 
@@ -43,6 +52,7 @@ public:
     void set_individual_name(const QString& name);
 
     void cancel_individual_dir_creation() const ;
+    void delete_temp_files() const;
 };
 
 #endif // INDIVIDUAL_FILE_MANAGER_H
