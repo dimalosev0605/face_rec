@@ -19,7 +19,6 @@ Item {
         nameFilters: [ "Image files (*.jpg *.png *.jpeg)", "All files (*)" ]
         onAccepted: {
             selected_images_model.accept_images(file_dialog.fileUrls)
-//            console.log("You chose: " + file_dialog.fileUrls)
             file_dialog.close()
         }
         onRejected: {
@@ -495,6 +494,13 @@ Item {
                    anchors.centerIn: parent
                    text: "Extract face"
                }
+               MouseArea {
+                   anchors.fill: parent
+                   onClicked: {
+                       console.log("BLOCK")
+                       block_ui_rect.visible = true
+                   }
+               }
            }
            Rectangle {
                id: delete_pyramided_imgs
@@ -517,6 +523,35 @@ Item {
                    }
                }
            }
+        }
+    }
+    Rectangle {
+        id: block_ui_rect
+        anchors.fill: parent
+        color: "gray"
+        visible: false
+        opacity: 0.5
+        BusyIndicator {
+            anchors.centerIn: parent
+            running: block_ui_rect.visible
+        }
+        MouseArea {
+            id: block_ui_rect_m_area
+            anchors.fill: parent
+        }
+        Rectangle {
+            anchors {
+                right: parent.right
+            }
+            width: 200
+            height: 50
+            color: "red"
+            MouseArea {
+                anchors.fill: parent
+                onClicked: {
+                    block_ui_rect.visible = false
+                }
+            }
         }
     }
 }

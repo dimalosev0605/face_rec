@@ -42,6 +42,8 @@ class Image_handler : public QObject
 
 private:
     bool check_file_existense();
+    void load_image(dlib::matrix<dlib::rgb_pixel>& img, const QString& prefix);
+    QString save_image(dlib::matrix<dlib::rgb_pixel>& img, const QString& prefix);
 
 public:
     explicit Image_handler(QObject* parent = nullptr);
