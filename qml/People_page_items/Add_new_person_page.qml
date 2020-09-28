@@ -50,6 +50,7 @@ Item {
             processed_img.source = ""
             processed_img.source = source
             console.log("New source = " + processed_img.source)
+            block_ui_rect.visible = false
         }
     }
     People_manager {
@@ -417,6 +418,7 @@ Item {
                MouseArea {
                    anchors.fill: parent
                    onClicked: {
+                       block_ui_rect.visible = true
                        image_handler.hog()
                    }
                }
@@ -437,6 +439,7 @@ Item {
                MouseArea {
                    anchors.fill: parent
                    onClicked: {
+                       block_ui_rect.visible = true
                        image_handler.cnn()
                    }
                }
@@ -457,6 +460,7 @@ Item {
                MouseArea {
                    anchors.fill: parent
                    onClicked: {
+                       block_ui_rect.visible = true
                        image_handler.pyr_up()
                    }
                }
@@ -477,6 +481,7 @@ Item {
                MouseArea {
                    anchors.fill: parent
                    onClicked: {
+                       block_ui_rect.visible = true
                        image_handler.pyr_down()
                    }
                }
@@ -497,8 +502,7 @@ Item {
                MouseArea {
                    anchors.fill: parent
                    onClicked: {
-                       console.log("BLOCK")
-                       block_ui_rect.visible = true
+//                       block_ui_rect.visible = true
                    }
                }
            }

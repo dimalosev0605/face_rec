@@ -35,15 +35,17 @@ class Image_handler : public QObject
     Q_OBJECT
     QString selected_img_path;
     std::unique_ptr<std::thread> worker_thread;
-    dlib::frontal_face_detector hog_face_detector = dlib::get_frontal_face_detector();
     net_type cnn_face_detector;
     dlib::shape_predictor shape_predictor;
     Individual_file_manager individual_file_manager;
+    std::mutex selected_img_mutex;
 
 private:
-    bool check_file_existense();
-    void load_image(dlib::matrix<dlib::rgb_pixel>& img, const QString& prefix);
-    QString save_image(dlib::matrix<dlib::rgb_pixel>& img, const QString& prefix);
+    bool check_img_existense(const QString& path);
+    QString copy_processing_img_path();
+    void update_processed_img(const QString& processing_img_path, dlib::matrix<dlib::rgb_pixel>& img, const QString& prefix);
+    void load_image(dlib::matrix<dlib::rgb_pixel>& img, const QString& prefix, const QString& path);
+    QString save_image(dlib::matrix<dlib::rgb_pixel>& img, const QString& prefix, const QString& path);
 
 public:
     explicit Image_handler(QObject* parent = nullptr);
