@@ -195,7 +195,7 @@ Item {
                     clip: true
                     currentIndex: -1
                     onCurrentIndexChanged: {
-                        image_handler.delete_temp_files()
+                        image_handler.cancel()
                         processed_img.source = ""
                     }
                     delegate: Rectangle {
@@ -287,7 +287,7 @@ Item {
                                 id: delete_from_selected_imgs_btn_m_area
                                 anchors.fill: parent
                                 onClicked: {
-                                    image_handler.delete_temp_files()
+                                    image_handler.cancel()
                                     processed_img.source = ""
                                     selected_images_model.delete_image(index)
                                 }
@@ -327,7 +327,7 @@ Item {
                fillMode: Image.PreserveAspectFit
                source: selected_photos_list_view.currentItem === null ? "" : selected_photos_list_view.currentItem.selected_img_preview.source
                onSourceChanged: {
-                   image_handler.update_path(source)
+                   image_handler.update_selected_img_path(source)
                }
                MouseArea {
                    anchors.fill: parent
@@ -502,7 +502,8 @@ Item {
                MouseArea {
                    anchors.fill: parent
                    onClicked: {
-//                       block_ui_rect.visible = true
+                       block_ui_rect.visible = true
+                       image_handler.extract_face()
                    }
                }
            }
@@ -517,13 +518,13 @@ Item {
                height: parent.h
                Text {
                    anchors.centerIn: parent
-                   text: "Del pyr"
+                   text: "Cancel"
                }
                MouseArea {
                    anchors.fill: parent
                    onClicked: {
                        processed_img.source = ""
-                       image_handler.delete_temp_files()
+                       image_handler.cancel()
                    }
                }
            }

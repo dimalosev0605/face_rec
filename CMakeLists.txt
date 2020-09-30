@@ -27,9 +27,6 @@ add_executable(face_rec
     selected_images_model.h
     selected_images_model.cpp
     
-    processed_images_provider.h
-    processed_images_provider.cpp
-
     image_handler.h
     image_handler.cpp
 

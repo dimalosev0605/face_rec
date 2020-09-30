@@ -3,7 +3,6 @@
 
 #include "left_vertical_menu_bar_model.h"
 #include "selected_images_model.h"
-#include "processed_images_provider.h"
 #include "image_handler.h"
 #include "people_manager.h"
 
@@ -21,7 +20,6 @@ int main(int argc, char *argv[])
     qmlRegisterUncreatableMetaObject(MenuBarAction::staticMetaObject, "MenuBarActionNamespace_qml", 1, 0, "MenuBarAction", "Error, only enums!");
 
     QQmlApplicationEngine engine;
-    engine.addImageProvider("Processed_images_provider", new Processed_images_provider);
 
     const QUrl url(QStringLiteral("qrc:/qml/main.qml"));
     QObject::connect(&engine, &QQmlApplicationEngine::objectCreated,
