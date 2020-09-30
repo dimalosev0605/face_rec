@@ -6,9 +6,12 @@ import Left_vertical_menu_bar_model_qml 1.0
 import MenuBarActionNamespace_qml 1.0
 
 Window {
+    id: main_qml
     visible: true
     width: 1400
     height: 800
+
+    property alias main_qml_sc: main_qml_sc
 
     Left_vertical_menu_bar_model {
         id: left_vertical_menu_bar_model
@@ -110,6 +113,7 @@ Window {
                                 }
                             }
                             page_loader.source = "People_page.qml"
+//                            main_qml_sc.enabled = false
                             break;
                         case MenuBarAction.RECOGNITION:
                             console.log("Recognition clicked")
@@ -136,6 +140,7 @@ Window {
     }
     Loader {
         id: page_loader
+        focus: true
         anchors {
             left: left_vertical_menu_bar.right
             right: parent.right
@@ -144,9 +149,11 @@ Window {
         }
     }
     Shortcut {
+        id: main_qml_sc
         sequence: "Esc"
+//        enabled: page_loader.source === "" ? true : false
         onActivated: {
-            console.log("Escape pressed")
+            console.log("Main qml Esc")
             page_loader.source = ""
         }
     }

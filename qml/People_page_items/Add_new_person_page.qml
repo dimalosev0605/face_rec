@@ -10,6 +10,8 @@ import People_manager_qml 1.0
 Item {
     id: root
 
+//    focus: true
+
     FileDialog {
         id: file_dialog
         title: "Please choose files"
@@ -37,6 +39,23 @@ Item {
         sequence: "Up"
         onActivated: {
             selected_photos_list_view.decrementCurrentIndex()
+        }
+    }
+//    Keys.onShortcutOverride: {
+//        console.log("HERE 1")
+//        if (event.key === Qt.Key_Escape) {
+//            console.log("HERE 2")
+//            event.accepted = true
+//        }
+//    }
+//    Keys.onEscapePressed: {
+//        console.log("Keys.onEscapePressed in Add new person page.qml")
+//    }
+    Shortcut {
+        sequence: "Esc"
+        onActivated: {
+            console.log("Add new person qml Esc")
+            cancel_btn_m_area.clicked(null)
         }
     }
 
@@ -164,10 +183,14 @@ Item {
                     text: "Cancel"
                 }
                 MouseArea {
+                    id: cancel_btn_m_area
                     anchors.fill: parent
                     onClicked: {
-                        people_manager.cancel_individual_creation()
+                        if(new_person_nickname_input.text !== "") {
+                            people_manager.cancel_individual_creation()
+                        }
                         people_page_item.loader.source = ""
+                        main_qml.main_qml_sc.enabled = true
                     }
                 }
             }
@@ -525,6 +548,26 @@ Item {
                    onClicked: {
                        processed_img.source = ""
                        image_handler.cancel()
+                   }
+               }
+           }
+           Rectangle {
+               id: save
+               anchors {
+                   bottom: parent.bottom
+                   left: delete_pyramided_imgs.right
+               }
+               enabled: selected_img.source === "" ? false : true
+               width: parent.w
+               height: parent.h
+               Text {
+                   anchors.centerIn: parent
+                   text: "Save"
+               }
+               MouseArea {
+                   anchors.fill: parent
+                   onClicked: {
+                       processed_img.source = ""
                    }
                }
            }

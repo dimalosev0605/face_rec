@@ -5,6 +5,8 @@ Item {
     id: people_page_item
     property alias loader: loader
     objectName: "People_page"
+//    focus: true
+
     SplitView {
         id: split_view
         anchors.fill: parent
@@ -76,6 +78,9 @@ Item {
                     }
                     onClicked: {
                         loader.source = "qrc:/qml/People_page_items/Add_new_person_page.qml"
+//                        main_qml.main_qml_sc.enabled = false
+//                        main_qml_sc.enabled = false
+                        main_qml.main_qml_sc.enabled = false
                     }
                 }
             }
@@ -119,7 +124,8 @@ Item {
 
         Loader {
             id: loader
-//            asynchronous: true
+            asynchronous: true
+//            focus: true
 //            visible: status == Loader.Ready
             height: parent.height
         }
