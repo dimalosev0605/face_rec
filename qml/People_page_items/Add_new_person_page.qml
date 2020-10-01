@@ -98,41 +98,46 @@ Item {
                     top: parent.top
                     topMargin: 10
                 }
-                width: 150
+                width: 200
                 height: 30
-                placeholderText: "Enter person name"
+                placeholderText: "Enter person nickname"
             }
 
             Rectangle {
-                id: create_new_person_btn
+                id: add_new_person_btn
                 anchors {
                     left: new_person_nickname_input.right
                     leftMargin: 10
-                    top: new_person_nickname_input.top
+                    verticalCenter: new_person_nickname_input.verticalCenter
                 }
-                width: height * 3
+                width: height * 4
                 height: new_person_nickname_input.height
                 border.width: 1
-                border.color: "black"
-                color: create_new_person_btn_m_area.pressed ? "green" : "white"
+                border.color: add_new_person_btn_m_area.containsPress ? "#0099cc" : "black"
+                radius: 3
+                color: enabled ? add_new_person_btn_m_area.containsPress ? "#79ff4d" : add_new_person_btn_m_area.containsMouse ? "#cccccc" : "white" : "gray"
                 enabled: new_person_nickname_input.text === "" ? false : true
                 Text {
-                    anchors.centerIn: parent
                     width: parent.width
                     height: parent.height
+                    verticalAlignment: Text.AlignVCenter
+                    horizontalAlignment: Text.AlignHCenter
                     fontSizeMode: Text.Fit
-                    minimumPointSize: 1
-                    font.pointSize: 10
                     elide: Text.ElideRight
                     wrapMode: Text.WordWrap
+                    minimumPointSize: 1
+                    font.pointSize: 10
+                    font.weight: Font.Medium
+                    color: add_new_person_btn_m_area.containsPress ? "white" : "black"
                     text: "Create new person"
                 }
                 MouseArea {
-                    id: create_new_person_btn_m_area
+                    id: add_new_person_btn_m_area
                     anchors.fill: parent
+                    hoverEnabled: true
                     onClicked: {
                         if(people_manager.create_individual_dir(new_person_nickname_input.text)) {
-                            create_new_person_btn.visible = false
+                            add_new_person_btn.visible = false
                             new_person_nickname_input.focus = false
                             new_person_nickname_input.enabled = false
                             image_handler.set_current_individual_name(new_person_nickname_input.text)
@@ -148,18 +153,31 @@ Item {
                     leftMargin: 10
                     top: new_person_nickname_input.top
                 }
-                visible: !create_new_person_btn.visible
-                width: height * 3
+                visible: !add_new_person_btn.visible
+                width: height * 4
+                border.width: 1
+                radius: 3
+                border.color: select_photos_btn_m_area.containsPress ? "#0099cc" : "black"
+                color: select_photos_btn_m_area.containsPress ? "#79ff4d" : select_photos_btn_m_area.containsMouse ? "#cccccc" : "white"
                 height: new_person_nickname_input.height
-                color: m_area.pressed ? "green" : "blue"
                 Text {
-                    anchors.centerIn: parent
+                    width: parent.width
+                    height: parent.height
+                    verticalAlignment: Text.AlignVCenter
+                    horizontalAlignment: Text.AlignHCenter
                     fontSizeMode: Text.Fit
-                    text: "Select photo"
+                    elide: Text.ElideRight
+                    wrapMode: Text.WordWrap
+                    minimumPointSize: 1
+                    font.pointSize: 10
+                    font.weight: Font.Medium
+                    color: select_photos_btn_m_area.containsPress ? "white" : "black"
+                    text: "Select photos"
                 }
                 MouseArea {
-                    id: m_area
+                    id: select_photos_btn_m_area
                     anchors.fill: parent
+                    hoverEnabled: true
                     onClicked: {
                         file_dialog.open()
                     }
@@ -173,18 +191,31 @@ Item {
                     leftMargin: 10
                     top: select_photos_btn.top
                 }
-                visible: !create_new_person_btn.visible
-                width: height * 3
+                visible: !add_new_person_btn.visible
+                width: height * 4
                 height: new_person_nickname_input.height
-                color: "red"
+                border.width: 1
+                radius: 3
+                border.color: cancel_btn_m_area.containsPress ? "#661400" : "black"
+                color: cancel_btn_m_area.containsPress ? "#e63900" : cancel_btn_m_area.containsMouse ? "#ff4000" : "#ffaf99"
                 Text {
-                    anchors.centerIn: parent
+                    width: parent.width
+                    height: parent.height
+                    verticalAlignment: Text.AlignVCenter
+                    horizontalAlignment: Text.AlignHCenter
                     fontSizeMode: Text.Fit
+                    elide: Text.ElideRight
+                    wrapMode: Text.WordWrap
+                    minimumPointSize: 1
+                    font.pointSize: 10
+                    font.weight: Font.Medium
+                    color: cancel_btn_m_area.containsPress ? "white" : "black"
                     text: "Cancel"
                 }
                 MouseArea {
                     id: cancel_btn_m_area
                     anchors.fill: parent
+                    hoverEnabled: true
                     onClicked: {
                         if(new_person_nickname_input.text !== "") {
                             people_manager.cancel_individual_creation()
@@ -204,7 +235,7 @@ Item {
                     left: parent.left
                     leftMargin: 5
                 }
-                visible: !create_new_person_btn.visible
+                visible: !add_new_person_btn.visible
                 property int space_between_frames: 10
                 width: (parent.width - anchors.leftMargin - processed_photos.anchors.rightMargin - space_between_frames) / 2
                 height: parent.height - new_person_nickname_input.height - new_person_nickname_input.anchors.topMargin -
@@ -326,14 +357,14 @@ Item {
                     right: parent.right
                     rightMargin: selected_photos_frame.anchors.leftMargin
                 }
-                visible: !create_new_person_btn.visible
+                visible: !add_new_person_btn.visible
                 width: selected_photos_frame.width
                 height: selected_photos_frame.height
             }
         }
         Rectangle {
            color: "yellow"
-           visible: !create_new_person_btn.visible
+           visible: !add_new_person_btn.visible
            Image {
                id: selected_img
                anchors {
@@ -374,10 +405,8 @@ Item {
                font.pointSize: 10
                elide: Text.ElideRight
                wrapMode: Text.WordWrap
-//               text: selected_photos_list_view.count !== 0 ? String(selected_img.sourceSize.width + " - " + selected_img.sourceSize.height) : ""
                text: String(selected_img.sourceSize.width + " - " + selected_img.sourceSize.height)
                visible: selected_img.source.toString() === "" ? false : true
-//               visible: selected_img.sourceSize.width === 0 ? false : true
            }
            Image {
                id: processed_img
@@ -568,6 +597,25 @@ Item {
                    anchors.fill: parent
                    onClicked: {
                        processed_img.source = ""
+                   }
+               }
+           }
+           Rectangle {
+               id: resize
+               anchors {
+                   bottom: parent.bottom
+                   left: save.right
+               }
+               enabled: selected_img.source === "" ? false : true
+               width: parent.w
+               height: parent.h
+               Text {
+                   anchors.centerIn: parent
+                   text: "Resize"
+               }
+               MouseArea {
+                   anchors.fill: parent
+                   onClicked: {
                    }
                }
            }
