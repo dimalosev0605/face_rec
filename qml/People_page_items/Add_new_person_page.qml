@@ -22,7 +22,6 @@ Item {
             file_dialog.close()
         }
         onRejected: {
-            console.log("Canceled")
             file_dialog.close()
         }
     }
@@ -54,11 +53,10 @@ Item {
         id: image_handler
         onImg_source_changed: {
             console.log("SOURCE CHANGED = " + source)
-            processed_img.source = ""
+//            processed_img.source = ""
             processed_img.source = source
             console.log("New source = " + processed_img.source)
             block_ui_rect.visible = false
-            cancel.enabled = true
             extract_face_btn.enabled = false
         }
         onEnable_extract_face_btn: {
@@ -209,7 +207,6 @@ Item {
                         image_handler.cancel()
                         extract_face_btn.enabled = false
                         processed_img.source = ""
-                        cancel.enabled = false
                     }
                     delegate: Rectangle {
                         id: delegate
@@ -318,7 +315,6 @@ Item {
                                     extract_face_btn.enabled = false
                                     processed_img.source = ""
                                     selected_images_model.delete_image(index)
-                                    cancel.enabled = false
                                 }
                             }
                         }
@@ -482,12 +478,11 @@ Item {
                             text: "Cancel"
                             width: parent.width
                             height: (parent.height - parent.spacing) / selected_img_row_buttons.number_of_rows
-                            enabled: false
+                            enabled: processed_img.source.toString() === "" ? false : true
                             m_area.onClicked: {
                                 processed_img.source = ""
                                 image_handler.cancel()
                                 extract_face_btn.enabled = false
-                                cancel.enabled = false
                             }
                         }
                     }
@@ -531,6 +526,7 @@ Item {
                     }
                     mipmap: true
                     cache: false
+                    source: ""
                     fillMode: Image.PreserveAspectFit
                     MouseArea {
                         anchors.fill: parent
@@ -584,30 +580,32 @@ Item {
         anchors.fill: parent
         color: "gray"
         visible: false
-        opacity: 0.5
+        opacity: 0.7
         BusyIndicator {
+            id: busy_indicator
             anchors.centerIn: parent
+            height: 100
+            width: 100
             running: block_ui_rect.visible
         }
         MouseArea {
             id: block_ui_rect_m_area
             anchors.fill: parent
         }
-        Rectangle {
+        Custom_button {
+            id: cancel_processing_btn
             anchors {
-                right: parent.right
+                top: busy_indicator.bottom
+                topMargin: 5
+                horizontalCenter: parent.horizontalCenter
             }
-            width: 200
-            height: 50
-            color: "red"
-            MouseArea {
-                anchors.fill: parent
-                onClicked: {
-                    image_handler.cancel()
-                    extract_face_btn.enabled = false
-                    block_ui_rect.visible = false
-                    cancel.enabled = false
-                }
+            height: 40
+            width: 150
+            pressed_color: "#ff0000"
+            text: "Cancel"
+            m_area.onClicked: {
+                image_handler.cancel()
+                block_ui_rect.visible = false
             }
         }
     }
