@@ -103,7 +103,7 @@ Item {
                 placeholderText: "Enter person nickname"
             }
 
-            Rectangle {
+            Custom_button {
                 id: add_new_person_btn
                 anchors {
                     left: new_person_nickname_input.right
@@ -112,41 +112,30 @@ Item {
                 }
                 width: height * 4
                 height: new_person_nickname_input.height
-                border.width: 1
-                border.color: add_new_person_btn_m_area.containsPress ? "#0099cc" : "black"
-                radius: 3
-                color: enabled ? add_new_person_btn_m_area.containsPress ? "#79ff4d" : add_new_person_btn_m_area.containsMouse ? "#cccccc" : "white" : "gray"
                 enabled: new_person_nickname_input.text === "" ? false : true
-                Text {
-                    width: parent.width
-                    height: parent.height
-                    verticalAlignment: Text.AlignVCenter
-                    horizontalAlignment: Text.AlignHCenter
-                    fontSizeMode: Text.Fit
-                    elide: Text.ElideRight
-                    wrapMode: Text.WordWrap
-                    minimumPointSize: 1
-                    font.pointSize: 10
-                    font.weight: Font.Medium
-                    color: add_new_person_btn_m_area.containsPress ? "white" : "black"
-                    text: "Create new person"
-                }
-                MouseArea {
-                    id: add_new_person_btn_m_area
-                    anchors.fill: parent
-                    hoverEnabled: true
-                    onClicked: {
-                        if(people_manager.create_individual_dir(new_person_nickname_input.text)) {
-                            add_new_person_btn.visible = false
-                            new_person_nickname_input.focus = false
-                            new_person_nickname_input.enabled = false
-                            image_handler.set_current_individual_name(new_person_nickname_input.text)
-                        }
+
+                default_color: "#ffffff"
+                disabled_color: "#808080"
+                hovered_color: "#cccccc"
+                pressed_color: "#79ff4d"
+
+                border_default_color: "#000000"
+                border_pressed_color: "#0099cc"
+
+                text_color: "#000000"
+                text_pressed_color: "#ffffff"
+                text: "Create new person"
+
+                m_area.onClicked: {
+                    if(people_manager.create_individual_dir(new_person_nickname_input.text)) {
+                        add_new_person_btn.visible = false
+                        new_person_nickname_input.focus = false
+                        new_person_nickname_input.enabled = false
+                        image_handler.set_current_individual_name(new_person_nickname_input.text)
                     }
                 }
             }
-
-            Rectangle {
+            Custom_button {
                 id: select_photos_btn
                 anchors {
                     left: new_person_nickname_input.right
@@ -155,36 +144,24 @@ Item {
                 }
                 visible: !add_new_person_btn.visible
                 width: height * 4
-                border.width: 1
-                radius: 3
-                border.color: select_photos_btn_m_area.containsPress ? "#0099cc" : "black"
-                color: select_photos_btn_m_area.containsPress ? "#79ff4d" : select_photos_btn_m_area.containsMouse ? "#cccccc" : "white"
                 height: new_person_nickname_input.height
-                Text {
-                    width: parent.width
-                    height: parent.height
-                    verticalAlignment: Text.AlignVCenter
-                    horizontalAlignment: Text.AlignHCenter
-                    fontSizeMode: Text.Fit
-                    elide: Text.ElideRight
-                    wrapMode: Text.WordWrap
-                    minimumPointSize: 1
-                    font.pointSize: 10
-                    font.weight: Font.Medium
-                    color: select_photos_btn_m_area.containsPress ? "white" : "black"
-                    text: "Select photos"
-                }
-                MouseArea {
-                    id: select_photos_btn_m_area
-                    anchors.fill: parent
-                    hoverEnabled: true
-                    onClicked: {
-                        file_dialog.open()
-                    }
+
+                default_color: "#ffffff"
+                hovered_color: "#cccccc"
+                pressed_color: "#79ff4d"
+
+                border_default_color: "#000000"
+                border_pressed_color: "#0099cc"
+
+                text_color: "#000000"
+                text_pressed_color: "#ffffff"
+                text: "Select photos"
+
+                m_area.onClicked: {
+                    file_dialog.open()
                 }
             }
-
-            Rectangle {
+            Custom_button {
                 id: cancel_btn
                 anchors {
                     left: select_photos_btn.right
@@ -194,38 +171,26 @@ Item {
                 visible: !add_new_person_btn.visible
                 width: height * 4
                 height: new_person_nickname_input.height
-                border.width: 1
-                radius: 3
-                border.color: cancel_btn_m_area.containsPress ? "#661400" : "black"
-                color: cancel_btn_m_area.containsPress ? "#e63900" : cancel_btn_m_area.containsMouse ? "#ff4000" : "#ffaf99"
-                Text {
-                    width: parent.width
-                    height: parent.height
-                    verticalAlignment: Text.AlignVCenter
-                    horizontalAlignment: Text.AlignHCenter
-                    fontSizeMode: Text.Fit
-                    elide: Text.ElideRight
-                    wrapMode: Text.WordWrap
-                    minimumPointSize: 1
-                    font.pointSize: 10
-                    font.weight: Font.Medium
-                    color: cancel_btn_m_area.containsPress ? "white" : "black"
-                    text: "Cancel"
-                }
-                MouseArea {
-                    id: cancel_btn_m_area
-                    anchors.fill: parent
-                    hoverEnabled: true
-                    onClicked: {
-                        if(new_person_nickname_input.text !== "") {
-                            people_manager.cancel_individual_creation()
-                        }
-                        people_page_item.loader.source = ""
-                        main_qml.main_qml_sc.enabled = true
+
+                default_color: "#ffaf99"
+                hovered_color: "#ff4000"
+                pressed_color: "#e63900"
+
+                border_default_color: "#000000"
+                border_pressed_color: "#661400"
+
+                text_color: "#000000"
+                text_pressed_color: "#ffffff"
+                text: "Cancel"
+
+                m_area.onClicked: {
+                    if(new_person_nickname_input.text !== "") {
+                        people_manager.cancel_individual_creation()
                     }
+                    people_page_item.loader.source = ""
+                    main_qml.main_qml_sc.enabled = true
                 }
             }
-
 
             Item {
                 id: selected_photos_frame
@@ -244,7 +209,7 @@ Item {
                 ListView {
                     id: selected_photos_list_view
                     anchors.fill: parent
-                    cacheBuffer: 0
+//                    cacheBuffer: 0
                     model: selected_images_model
                     clip: true
                     currentIndex: -1

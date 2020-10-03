@@ -11,5 +11,6 @@
         <file>qml/People_page_items/Add_new_person_page.qml</file>
         <file>qml/People_page_items/trash_icon.png</file>
         <file>qml/People_page_items/Full_screen_img.qml</file>
+        <file>qml/People_page_items/Custom_button.qml</file>
     </qresource>
 </RCC>
