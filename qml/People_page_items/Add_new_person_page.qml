@@ -10,8 +10,6 @@ import People_manager_qml 1.0
 Item {
     id: root
 
-//    focus: true
-
     FileDialog {
         id: file_dialog
         title: "Please choose files"
@@ -41,16 +39,6 @@ Item {
             selected_photos_list_view.decrementCurrentIndex()
         }
     }
-//    Keys.onShortcutOverride: {
-//        console.log("HERE 1")
-//        if (event.key === Qt.Key_Escape) {
-//            console.log("HERE 2")
-//            event.accepted = true
-//        }
-//    }
-//    Keys.onEscapePressed: {
-//        console.log("Keys.onEscapePressed in Add new person page.qml")
-//    }
     Shortcut {
         sequence: "Esc"
         onActivated: {
@@ -202,7 +190,7 @@ Item {
                 }
                 visible: !add_new_person_btn.visible
                 property int space_between_frames: 10
-                width: (parent.width - anchors.leftMargin - processed_photos.anchors.rightMargin - space_between_frames) / 2
+                width: (parent.width - anchors.leftMargin - processed_photos_frame.anchors.rightMargin - space_between_frames) / 2
                 height: parent.height - new_person_nickname_input.height - new_person_nickname_input.anchors.topMargin -
                         selected_photos_frame.anchors.topMargin - space_between_frames
 
@@ -252,6 +240,14 @@ Item {
                                     radius: 5
                                 }
                             }
+                            MouseArea {
+                                anchors.fill: parent
+                                onClicked: {
+                                    var comp = Qt.createComponent("Full_screen_img.qml")
+                                    var win = comp.createObject(root, { img_source: selected_img.source, window_type: true })
+                                    win.show()
+                                }
+                            }
                         }
                         Text {
                             id: selected_img_preview_file_name
@@ -273,7 +269,8 @@ Item {
                         MouseArea {
                             id: delegate_body_m_area
                             anchors {
-                                left: parent.left
+                                top: selected_img_preview.top
+                                left: selected_img_preview.right
                                 right: selected_img_preview_file_name.right
                             }
                             height: parent.height
@@ -293,7 +290,10 @@ Item {
                             width: height * 0.85
                             radius: 4
                             property color delete_btn_pressed_color: "#9c0303"
-                            color: delete_from_selected_imgs_btn_m_area.pressed ? delete_btn_pressed_color : delegate.color
+                            color: delete_from_selected_imgs_btn_m_area.containsPress ?
+                                       delete_btn_pressed_color :
+                                       delete_from_selected_imgs_btn_m_area.containsMouse ?
+                                       "gray" : delegate.color
                             Image {
                                 id: delete_from_selected_imgs_btn_img
                                 anchors.fill: parent
@@ -305,6 +305,7 @@ Item {
                             MouseArea {
                                 id: delete_from_selected_imgs_btn_m_area
                                 anchors.fill: parent
+                                hoverEnabled: true
                                 onClicked: {
                                     image_handler.cancel()
                                     processed_img.source = ""
@@ -316,7 +317,7 @@ Item {
                 }
             }
             Rectangle {
-                id: processed_photos
+                id: processed_photos_frame
                 anchors {
                     top: selected_photos_frame.top
                     right: parent.right
@@ -325,6 +326,7 @@ Item {
                 visible: !add_new_person_btn.visible
                 width: selected_photos_frame.width
                 height: selected_photos_frame.height
+//                color: "blue"
             }
         }
         Rectangle {
@@ -586,11 +588,15 @@ Item {
            }
         }
     }
+    Component.onCompleted: {
+        block_ui_rect.visible = false
+        console.log("HERE!!!")
+    }
     Rectangle {
         id: block_ui_rect
         anchors.fill: parent
         color: "gray"
-        visible: false
+        visible: true
         opacity: 0.5
         BusyIndicator {
             anchors.centerIn: parent
