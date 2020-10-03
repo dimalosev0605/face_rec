@@ -6,16 +6,16 @@ Rectangle {
     property alias m_area: m_area
     property string text: text.text
 
-    property color border_default_color
-    property color border_pressed_color
+    property color border_default_color: "#000000"
+    property color border_pressed_color: "#0099cc"
 
-    property color default_color
+    property color default_color: "#ffffff"
     property color disabled_color: "#808080"
-    property color hovered_color
-    property color pressed_color
+    property color hovered_color: "#cccccc"
+    property color pressed_color: "#79ff4d"
 
-    property color text_color
-    property color text_pressed_color
+    property color text_color: "#000000"
+    property color text_pressed_color: "#ffffff"
 
     border.width: 1
     border.color: m_area.containsPress ? border_pressed_color : border_default_color

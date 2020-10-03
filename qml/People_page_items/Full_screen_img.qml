@@ -169,7 +169,7 @@ Window {
             bottomMargin: 5
         }
         cache: false
-        asynchronous: true
+//        asynchronous: true
         mipmap: true
         fillMode: Image.PreserveAspectFit
     }

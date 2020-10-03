@@ -65,6 +65,7 @@ public slots:
 
 signals:
     void img_source_changed(const QString& source);
+    void enable_extract_face_btn();
 };
 
 #endif // IMAGE_HANDLER_H

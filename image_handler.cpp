@@ -107,6 +107,7 @@ void Image_handler::hog()
             if(worker_thread_id == std::this_thread::get_id()) {
                 rect_around_face = rects_around_faces[0];
                 update_processed_img(processing_img_path, img, "hog_");
+                emit enable_extract_face_btn();
             }
         }
     }));
@@ -154,6 +155,7 @@ void Image_handler::cnn()
             if(worker_thread_id == std::this_thread::get_id()) {
                 rect_around_face = rects_around_faces[0];
                 update_processed_img(processing_img_path, img, "cnn_");
+                emit enable_extract_face_btn();
             }
         }
     }));

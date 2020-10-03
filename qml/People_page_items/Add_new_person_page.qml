@@ -43,7 +43,7 @@ Item {
         sequence: "Esc"
         onActivated: {
             console.log("Add new person qml Esc")
-            cancel_btn_m_area.clicked(null)
+            cancel_individual_creation_btn.m_area.clicked(null)
         }
     }
 
@@ -58,6 +58,11 @@ Item {
             processed_img.source = source
             console.log("New source = " + processed_img.source)
             block_ui_rect.visible = false
+            cancel.enabled = true
+            extract_face_btn.enabled = false
+        }
+        onEnable_extract_face_btn: {
+            extract_face_btn.enabled = true
         }
     }
     People_manager {
@@ -150,7 +155,7 @@ Item {
                 }
             }
             Custom_button {
-                id: cancel_btn
+                id: cancel_individual_creation_btn
                 anchors {
                     left: select_photos_btn.right
                     leftMargin: 10
@@ -197,13 +202,14 @@ Item {
                 ListView {
                     id: selected_photos_list_view
                     anchors.fill: parent
-//                    cacheBuffer: 0
                     model: selected_images_model
                     clip: true
                     currentIndex: -1
                     onCurrentIndexChanged: {
                         image_handler.cancel()
+                        extract_face_btn.enabled = false
                         processed_img.source = ""
+                        cancel.enabled = false
                     }
                     delegate: Rectangle {
                         id: delegate
@@ -218,6 +224,7 @@ Item {
                                                         delegate_body_m_area.pressed ? highlighted_color : hovered_color :
                                                         default_color
                         property alias selected_img_preview: selected_img_preview
+                        property alias selected_img_preview_file_name: selected_img_preview_file_name
                         Image {
                             id: selected_img_preview
                             anchors {
@@ -308,8 +315,10 @@ Item {
                                 hoverEnabled: true
                                 onClicked: {
                                     image_handler.cancel()
+                                    extract_face_btn.enabled = false
                                     processed_img.source = ""
                                     selected_images_model.delete_image(index)
+                                    cancel.enabled = false
                                 }
                             }
                         }
@@ -329,263 +338,241 @@ Item {
 //                color: "blue"
             }
         }
-        Rectangle {
-           color: "yellow"
-           visible: !add_new_person_btn.visible
-           Image {
-               id: selected_img
-               anchors {
-                   left: parent.left
-                   leftMargin: 10
-                   top: parent.top
-                   topMargin: 30
-                   bottom: hog_btn.top
-                   bottomMargin: 10
-               }
-               width: height
-               asynchronous: true
-               mipmap: true
-               fillMode: Image.PreserveAspectFit
-               source: selected_photos_list_view.currentItem === null ? "" : selected_photos_list_view.currentItem.selected_img_preview.source
-               onSourceChanged: {
-                   image_handler.update_selected_img_path(source)
-               }
-               MouseArea {
-                   anchors.fill: parent
-                   onClicked: {
-                       var comp = Qt.createComponent("Full_screen_img.qml")
-                       var win = comp.createObject(root, { img_source: selected_img.source, window_type: true })
-                       win.show()
-                   }
-               }
-           }
-           Text {
-               id: selected_img_info
-               anchors {
-                   top: parent.top
-                   horizontalCenter: selected_img.horizontalCenter
-               }
-               width: 100
-               height: 20
-               fontSizeMode: Text.Fit
-               minimumPointSize: 1
-               font.pointSize: 10
-               elide: Text.ElideRight
-               wrapMode: Text.WordWrap
-               text: String(selected_img.sourceSize.width + " - " + selected_img.sourceSize.height)
-               visible: selected_img.source.toString() === "" ? false : true
-           }
-           Image {
-               id: processed_img
-               anchors {
-                   right: parent.right
-                   rightMargin: 10
-                   top: parent.top
-                   topMargin: 30
-                   bottom: parent.bottom
-                   bottomMargin: 10
-               }
-               width: height
-               asynchronous: true
-               mipmap: true
-               fillMode: Image.PreserveAspectFit
-               cache: false
-//               source: "image://Processed_images_provider/" + selected_img.source
-               MouseArea {
-                   anchors.fill: parent
-                   onClicked: {
-                       var comp = Qt.createComponent("Full_screen_img.qml")
-                       var win = comp.createObject(root, { img_source: processed_img.source, window_type: false })
-                       win.show()
-                   }
-               }
-           }
-           Text {
-               id: processed_img_info
-               anchors {
-                   top: parent.top
-                   horizontalCenter: processed_img.horizontalCenter
-               }
-               width: 100
-               height: 20
-               fontSizeMode: Text.Fit
-               minimumPointSize: 1
-               font.pointSize: 10
-               elide: Text.ElideRight
-               wrapMode: Text.WordWrap
-//               text: selected_photos_list_view.count !== 0 ? String(processed_img.sourceSize.width + " - " + processed_img.sourceSize.height) : ""
-               text: String(processed_img.sourceSize.width + " - " + processed_img.sourceSize.height)
-               visible: processed_img.source.toString() === "" ? false : true
-//               visible: processed_img.sourceSize.width === 0 ? false : true
-           }
 
-           property int w: 80
-           property int h: 30
-           Rectangle {
-               id: hog_btn
-               anchors {
-                   bottom: parent.bottom
-                   left: parent.left
-               }
-               width: parent.w
-               height: parent.h
-               enabled: selected_img.source === "" ? false : true
-               Text {
-                   anchors.centerIn: parent
-                   text: "HOG"
-               }
-               MouseArea {
-                   anchors.fill: parent
-                   onClicked: {
-                       block_ui_rect.visible = true
-                       image_handler.hog()
-                   }
-               }
-           }
-           Rectangle {
-               id: cnn_btn
-               anchors {
-                   bottom: parent.bottom
-                   left: hog_btn.right
-               }
-               enabled: selected_img.source === "" ? false : true
-               width: parent.w
-               height: parent.h
-               Text {
-                   anchors.centerIn: parent
-                   text: "CNN"
-               }
-               MouseArea {
-                   anchors.fill: parent
-                   onClicked: {
-                       block_ui_rect.visible = true
-                       image_handler.cnn()
-                   }
-               }
-           }
-           Rectangle {
-               id: pyr_up
-               anchors {
-                   bottom: parent.bottom
-                   left: cnn_btn.right
-               }
-               enabled: selected_img.source === "" ? false : true
-               width: parent.w
-               height: parent.h
-               Text {
-                   anchors.centerIn: parent
-                   text: "Pyr up"
-               }
-               MouseArea {
-                   anchors.fill: parent
-                   onClicked: {
-                       block_ui_rect.visible = true
-                       image_handler.pyr_up()
-                   }
-               }
-           }
-           Rectangle {
-               id: pyr_down
-               anchors {
-                   bottom: parent.bottom
-                   left: pyr_up.right
-               }
-               enabled: selected_img.source === "" ? false : true
-               width: parent.w
-               height: parent.h
-               Text {
-                   anchors.centerIn: parent
-                   text: "Pyr down"
-               }
-               MouseArea {
-                   anchors.fill: parent
-                   onClicked: {
-                       block_ui_rect.visible = true
-                       image_handler.pyr_down()
-                   }
-               }
-           }
-           Rectangle {
-               id: extract_face
-               anchors {
-                   bottom: parent.bottom
-                   left: pyr_down.right
-               }
-               enabled: selected_img.source === "" ? false : true
-               width: parent.w
-               height: parent.h
-               Text {
-                   anchors.centerIn: parent
-                   text: "Extract face"
-               }
-               MouseArea {
-                   anchors.fill: parent
-                   onClicked: {
-                       block_ui_rect.visible = true
-                       image_handler.extract_face()
-                   }
-               }
-           }
-           Rectangle {
-               id: delete_pyramided_imgs
-               anchors {
-                   bottom: parent.bottom
-                   left: extract_face.right
-               }
-               enabled: selected_img.source === "" ? false : true
-               width: parent.w
-               height: parent.h
-               Text {
-                   anchors.centerIn: parent
-                   text: "Cancel"
-               }
-               MouseArea {
-                   anchors.fill: parent
-                   onClicked: {
-                       processed_img.source = ""
-                       image_handler.cancel()
-                   }
-               }
-           }
-           Rectangle {
-               id: save
-               anchors {
-                   bottom: parent.bottom
-                   left: delete_pyramided_imgs.right
-               }
-               enabled: selected_img.source === "" ? false : true
-               width: parent.w
-               height: parent.h
-               Text {
-                   anchors.centerIn: parent
-                   text: "Save"
-               }
-               MouseArea {
-                   anchors.fill: parent
-                   onClicked: {
-                       processed_img.source = ""
-                   }
-               }
-           }
-           Rectangle {
-               id: resize
-               anchors {
-                   bottom: parent.bottom
-                   left: save.right
-               }
-               enabled: selected_img.source === "" ? false : true
-               width: parent.w
-               height: parent.h
-               Text {
-                   anchors.centerIn: parent
-                   text: "Resize"
-               }
-               MouseArea {
-                   anchors.fill: parent
-                   onClicked: {
-                   }
-               }
-           }
+        SplitView {
+            orientation: Qt.Horizontal
+            handle: Rectangle {
+                color: "#000000"
+                width: parent.width / 2
+                implicitWidth: 1
+            }
+            Rectangle {
+                height: parent.height
+                implicitWidth: parent.width / 2
+                color: "#ffb3b3"
+
+                Text {
+                    id: selected_img_info
+                    anchors {
+                        top: parent.top
+                        topMargin: 5
+                        horizontalCenter: parent.horizontalCenter
+                    }
+                    width: parent.width
+                    height: 25
+                    verticalAlignment: Text.AlignVCenter
+                    horizontalAlignment: Text.AlignHCenter
+                    fontSizeMode: Text.Fit
+                    minimumPointSize: 1
+                    font.pointSize: 10
+                    elide: Text.ElideRight
+                    wrapMode: Text.WordWrap
+                    text: selected_photos_list_view.currentItem !== null ?
+                          String(selected_photos_list_view.currentItem.selected_img_preview_file_name.text +
+                          "   " +
+                          "(" +
+                          selected_img.sourceSize.width + " x " + selected_img.sourceSize.height +
+                          ")") : ""
+                }
+                Image {
+                    id: selected_img
+                    anchors {
+                        top: selected_img_info.bottom
+                        topMargin: 10
+                        bottom: selected_img_row_buttons.top
+                        bottomMargin: anchors.topMargin
+                        left: parent.left
+                        leftMargin: 5
+                        right: parent.right
+                        rightMargin: anchors.leftMargin
+                    }
+                    mipmap: true
+                    fillMode: Image.PreserveAspectFit
+                    source: selected_photos_list_view.currentItem === null ? "" : selected_photos_list_view.currentItem.selected_img_preview.source
+                    onSourceChanged: {
+                        image_handler.update_selected_img_path(source)
+                    }
+                    MouseArea {
+                        anchors.fill: parent
+                        onClicked: {
+                            var comp = Qt.createComponent("Full_screen_img.qml")
+                            var win = comp.createObject(root, { img_source: selected_img.source, window_type: true })
+                            win.show()
+                        }
+                    }
+                }
+                Row {
+                    id: selected_img_row_buttons
+                    anchors {
+                        bottom: parent.bottom
+                        bottomMargin: 5
+                        left: parent.left
+                        leftMargin: 5
+                        right: parent.right
+                        rightMargin: anchors.leftMargin
+                    }
+                    height: 60
+                    spacing: 10
+                    property int number_of_cols: 3
+                    property int number_of_rows: 2
+                    Column {
+                        height: parent.height
+                        width: (parent.width - (selected_img_row_buttons.number_of_cols - 1) * parent.spacing) / selected_img_row_buttons.number_of_cols
+                        spacing: 3
+                        Custom_button {
+                            text: "HOG"
+                            width: parent.width
+                            height: (parent.height - parent.spacing) / selected_img_row_buttons.number_of_rows
+                            enabled: selected_photos_list_view.currentItem === null ? false : true
+                            m_area.onClicked: {
+                                block_ui_rect.visible = true
+                                image_handler.hog()
+                            }
+                        }
+                        Custom_button {
+                            text: "CNN"
+                            width: parent.width
+                            height: (parent.height - parent.spacing) / selected_img_row_buttons.number_of_rows
+                            enabled: selected_photos_list_view.currentItem === null ? false : true
+                            m_area.onClicked: {
+                                block_ui_rect.visible = true
+                                image_handler.cnn()
+                            }
+                        }
+                    }
+                    Column {
+                        height: parent.height
+                        width: (parent.width - (selected_img_row_buttons.number_of_cols - 1) * parent.spacing) / selected_img_row_buttons.number_of_cols
+                        spacing: 3
+                        Custom_button {
+                            text: "Pyr up"
+                            width: parent.width
+                            height: (parent.height - parent.spacing) / selected_img_row_buttons.number_of_rows
+                            enabled: selected_photos_list_view.currentItem === null ? false : true
+                            m_area.onClicked: {
+                                block_ui_rect.visible = true
+                                image_handler.pyr_up()
+                            }
+                        }
+                        Custom_button {
+                            text: "Pyr down"
+                            width: parent.width
+                            height: (parent.height - parent.spacing) / selected_img_row_buttons.number_of_rows
+                            enabled: selected_photos_list_view.currentItem === null ? false : true
+                            m_area.onClicked: {
+                                block_ui_rect.visible = true
+                                image_handler.pyr_down()
+                            }
+                        }
+                    }
+                    Column {
+                        height: parent.height
+                        width: (parent.width - (selected_img_row_buttons.number_of_cols - 1) * parent.spacing) / selected_img_row_buttons.number_of_cols
+                        spacing: 3
+                        Custom_button {
+                            text: "Resize"
+                            width: parent.width
+                            height: (parent.height - parent.spacing) / selected_img_row_buttons.number_of_rows
+                            enabled: selected_photos_list_view.currentItem === null ? false : true
+                            m_area.onClicked: {
+                            }
+                        }
+                        Custom_button {
+                            id: cancel
+                            text: "Cancel"
+                            width: parent.width
+                            height: (parent.height - parent.spacing) / selected_img_row_buttons.number_of_rows
+                            enabled: false
+                            m_area.onClicked: {
+                                processed_img.source = ""
+                                image_handler.cancel()
+                                extract_face_btn.enabled = false
+                                cancel.enabled = false
+                            }
+                        }
+                    }
+                }
+            }
+            Rectangle {
+                height: parent.height
+                implicitWidth: parent.width / 2
+                color: "#ccffff"
+
+                Text {
+                    id: processed_img_info
+                    anchors {
+                        top: parent.top
+                        topMargin: 5
+                        horizontalCenter: parent.horizontalCenter
+                    }
+                    width: parent.width
+                    height: 25
+                    verticalAlignment: Text.AlignVCenter
+                    horizontalAlignment: Text.AlignHCenter
+                    fontSizeMode: Text.Fit
+                    minimumPointSize: 1
+                    font.pointSize: 10
+                    elide: Text.ElideRight
+                    wrapMode: Text.WordWrap
+                    text: String(processed_img.sourceSize.width + " x " + processed_img.sourceSize.height)
+                    visible: processed_img.source.toString() === "" ? false : true
+                }
+                Image {
+                    id: processed_img
+                    anchors {
+                        top: processed_img_info.bottom
+                        topMargin: 10
+                        bottom: processed_img_row_buttons.top
+                        bottomMargin: anchors.topMargin
+                        left: parent.left
+                        leftMargin: 5
+                        right: parent.right
+                        rightMargin: anchors.leftMargin
+                    }
+                    mipmap: true
+                    cache: false
+                    fillMode: Image.PreserveAspectFit
+                    MouseArea {
+                        anchors.fill: parent
+                        onClicked: {
+                            var comp = Qt.createComponent("Full_screen_img.qml")
+                            var win = comp.createObject(root, { img_source: processed_img.source, window_type: false })
+                            win.show()
+                        }
+                    }
+                }
+                Row {
+                    id: processed_img_row_buttons
+                    anchors {
+                        bottom: parent.bottom
+                        bottomMargin: 5
+                        left: parent.left
+                        leftMargin: 5
+                        right: parent.right
+                        rightMargin: anchors.leftMargin
+                    }
+                    height: 60
+                    spacing: 10
+                    Custom_button {
+                        id: extract_face_btn
+                        text: "Extract face"
+                        height: parent.height
+                        width: (parent.width - parent.spacing) / 2
+                        enabled: false
+                        m_area.onClicked: {
+                            block_ui_rect.visible = true
+                            image_handler.extract_face()
+                        }
+                    }
+                    Custom_button {
+                        text: "Save"
+                        height: parent.height
+                        width: (parent.width - parent.spacing) / 2
+                        m_area.onClicked: {
+                        }
+                    }
+                }
+            }
         }
     }
     Component.onCompleted: {
@@ -596,7 +583,7 @@ Item {
         id: block_ui_rect
         anchors.fill: parent
         color: "gray"
-        visible: true
+        visible: false
         opacity: 0.5
         BusyIndicator {
             anchors.centerIn: parent
@@ -616,7 +603,10 @@ Item {
             MouseArea {
                 anchors.fill: parent
                 onClicked: {
+                    image_handler.cancel()
+                    extract_face_btn.enabled = false
                     block_ui_rect.visible = false
+                    cancel.enabled = false
                 }
             }
         }
