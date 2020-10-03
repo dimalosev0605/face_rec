@@ -391,6 +391,7 @@ Item {
                     MouseArea {
                         anchors.fill: parent
                         onClicked: {
+                            if(selected_img.source.toString() === "") return
                             var comp = Qt.createComponent("Full_screen_img.qml")
                             var win = comp.createObject(root, { img_source: selected_img.source, window_type: true })
                             win.show()
@@ -466,11 +467,61 @@ Item {
                         width: (parent.width - (selected_img_row_buttons.number_of_cols - 1) * parent.spacing) / selected_img_row_buttons.number_of_cols
                         spacing: 3
                         Custom_button {
+                            id: resize_btn
                             text: "Resize"
                             width: parent.width
                             height: (parent.height - parent.spacing) / selected_img_row_buttons.number_of_rows
                             enabled: selected_photos_list_view.currentItem === null ? false : true
                             m_area.onClicked: {
+                                new_size_popup.open()
+                            }
+                            Popup {
+                                id: new_size_popup
+                                x: resize_btn.x
+                                y: resize_btn.y - height
+                                visible: false
+                                background: Rectangle {
+                                    id: background
+                                    implicitWidth: resize_btn.width
+                                    implicitHeight: col.item_h * 3 + 2 * col.spacing
+                                    border.color: "#000000"
+                                }
+                                contentItem: Column {
+                                    id: col
+                                    property int item_h: 30
+                                    spacing: 2
+                                    TextField {
+                                        id: width_input
+                                        height: col.item_h
+                                        width: parent.width
+                                        placeholderText: "max 3840"
+                                        text: selected_img.sourceSize.width
+                                        validator: IntValidator{bottom: 1; top: 3840;}
+                                    }
+                                    TextField {
+                                        id: height_input
+                                        height: col.item_h
+                                        width: parent.width
+                                        placeholderText: "max 2160"
+                                        text: selected_img.sourceSize.height
+                                        wrapMode: TextInput.WrapAnywhere
+                                        validator: IntValidator{bottom: 1; top: 2160;}
+                                    }
+                                    Custom_button {
+                                        height: col.item_h
+                                        width: parent.width
+                                        text: "Ok"
+                                        m_area.onClicked: {
+                                            if(width_input.acceptableInput && height_input.acceptableInput) {
+                                                console.log("Accepted!")
+                                                new_size_popup.close()
+                                            }
+                                            else {
+                                                console.log("Rejected")
+                                            }
+                                        }
+                                    }
+                                }
                             }
                         }
                         Custom_button {
@@ -531,6 +582,7 @@ Item {
                     MouseArea {
                         anchors.fill: parent
                         onClicked: {
+                            if(processed_img.source.toString() === "") return
                             var comp = Qt.createComponent("Full_screen_img.qml")
                             var win = comp.createObject(root, { img_source: processed_img.source, window_type: false })
                             win.show()
