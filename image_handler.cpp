@@ -31,16 +31,45 @@ bool Image_handler::check_img_existense(const QString& path)
     return check_existense.exists(url.toString(QUrl::PreferLocalFile));
 }
 
-void Image_handler::load_processing_image(dlib::matrix<dlib::rgb_pixel>& img, const QString& path)
+void Image_handler::load_processing_image(dlib::matrix<dlib::rgb_pixel>& img, const QString& path, Load_priority load_priority)
 {
-    // try load pyramided image. If it is not exists -> load original image.
-    const auto pyramided_img_path = individual_file_manager.get_path_to_temp_files_dir("pyr_", QUrl(path).fileName());
-    QFile pyramided_img;
-    if(pyramided_img.exists(pyramided_img_path)) {
-        dlib::load_image(img, pyramided_img_path.toStdString());
+    if(load_priority == Load_priority::resized) {
+        const auto resized_img_path = individual_file_manager.get_path_to_temp_files_dir("resized_", QUrl(path).fileName());
+        QFile resized_img;
+        if(resized_img.exists(resized_img_path)) {
+            dlib::load_image(img, resized_img_path.toStdString());
+        }
+        else {
+            dlib::load_image(img, path.toStdString());
+        }
     }
-    else {
-        dlib::load_image(img, path.toStdString());
+
+    if(load_priority == Load_priority::pyramided) {
+        const auto pyramided_img_path = individual_file_manager.get_path_to_temp_files_dir("pyr_", QUrl(path).fileName());
+        QFile pyramided_img;
+        if(pyramided_img.exists(pyramided_img_path)) {
+            dlib::load_image(img, pyramided_img_path.toStdString());
+        }
+        else {
+            dlib::load_image(img, path.toStdString());
+        }
+    }
+
+    if(load_priority == Load_priority::extr_face) {
+        const auto resized_img_path = individual_file_manager.get_path_to_temp_files_dir("resized_", QUrl(path).fileName());
+        QFile img_file;
+        if(img_file.exists(resized_img_path)) {
+            dlib::load_image(img, resized_img_path.toStdString());
+        }
+        else {
+            const auto pyramided_img_path = individual_file_manager.get_path_to_temp_files_dir("pyr_", QUrl(path).fileName());
+            if(img_file.exists(pyramided_img_path)) {
+                dlib::load_image(img, pyramided_img_path.toStdString());
+            }
+            else {
+                dlib::load_image(img, path.toStdString());
+            }
+        }
     }
 }
 
@@ -83,7 +112,7 @@ void Image_handler::hog()
         }
 
         dlib::matrix<dlib::rgb_pixel> img;
-        load_processing_image(img, processing_img_path);
+        load_processing_image(img, processing_img_path, Load_priority::resized);
 
         auto hog_face_detector = dlib::get_frontal_face_detector();
         const auto rects_around_faces = hog_face_detector(img);
@@ -132,7 +161,7 @@ void Image_handler::cnn()
         }
 
         dlib::matrix<dlib::rgb_pixel> img;
-        load_processing_image(img, processing_img_path);
+        load_processing_image(img, processing_img_path, Load_priority::resized);
 
         const auto rects_around_faces = cnn_face_detector(img);
         for(const auto& rect : rects_around_faces) {
@@ -179,7 +208,7 @@ void Image_handler::pyr_up()
         }
 
         dlib::matrix<dlib::rgb_pixel> img;
-        load_processing_image(img, processing_img_path);
+        load_processing_image(img, processing_img_path, Load_priority::pyramided);
 
         dlib::pyramid_up(img);
 
@@ -210,7 +239,7 @@ void Image_handler::pyr_down()
         }
 
         dlib::matrix<dlib::rgb_pixel> img;
-        load_processing_image(img, processing_img_path);
+        load_processing_image(img, processing_img_path, Load_priority::pyramided);
 
         dlib::pyramid_down<2> pyr;
         pyr(img);
@@ -219,6 +248,40 @@ void Image_handler::pyr_down()
             std::lock_guard<std::mutex> lock(worker_thread_mutex);
             if(worker_thread_id == std::this_thread::get_id()) {
                 update_processed_img(processing_img_path, img, "pyr_");
+            }
+        }
+    }));
+    worker_thread->detach();
+}
+
+void Image_handler::resize(const int new_width, const int new_height)
+{
+    worker_thread.reset(new std::thread([this, new_width, new_height]()
+    {
+        QString processing_img_path;
+        {
+            std::lock_guard<std::mutex> lock(worker_thread_mutex);
+            worker_thread_id = std::this_thread::get_id();
+            processing_img_path = selected_img_path;
+        }
+
+        // possible to resize only original image.
+
+        if(!check_img_existense(processing_img_path)) {
+            qDebug() << processing_img_path << " NOT EXISTS!";
+            return;
+        }
+
+        dlib::matrix<dlib::rgb_pixel> img;
+        dlib::load_image(img, processing_img_path.toStdString());
+
+        dlib::matrix<dlib::rgb_pixel> resized_img(new_height, new_width);
+        dlib::resize_image(img, resized_img);
+
+        {
+            std::lock_guard<std::mutex> lock(worker_thread_mutex);
+            if(worker_thread_id == std::this_thread::get_id()) {
+                update_processed_img(processing_img_path, resized_img, "resized_");
             }
         }
     }));
@@ -236,7 +299,7 @@ void Image_handler::extract_face()
 {
     std::lock_guard<std::mutex> lock(worker_thread_mutex);
     dlib::matrix<dlib::rgb_pixel> img;
-    load_processing_image(img, selected_img_path);
+    load_processing_image(img, selected_img_path, Load_priority::extr_face);
 
     auto face_shape = shape_predictor(img, rect_around_face);
     dlib::matrix<dlib::rgb_pixel> processed_face;

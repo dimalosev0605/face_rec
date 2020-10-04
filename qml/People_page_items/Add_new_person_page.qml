@@ -53,7 +53,7 @@ Item {
         id: image_handler
         onImg_source_changed: {
             console.log("SOURCE CHANGED = " + source)
-//            processed_img.source = ""
+            processed_img.source = ""
             processed_img.source = source
             console.log("New source = " + processed_img.source)
             block_ui_rect.visible = false
@@ -514,6 +514,7 @@ Item {
                                         m_area.onClicked: {
                                             if(width_input.acceptableInput && height_input.acceptableInput) {
                                                 console.log("Accepted!")
+                                                image_handler.resize(width_input.text, height_input.text)
                                                 new_size_popup.close()
                                             }
                                             else {
@@ -578,7 +579,7 @@ Item {
                     mipmap: true
                     cache: false
                     source: ""
-                    fillMode: Image.PreserveAspectFit
+                    fillMode: sourceSize.width === 150 ? Image.Pad : Image.PreserveAspectFit
                     MouseArea {
                         anchors.fill: parent
                         onClicked: {
