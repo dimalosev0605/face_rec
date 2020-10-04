@@ -10,6 +10,10 @@ import People_manager_qml 1.0
 Item {
     id: root
 
+    Component.onCompleted: {
+        new_person_nickname_input.forceActiveFocus()
+    }
+
     FileDialog {
         id: file_dialog
         title: "Please choose files"
@@ -52,10 +56,8 @@ Item {
     Image_handler {
         id: image_handler
         onImg_source_changed: {
-            console.log("SOURCE CHANGED = " + source)
             processed_img.source = ""
             processed_img.source = source
-            console.log("New source = " + processed_img.source)
             block_ui_rect.visible = false
             extract_face_btn.enabled = false
         }
@@ -120,7 +122,6 @@ Item {
                 m_area.onClicked: {
                     if(people_manager.create_individual_dir(new_person_nickname_input.text)) {
                         add_new_person_btn.visible = false
-                        new_person_nickname_input.focus = false
                         new_person_nickname_input.enabled = false
                         image_handler.set_current_individual_name(new_person_nickname_input.text)
                     }
@@ -332,7 +333,6 @@ Item {
                 visible: !add_new_person_btn.visible
                 width: selected_photos_frame.width
                 height: selected_photos_frame.height
-//                color: "blue"
             }
         }
 
@@ -518,12 +518,9 @@ Item {
                                         text: "Ok"
                                         m_area.onClicked: {
                                             if(width_input.acceptableInput && height_input.acceptableInput) {
-                                                console.log("Accepted!")
+                                                block_ui_rect.visible = true
                                                 image_handler.resize(width_input.text, height_input.text)
                                                 new_size_popup.close()
-                                            }
-                                            else {
-                                                console.log("Rejected")
                                             }
                                         }
                                     }
@@ -628,6 +625,7 @@ Item {
                         enabled: false
                         m_area.onClicked: {
                             // delete all temp files
+                            image_handler.cancel()
                             save_btn.enabled = false
                             processed_img.source = ""
                         }
@@ -635,10 +633,6 @@ Item {
                 }
             }
         }
-    }
-    Component.onCompleted: {
-        block_ui_rect.visible = false
-        console.log("HERE!!!")
     }
     Rectangle {
         id: block_ui_rect
