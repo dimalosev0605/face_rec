@@ -45,16 +45,10 @@ class Image_handler : public QObject
     Individual_file_manager individual_file_manager;
 
 private:
-    enum Load_priority {
-        resized = 0,
-        pyramided,
-        extr_face
-    };
-    void load_processing_image(dlib::matrix<dlib::rgb_pixel>& img, const QString& path, Load_priority load_priority);
-
     bool check_img_existense(const QString& path);
     void update_processed_img(const QString& processing_img_path, dlib::matrix<dlib::rgb_pixel>& img, const QString& prefix);
-    QString save_processed_image(dlib::matrix<dlib::rgb_pixel>& img, const QString& prefix, const QString& path);
+    QString save_processed_image(dlib::matrix<dlib::rgb_pixel>& img, const QString& path, const QString& prefix);
+    void load_processing_image(dlib::matrix<dlib::rgb_pixel>& img, const QString& path, const QString& prefix);
 
 public:
     explicit Image_handler(QObject* parent = nullptr);

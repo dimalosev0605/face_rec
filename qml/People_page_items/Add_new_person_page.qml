@@ -206,6 +206,7 @@ Item {
                     onCurrentIndexChanged: {
                         image_handler.cancel()
                         extract_face_btn.enabled = false
+                        save_btn.enabled = false
                         processed_img.source = ""
                     }
                     delegate: Rectangle {
@@ -417,20 +418,22 @@ Item {
                         width: (parent.width - (selected_img_row_buttons.number_of_cols - 1) * parent.spacing) / selected_img_row_buttons.number_of_cols
                         spacing: 3
                         Custom_button {
+                            id: hog_btn
                             text: "HOG"
                             width: parent.width
                             height: (parent.height - parent.spacing) / selected_img_row_buttons.number_of_rows
-                            enabled: selected_photos_list_view.currentItem === null ? false : true
+                            enabled: selected_photos_list_view.currentItem === null ? false : save_btn.enabled ? false : true
                             m_area.onClicked: {
                                 block_ui_rect.visible = true
                                 image_handler.hog()
                             }
                         }
                         Custom_button {
+                            id: cnn_btn
                             text: "CNN"
                             width: parent.width
                             height: (parent.height - parent.spacing) / selected_img_row_buttons.number_of_rows
-                            enabled: selected_photos_list_view.currentItem === null ? false : true
+                            enabled: selected_photos_list_view.currentItem === null ? false : save_btn.enabled ? false : true
                             m_area.onClicked: {
                                 block_ui_rect.visible = true
                                 image_handler.cnn()
@@ -442,20 +445,22 @@ Item {
                         width: (parent.width - (selected_img_row_buttons.number_of_cols - 1) * parent.spacing) / selected_img_row_buttons.number_of_cols
                         spacing: 3
                         Custom_button {
+                            id: pyr_up_btn
                             text: "Pyr up"
                             width: parent.width
                             height: (parent.height - parent.spacing) / selected_img_row_buttons.number_of_rows
-                            enabled: selected_photos_list_view.currentItem === null ? false : true
+                            enabled: selected_photos_list_view.currentItem === null ? false : save_btn.enabled ? false : true
                             m_area.onClicked: {
                                 block_ui_rect.visible = true
                                 image_handler.pyr_up()
                             }
                         }
                         Custom_button {
+                            id: pyr_down_btn
                             text: "Pyr down"
                             width: parent.width
                             height: (parent.height - parent.spacing) / selected_img_row_buttons.number_of_rows
-                            enabled: selected_photos_list_view.currentItem === null ? false : true
+                            enabled: selected_photos_list_view.currentItem === null ? false : save_btn.enabled ? false : true
                             m_area.onClicked: {
                                 block_ui_rect.visible = true
                                 image_handler.pyr_down()
@@ -471,7 +476,7 @@ Item {
                             text: "Resize"
                             width: parent.width
                             height: (parent.height - parent.spacing) / selected_img_row_buttons.number_of_rows
-                            enabled: selected_photos_list_view.currentItem === null ? false : true
+                            enabled: selected_photos_list_view.currentItem === null ? false : save_btn.enabled ? false : true
                             m_area.onClicked: {
                                 new_size_popup.open()
                             }
@@ -495,7 +500,7 @@ Item {
                                         height: col.item_h
                                         width: parent.width
                                         placeholderText: "max 3840"
-                                        text: selected_img.sourceSize.width
+                                        text: processed_img.source.toString() === "" ? selected_img.sourceSize.width : processed_img.sourceSize.width
                                         validator: IntValidator{bottom: 1; top: 3840;}
                                     }
                                     TextField {
@@ -503,7 +508,7 @@ Item {
                                         height: col.item_h
                                         width: parent.width
                                         placeholderText: "max 2160"
-                                        text: selected_img.sourceSize.height
+                                        text: processed_img.source.toString() === "" ? selected_img.sourceSize.height : processed_img.sourceSize.height
                                         wrapMode: TextInput.WrapAnywhere
                                         validator: IntValidator{bottom: 1; top: 2160;}
                                     }
@@ -526,7 +531,7 @@ Item {
                             }
                         }
                         Custom_button {
-                            id: cancel
+                            id: cancel_btn
                             text: "Cancel"
                             width: parent.width
                             height: (parent.height - parent.spacing) / selected_img_row_buttons.number_of_rows
@@ -535,6 +540,7 @@ Item {
                                 processed_img.source = ""
                                 image_handler.cancel()
                                 extract_face_btn.enabled = false
+                                save_btn.enabled = false
                             }
                         }
                     }
@@ -611,13 +617,19 @@ Item {
                         m_area.onClicked: {
                             block_ui_rect.visible = true
                             image_handler.extract_face()
+                            save_btn.enabled = true
                         }
                     }
                     Custom_button {
+                        id: save_btn
                         text: "Save"
                         height: parent.height
                         width: (parent.width - parent.spacing) / 2
+                        enabled: false
                         m_area.onClicked: {
+                            // delete all temp files
+                            save_btn.enabled = false
+                            processed_img.source = ""
                         }
                     }
                 }
