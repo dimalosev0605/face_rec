@@ -4,6 +4,7 @@ import QtQuick.Controls 2.15
 Item {
     id: people_page_item
     property alias loader: loader
+    property alias wait_loader: wait_loader
     objectName: "People_page"
 //    focus: true
 
@@ -21,6 +22,7 @@ Item {
             id: people_list
             height: parent.height
             SplitView.minimumWidth: 250
+            SplitView.maximumWidth: 450
             implicitWidth: 400
 //            color: "lightblue"
             color: "red"
@@ -77,10 +79,9 @@ Item {
                         add_new_people_btn_canvas.requestPaint()
                     }
                     onClicked: {
+                        wait_loader.source = "qrc:/qml/Wait_page.qml"
                         loader.source = "qrc:/qml/People_page_items/Add_new_person_page.qml"
 //                        main_qml.main_qml_sc.enabled = false
-//                        main_qml_sc.enabled = false
-                        main_qml.main_qml_sc.enabled = false
                     }
                 }
             }
@@ -125,9 +126,21 @@ Item {
         Loader {
             id: loader
             asynchronous: true
+//            visible: false
 //            focus: true
-//            visible: status == Loader.Ready
+            visible: status == Loader.Ready
             height: parent.height
+            onStatusChanged: {
+                if(loader.status === Loader.Ready) {
+                    wait_loader.visible = false
+                    main_qml.main_qml_sc.enabled = false
+                }
+            }
+        }
+        Loader {
+            id: wait_loader
+            height: parent.height
+//            visible: !loader.visible
         }
     }
 }
