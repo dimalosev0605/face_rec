@@ -183,6 +183,23 @@ Item {
                     main_qml.main_qml_sc.enabled = true
                 }
             }
+            Custom_button {
+                id: finish_person_creation_btn
+                anchors {
+                    right: parent.right
+                    rightMargin: 10
+                    verticalCenter: new_person_nickname_input.verticalCenter
+                }
+                width: height * 4
+                height: new_person_nickname_input.height
+                text: "Add person"
+                enabled: processed_imgs_list_view.count === 0 ? false : true
+                visible: !add_new_person_btn.visible
+                m_area.onClicked: {
+                    people_page_item.loader.source = ""
+                    main_qml.main_qml_sc.enabled = true
+                }
+            }
 
             Item {
                 id: selected_photos_frame
