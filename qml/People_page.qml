@@ -1,5 +1,8 @@
 import QtQuick 2.12
 import QtQuick.Controls 2.15
+import QtGraphicalEffects 1.0
+
+import People_manager_qml 1.0
 
 Item {
     id: people_page_item
@@ -7,6 +10,10 @@ Item {
     property alias wait_loader: wait_loader
     objectName: "People_page"
 //    focus: true
+
+    People_manager {
+        id: people_manager
+    }
 
     SplitView {
         id: split_view
@@ -25,7 +32,7 @@ Item {
             SplitView.maximumWidth: 450
             implicitWidth: 400
 //            color: "lightblue"
-            color: "red"
+//            color: "red"
             TextField {
                 id: search_people_input
                 anchors {
@@ -95,13 +102,62 @@ Item {
                     rightMargin: 1
                     bottom: parent.bottom
                 }
-                model: 25
-                spacing: 3
+                model: people_manager
                 clip: true
                 delegate: Rectangle {
-                    color: "blue"
+                    id: delegate
                     width: people_list_view.width - people_list_view_scroll_bar.implicitWidth
-                    height: 35
+                    height: 60
+                    radius: 2
+                    property color hovered_color: "#d4d4d4"
+                    property color default_color: "#ffffff"
+                    property color highlighted_color: "#999999"
+                    color: individual_avatar_m_area.containsMouse ?
+                               individual_avatar_m_area.pressed ?
+                               highlighted_color : hovered_color : default_color
+                    Image {
+                        id: individual_avatar
+                        anchors {
+                            left: parent.left
+                            leftMargin: 5
+                            verticalCenter: parent.verticalCenter
+                        }
+                        property int space_between_top_and_bottom_of_delegate: 10
+                        height: parent.height - space_between_top_and_bottom_of_delegate
+                        width: height
+                        asynchronous: true
+                        mipmap: true
+                        fillMode: Image.PreserveAspectCrop
+                        source: "file://" + model.avatar_path
+                        layer.enabled: true
+                        layer.effect: OpacityMask {
+                            maskSource: Rectangle {
+                                width: individual_avatar.width
+                                height: individual_avatar.height
+                                radius: 5
+                            }
+                        }
+                    }
+                    Text {
+                        anchors {
+                            left: individual_avatar.right
+                        }
+                        width: delegate.width - individual_avatar.width - individual_avatar.anchors.leftMargin
+                        height: delegate.height
+                        verticalAlignment: Text.AlignVCenter
+                        horizontalAlignment: Text.AlignHCenter
+                        fontSizeMode: Text.Fit
+                        minimumPointSize: 1
+                        font.pointSize: 10
+                        elide: Text.ElideRight
+                        wrapMode: Text.WordWrap
+                        text: String(model.individual_name)
+                    }
+                    MouseArea {
+                        id: individual_avatar_m_area
+                        anchors.fill: parent
+                        hoverEnabled: true
+                    }
                 }
                 ScrollBar.vertical: people_list_view_scroll_bar
                 ScrollBar {
@@ -117,22 +173,15 @@ Item {
                 }
             }
         }
-//        Rectangle {
-//            id: temp_rect
-//            height: parent.height
-//            color: "green"
-//        }
-
         Loader {
             id: loader
             asynchronous: true
-//            visible: false
-//            focus: true
-            visible: status == Loader.Ready
             height: parent.height
+            visible: false
             onStatusChanged: {
                 if(loader.status === Loader.Ready) {
                     wait_loader.visible = false
+                    loader.visible = true
                     main_qml.main_qml_sc.enabled = false
                 }
             }
@@ -140,7 +189,7 @@ Item {
         Loader {
             id: wait_loader
             height: parent.height
-//            visible: !loader.visible
+            visible: true
         }
     }
 }

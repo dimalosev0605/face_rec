@@ -5,7 +5,7 @@ import QtGraphicalEffects 1.0
 
 import Selected_images_model_qml 1.0
 import Image_handler_qml 1.0
-import People_manager_qml 1.0
+import Individual_manager_qml 1.0
 
 Item {
     id: root
@@ -65,8 +65,8 @@ Item {
             extract_face_btn.enabled = true
         }
     }
-    People_manager {
-        id: people_manager
+    Individual_manager {
+        id: individual_manager
         onMessage: {
             console.log("Message in QML: " + message)
         }
@@ -120,7 +120,7 @@ Item {
                 text: "Create new person"
 
                 m_area.onClicked: {
-                    if(people_manager.create_individual_dir(new_person_nickname_input.text)) {
+                    if(individual_manager.create_individual_dir(new_person_nickname_input.text)) {
                         add_new_person_btn.visible = false
                         new_person_nickname_input.enabled = false
                         image_handler.set_current_individual_name(new_person_nickname_input.text)
@@ -177,7 +177,7 @@ Item {
 
                 m_area.onClicked: {
                     if(new_person_nickname_input.text !== "") {
-                        people_manager.cancel_individual_creation()
+                        individual_manager.cancel_individual_creation()
                     }
                     people_page_item.loader.source = ""
                     main_qml.main_qml_sc.enabled = true
@@ -353,7 +353,7 @@ Item {
                 ListView {
                     id: processed_imgs_list_view
                     anchors.fill: parent
-                    model: people_manager
+                    model: individual_manager
                     clip: true
                     currentIndex: -1
                     delegate: Rectangle {
@@ -425,7 +425,7 @@ Item {
                                 anchors.fill: parent
                                 hoverEnabled: true
                                 onClicked: {
-                                    people_manager.delete_individual_face(index)
+                                    individual_manager.delete_individual_face(index)
                                 }
                             }
                         }
@@ -780,7 +780,7 @@ Item {
                         width: (parent.width - parent.spacing) / 2
                         enabled: false
                         m_area.onClicked: {
-                            if(people_manager.add_individual_face(selected_img.source.toString(),
+                            if(individual_manager.add_individual_face(selected_img.source.toString(),
                                                                processed_img.source.toString())) {
                                 image_handler.cancel()
                                 save_btn.enabled = false

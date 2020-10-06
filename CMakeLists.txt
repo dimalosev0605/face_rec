@@ -30,6 +30,9 @@ add_executable(face_rec
     image_handler.h
     image_handler.cpp
 
+    individual_manager.h
+    individual_manager.cpp
+
     people_manager.h
     people_manager.cpp
 
