@@ -6,10 +6,13 @@ import People_manager_qml 1.0
 
 Item {
     id: people_page_item
+
+    Component.onCompleted: {
+        search_people_input.forceActiveFocus()
+    }
+
     property alias loader: loader
     property alias wait_loader: wait_loader
-    objectName: "People_page"
-//    focus: true
 
     People_manager {
         id: people_manager
@@ -31,8 +34,7 @@ Item {
             SplitView.minimumWidth: 250
             SplitView.maximumWidth: 450
             implicitWidth: 400
-//            color: "lightblue"
-//            color: "red"
+            color: "#ffffff"
             TextField {
                 id: search_people_input
                 anchors {
@@ -46,7 +48,7 @@ Item {
                 width: parent.width - anchors.leftMargin - add_new_people_btn_canvas.width - add_new_people_btn_canvas.anchors.rightMargin - space_between_items
                 placeholderText: "Search"
                 background: Rectangle {
-                    color: search_people_input.activeFocus ? "white" : "gray"
+                    color: search_people_input.activeFocus ? "white" : "#e6e6e6"
                     border.color: search_people_input.activeFocus ? "steelblue" : "transparent"
                     border.width: 2
                     radius: 5
@@ -67,8 +69,10 @@ Item {
                     var lw = 1.5;
                     var delta = 3
                     ctx.lineWidth = lw
-                    ctx.strokeStyle = add_new_people_btn_m_area.containsMouse ? "#ffffff" : parent.color
-                    ctx.fillStyle = add_new_people_btn_m_area.containsMouse ? "#00ff00" : "#ffffff"
+                    ctx.strokeStyle = add_new_people_btn_m_area.pressed ? people_list.color : "#000000"
+                    ctx.fillStyle = add_new_people_btn_m_area.containsMouse ?
+                                    add_new_people_btn_m_area.pressed ?
+                                    "#00ff00" : "#cccccc" : add_new_people_btn_m_area.pressed ? "#00ff00" : people_list.color
                     ctx.beginPath()
                     ctx.ellipse(lw, lw, width - lw * 2, height - lw * 2)
                     ctx.moveTo(lw + (width - lw * 2) / 2, lw + delta)
@@ -85,10 +89,12 @@ Item {
                     onContainsMouseChanged: {
                         add_new_people_btn_canvas.requestPaint()
                     }
+                    onPressedChanged: {
+                        add_new_people_btn_canvas.requestPaint()
+                    }
                     onClicked: {
                         wait_loader.source = "qrc:/qml/Wait_page.qml"
                         loader.source = "qrc:/qml/People_page_items/Add_new_person_page.qml"
-//                        main_qml.main_qml_sc.enabled = false
                     }
                 }
             }
@@ -162,14 +168,17 @@ Item {
                 ScrollBar.vertical: people_list_view_scroll_bar
                 ScrollBar {
                     id: people_list_view_scroll_bar
-//                    active: true
-//                    hoverEnabled: true
-//                    orientation: Qt.Vertical
-//                    contentItem: Rectangle {
-//                        implicitWidth: 3
-//                        radius: 1
-//                        color: "#ffffff"
-//                    }
+                    active: true
+                    hoverEnabled: true
+                    orientation: Qt.Vertical
+                    size: 0.5
+                    contentItem: Rectangle {
+                        implicitWidth: 5
+                        radius: 2
+                        color: people_list_view_scroll_bar.hovered ?
+                               people_list_view_scroll_bar.pressed ? "#000000" : "#999999" :
+                               people_list_view_scroll_bar.pressed ? "#000000" : "#cccccc"
+                    }
                 }
             }
         }

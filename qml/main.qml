@@ -16,7 +16,13 @@ Window {
     Left_vertical_menu_bar_model {
         id: left_vertical_menu_bar_model
     }
-
+    Shortcut {
+        id: main_qml_sc
+        sequence: "Esc"
+        onActivated: {
+            page_loader.source = ""
+        }
+    }
     Rectangle {
         id: left_vertical_menu_bar
         property color default_color: "#756c62"
@@ -51,8 +57,9 @@ Window {
                     height: menu_delegate_body.height
                     width: 2.5
                     color: menu_delegate_body.ListView.isCurrentItem ?
-                               left_solid_line.highlighted_color :
-                               m_area.containsMouse ? left_vertical_menu_bar.mouse_hovered_color : left_vertical_menu_bar.default_color
+                           left_solid_line.highlighted_color :
+                           m_area.containsMouse ? left_vertical_menu_bar.mouse_hovered_color :
+                                                  left_vertical_menu_bar.default_color
                 }
                 Rectangle {
                     id: body_rect
@@ -62,8 +69,9 @@ Window {
                     }
                     height: menu_delegate_body.height
                     color: menu_delegate_body.ListView.isCurrentItem ?
-                               left_vertical_menu_bar.highlighted_color :
-                               m_area.containsMouse ? left_vertical_menu_bar.mouse_hovered_color : left_vertical_menu_bar.default_color
+                           left_vertical_menu_bar.highlighted_color :
+                           m_area.containsMouse ? left_vertical_menu_bar.mouse_hovered_color :
+                                                  left_vertical_menu_bar.default_color
                     Image {
                         id: icon
                         anchors {
@@ -105,31 +113,14 @@ Window {
                         switch(model.menu_option_action)
                         {
                         case MenuBarAction.ADD_PEOPLE:
-                            console.log("Add people clicked")
-                            if(page_loader.sourceComponent !== null) {
-                                if(page_loader.item.objectName === "People_page") {
-                                    console.log("DON'T LOAD")
-                                    return
-                                }
-                            }
                             page_loader.source = "People_page.qml"
-//                            main_qml_sc.enabled = false
                             break;
                         case MenuBarAction.RECOGNITION:
-                            console.log("Recognition clicked")
                             break;
                         case MenuBarAction.EXIT:
-                            console.log("Exit clicked")
                             Qt.quit()
                             break;
                         case MenuBarAction.HELP:
-                            console.log("Help clicked")
-                            if(page_loader.sourceComponent !== null) {
-                                if(page_loader.item.objectName === "Help_page") {
-                                    console.log("DON'T LOAD!")
-                                    return
-                                }
-                            }
                             page_loader.source = "Help_page.qml"
                             break;
                         }
@@ -140,21 +131,11 @@ Window {
     }
     Loader {
         id: page_loader
-        focus: true
         anchors {
             left: left_vertical_menu_bar.right
             right: parent.right
             top: parent.top
             bottom: parent.bottom
-        }
-    }
-    Shortcut {
-        id: main_qml_sc
-        sequence: "Esc"
-//        enabled: page_loader.source === "" ? true : false
-        onActivated: {
-            console.log("Main qml Esc")
-            page_loader.source = ""
         }
     }
 }
