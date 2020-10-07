@@ -13,5 +13,6 @@
         <file>qml/People_page_items/Full_screen_img.qml</file>
         <file>qml/People_page_items/Custom_button.qml</file>
         <file>qml/Wait_page.qml</file>
+        <file>qml/Left_vertical_menu_bar_model.qml</file>
     </qresource>
 </RCC>

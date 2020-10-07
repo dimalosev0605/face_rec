@@ -21,9 +21,6 @@ include_directories(${OpenCV_INCLUDE_DIRS})
 add_executable(face_rec
     main.cpp
 
-    left_vertical_menu_bar_model.h
-    left_vertical_menu_bar_model.cpp
-
     selected_images_model.h
     selected_images_model.cpp
     

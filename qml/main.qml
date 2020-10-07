@@ -2,9 +2,6 @@ import QtQuick 2.12
 import QtQuick.Window 2.12
 import QtQuick.Controls 2.15
 
-import Left_vertical_menu_bar_model_qml 1.0
-import MenuBarActionNamespace_qml 1.0
-
 Window {
     id: main_qml
     visible: true
@@ -13,9 +10,6 @@ Window {
 
     property alias main_qml_sc: main_qml_sc
 
-    Left_vertical_menu_bar_model {
-        id: left_vertical_menu_bar_model
-    }
     Shortcut {
         id: main_qml_sc
         sequence: "Esc"
@@ -38,7 +32,7 @@ Window {
         ListView {
             id: left_vertical_menu_list_view
             anchors.fill: parent
-            model: left_vertical_menu_bar_model
+            model: Left_vertical_menu_bar_model { id: left_vertical_menu_bar_model }
             delegate: menu_delegate
             interactive: false
             currentIndex: -1
@@ -110,20 +104,10 @@ Window {
                     hoverEnabled: true
                     onClicked: {
                         left_vertical_menu_list_view.currentIndex = index
-                        switch(model.menu_option_action)
-                        {
-                        case MenuBarAction.ADD_PEOPLE:
-                            page_loader.source = "People_page.qml"
-                            break;
-                        case MenuBarAction.RECOGNITION:
-                            break;
-                        case MenuBarAction.EXIT:
+                        if(model.loader_path === "Qt.quit()") {
                             Qt.quit()
-                            break;
-                        case MenuBarAction.HELP:
-                            page_loader.source = "Help_page.qml"
-                            break;
                         }
+                        page_loader.source = model.loader_path
                     }
                 }
             }
