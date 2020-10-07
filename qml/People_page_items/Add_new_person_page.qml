@@ -45,14 +45,10 @@ Item {
     Shortcut {
         sequence: "Esc"
         onActivated: {
-            console.log("Add new person qml Esc")
             cancel_individual_creation_btn.m_area.clicked(null)
         }
     }
 
-    Selected_images_model {
-        id: selected_images_model
-    }
     Image_handler {
         id: image_handler
         onImg_source_changed: {
@@ -63,12 +59,6 @@ Item {
         }
         onEnable_extract_face_btn: {
             extract_face_btn.enabled = true
-        }
-    }
-    Individual_manager {
-        id: individual_manager
-        onMessage: {
-            console.log("Message in QML: " + message)
         }
     }
 
@@ -94,31 +84,23 @@ Item {
                 width: 200
                 height: 30
                 placeholderText: "Enter person nickname"
+                Keys.onReturnPressed: {
+                    add_new_person_btn.m_area.clicked(null)
+                }
             }
 
+            property int space_between_btns: 10
             Custom_button {
                 id: add_new_person_btn
                 anchors {
                     left: new_person_nickname_input.right
-                    leftMargin: 10
+                    leftMargin: parent.space_between_btns
                     verticalCenter: new_person_nickname_input.verticalCenter
                 }
                 width: height * 4
                 height: new_person_nickname_input.height
                 enabled: new_person_nickname_input.text === "" ? false : true
-
-                default_color: "#ffffff"
-                disabled_color: "#808080"
-                hovered_color: "#cccccc"
-                pressed_color: "#79ff4d"
-
-                border_default_color: "#000000"
-                border_pressed_color: "#0099cc"
-
-                text_color: "#000000"
-                text_pressed_color: "#ffffff"
                 text: "Create new person"
-
                 m_area.onClicked: {
                     if(individual_manager.create_individual_dir(new_person_nickname_input.text)) {
                         add_new_person_btn.visible = false
@@ -131,24 +113,13 @@ Item {
                 id: select_photos_btn
                 anchors {
                     left: new_person_nickname_input.right
-                    leftMargin: 10
+                    leftMargin: parent.space_between_btns
                     top: new_person_nickname_input.top
                 }
                 visible: !add_new_person_btn.visible
                 width: height * 4
                 height: new_person_nickname_input.height
-
-                default_color: "#ffffff"
-                hovered_color: "#cccccc"
-                pressed_color: "#79ff4d"
-
-                border_default_color: "#000000"
-                border_pressed_color: "#0099cc"
-
-                text_color: "#000000"
-                text_pressed_color: "#ffffff"
                 text: "Select photos"
-
                 m_area.onClicked: {
                     file_dialog.open()
                 }
@@ -157,28 +128,19 @@ Item {
                 id: cancel_individual_creation_btn
                 anchors {
                     left: select_photos_btn.right
-                    leftMargin: 10
+                    leftMargin: parent.space_between_btns
                     top: select_photos_btn.top
                 }
-                visible: !add_new_person_btn.visible
+                visible: true
                 width: height * 4
                 height: new_person_nickname_input.height
-
                 default_color: "#ffaf99"
                 hovered_color: "#ff4000"
                 pressed_color: "#e63900"
-
-                border_default_color: "#000000"
                 border_pressed_color: "#661400"
-
-                text_color: "#000000"
-                text_pressed_color: "#ffffff"
                 text: "Cancel"
-
                 m_area.onClicked: {
-                    if(new_person_nickname_input.text !== "") {
-                        individual_manager.cancel_individual_creation()
-                    }
+                    individual_manager.cancel_individual_creation()
                     people_page_item.loader.source = ""
                     main_qml.main_qml_sc.enabled = true
                 }
@@ -187,13 +149,13 @@ Item {
                 id: finish_person_creation_btn
                 anchors {
                     right: parent.right
-                    rightMargin: 10
+                    rightMargin: parent.space_between_btns
                     verticalCenter: new_person_nickname_input.verticalCenter
                 }
                 width: height * 4
                 height: new_person_nickname_input.height
                 text: "Add person"
-                enabled: processed_imgs_list_view.count === 0 ? false : true
+                enabled: processed_photos_list_view.count === 0 ? false : true
                 visible: !add_new_person_btn.visible
                 m_area.onClicked: {
                     people_page_item.loader.source = ""
@@ -218,7 +180,7 @@ Item {
                 ListView {
                     id: selected_photos_list_view
                     anchors.fill: parent
-                    model: selected_images_model
+                    model: Selected_images_model { id: selected_images_model }
                     clip: true
                     currentIndex: -1
                     onCurrentIndexChanged: {
@@ -227,120 +189,28 @@ Item {
                         save_btn.enabled = false
                         processed_img.source = ""
                     }
-                    delegate: Rectangle {
-                        id: delegate
+                    delegate: Selected_photos_delegate {
                         width: selected_photos_list_view.width
-                        height: 60
-                        radius: 2
-                        property color hovered_color: "#d4d4d4"
-                        property color default_color: "#ffffff"
-                        property color highlighted_color: "#999999"
-                        color: ListView.isCurrentItem ? highlighted_color :
+                        color: (ListView.isCurrentItem ? highlighted_color :
                                                         delegate_body_m_area.containsMouse ?
-                                                        delegate_body_m_area.pressed ? highlighted_color : hovered_color :
-                                                        default_color
-                        property alias selected_img_preview: selected_img_preview
-                        property alias selected_img_preview_file_name: selected_img_preview_file_name
-                        Image {
-                            id: selected_img_preview
-                            anchors {
-                                left: parent.left
-                                leftMargin: 5
-                                verticalCenter: parent.verticalCenter
-                            }
-                            property int space_between_top_and_bottom_of_delegate: 10
-                            height: parent.height - space_between_top_and_bottom_of_delegate
-                            width: height
-                            asynchronous: true
-                            mipmap: true
-                            fillMode: Image.PreserveAspectCrop
-                            source: model.file_path
-                            layer.enabled: true
-                            layer.effect: OpacityMask {
-                                maskSource: Rectangle {
-                                    width: selected_img_preview.width
-                                    height: selected_img_preview.height
-                                    radius: 5
-                                }
-                            }
-                            MouseArea {
-                                anchors.fill: parent
-                                onClicked: {
-                                    var comp = Qt.createComponent("Full_screen_img.qml")
-                                    var win = comp.createObject(root, { img_source: selected_img.source, window_type: true })
-                                    win.show()
-                                }
-                            }
+                                                        delegate_body_m_area.pressed ?
+                                                        highlighted_color : hovered_color :
+                                                        default_color)
+                        selected_img_preview_src: model.file_path
+                        selected_img_preview_file_name: model.file_name
+                        delegate_body_m_area.onClicked: {
+                            selected_photos_list_view.currentIndex = index
                         }
-                        Text {
-                            id: selected_img_preview_file_name
-                            anchors {
-                                left: selected_img_preview.right
-                                top: selected_img_preview.top
-                            }
-                            verticalAlignment: Text.AlignVCenter
-                            horizontalAlignment: Text.AlignHCenter
-                            height: parent.height
-                            width: parent.width - selected_img_preview.width - delete_from_selected_imgs_btn.width - delete_from_selected_imgs_btn.anchors.rightMargin
-                            fontSizeMode: Text.Fit
-                            minimumPointSize: 1
-                            font.pointSize: 10
-                            elide: Text.ElideRight
-                            wrapMode: Text.WordWrap
-                            text: String(model.file_name)
-                        }
-                        MouseArea {
-                            id: delegate_body_m_area
-                            anchors {
-                                top: selected_img_preview.top
-                                left: selected_img_preview.right
-                                right: selected_img_preview_file_name.right
-                            }
-                            height: parent.height
-                            hoverEnabled: true
-                            onClicked: {
-                                selected_photos_list_view.currentIndex = index
-                            }
-                        }
-                        Rectangle {
-                            id: delete_from_selected_imgs_btn
-                            anchors {
-                                right: parent.right
-                                rightMargin: 10
-                                verticalCenter: parent.verticalCenter
-                            }
-                            height: parent.height * 0.5
-                            width: height * 0.85
-                            radius: 4
-                            property color delete_btn_pressed_color: "#9c0303"
-                            color: delete_from_selected_imgs_btn_m_area.containsPress ?
-                                       delete_btn_pressed_color :
-                                       delete_from_selected_imgs_btn_m_area.containsMouse ?
-                                       "gray" : delegate.color
-                            Image {
-                                id: delete_from_selected_imgs_btn_img
-                                anchors.fill: parent
-                                mipmap: true
-                                asynchronous: true
-                                fillMode: Image.PreserveAspectFit
-                                source: "qrc:/qml/People_page_items/trash_icon.png"
-                            }
-                            MouseArea {
-                                id: delete_from_selected_imgs_btn_m_area
-                                anchors.fill: parent
-                                hoverEnabled: true
-                                onClicked: {
-                                    image_handler.cancel()
-                                    extract_face_btn.enabled = false
-                                    processed_img.source = ""
-                                    selected_images_model.delete_image(index)
-                                }
-                            }
+                        delete_from_selected_imgs_btn_m_area.onClicked: {
+                            image_handler.cancel()
+                            extract_face_btn.enabled = false
+                            processed_img.source = ""
+                            selected_images_model.delete_image(index)
                         }
                     }
                 }
             }
-            Rectangle {
+            Item {
                 id: processed_photos_frame
                 anchors {
                     top: selected_photos_frame.top
@@ -351,141 +221,23 @@ Item {
                 width: selected_photos_frame.width
                 height: selected_photos_frame.height
                 ListView {
-                    id: processed_imgs_list_view
+                    id: processed_photos_list_view
                     anchors.fill: parent
-                    model: individual_manager
+                    model: Individual_manager {
+                        id: individual_manager
+                        onMessage: {
+                            console.log("Message in QML: " + message)
+                        }
+                    }
                     clip: true
                     currentIndex: -1
-                    delegate: Rectangle {
-                        id: processed_imgs_delegate
-                        width: processed_imgs_list_view.width
-                        height: 60
-                        radius: 2
-                        property color hovered_color: "#d4d4d4"
-                        property color default_color: "#ffffff"
-                        property color highlighted_color: "#999999"
-                        color: processed_imgs_delegate_m_area.containsMouse ? processed_imgs_delegate_m_area.pressed ? highlighted_color : hovered_color : default_color
-                        Image {
-                            id: src_img
-                            anchors {
-                                left: parent.left
-                                leftMargin: 5
-                                verticalCenter: parent.verticalCenter
-                            }
-                            property int space_between_top_and_bottom_of_delegate: 10
-                            height: parent.height - space_between_top_and_bottom_of_delegate
-                            width: height
-                            asynchronous: true
-                            mipmap: true
-                            cache: false
-                            fillMode: Image.PreserveAspectCrop
-                            source: "file://" + String(model.src_img_path)
-                            layer.enabled: true
-                            layer.effect: OpacityMask {
-                                maskSource: Rectangle {
-                                    width: src_img.width
-                                    height: src_img.height
-                                    radius: 5
-                                }
-                            }
-                            MouseArea {
-                                anchors.fill: parent
-                                onClicked: {
-                                    var comp = Qt.createComponent("Full_screen_img.qml")
-                                    var win = comp.createObject(root, { img_source: src_img.source, window_type: false })
-                                    win.show()
-                                }
-                            }
-                        }
-                        Rectangle {
-                            id: delete_from_processed_imgs_btn
-                            anchors {
-                                right: parent.right
-                                rightMargin: 10
-                                verticalCenter: parent.verticalCenter
-                            }
-                            height: parent.height * 0.5
-                            width: height * 0.85
-                            radius: 4
-                            property color delete_btn_pressed_color: "#9c0303"
-                            color: delete_from_processed_imgs_btn_m_area.containsPress ?
-                                       delete_btn_pressed_color :
-                                       delete_from_processed_imgs_btn_m_area.containsMouse ?
-                                       "gray" : processed_imgs_delegate.color
-                            Image {
-                                id: delete_from_processed_imgs_btn_img
-                                anchors.fill: parent
-                                mipmap: true
-                                asynchronous: true
-                                fillMode: Image.PreserveAspectFit
-                                source: "qrc:/qml/People_page_items/trash_icon.png"
-                            }
-                            MouseArea {
-                                id: delete_from_processed_imgs_btn_m_area
-                                anchors.fill: parent
-                                hoverEnabled: true
-                                onClicked: {
-                                    individual_manager.delete_individual_face(index)
-                                }
-                            }
-                        }
-                        Image {
-                            id: extracted_face_img
-                            anchors {
-                                right: delete_from_processed_imgs_btn.left
-                                rightMargin: 10
-                                verticalCenter: parent.verticalCenter
-                            }
-                            height: src_img.height
-                            width: height
-                            asynchronous: true
-                            mipmap: true
-                            cache: false
-                            fillMode: Image.PreserveAspectCrop
-                            source: "file://" + String(model.extracted_face_img_path)
-                            layer.enabled: true
-                            layer.effect: OpacityMask {
-                                maskSource: Rectangle {
-                                    width: extracted_face_img.width
-                                    height: extracted_face_img.height
-                                    radius: 5
-                                }
-                            }
-                            MouseArea {
-                                anchors.fill: parent
-                                onClicked: {
-                                    var comp = Qt.createComponent("Full_screen_img.qml")
-                                    var win = comp.createObject(root, { img_source: extracted_face_img.source, window_type: false })
-                                    win.show()
-                                }
-                            }
-                        }
-                        Text {
-                            anchors {
-                                left: src_img.right
-                                right: extracted_face_img.left
-                            }
-                            verticalAlignment: Text.AlignVCenter
-                            horizontalAlignment: Text.AlignHCenter
-                            height: parent.height
-                            width: parent.width - src_img.width - src_img.anchors.leftMargin -
-                                   delete_from_processed_imgs_btn.width - delete_from_processed_imgs_btn.anchors.rightMargin -
-                                   extracted_face_img.width - extracted_face_img.anchors.rightMargin
-                            fontSizeMode: Text.Fit
-                            minimumPointSize: 1
-                            font.pointSize: 10
-                            elide: Text.ElideRight
-                            wrapMode: Text.WordWrap
-                            text: String(model.file_name)
-                        }
-                        MouseArea {
-                            id: processed_imgs_delegate_m_area
-                            anchors {
-                                left: src_img.right
-                                right: extracted_face_img.left
-                            }
-                            height: parent.height
-                            hoverEnabled: true
+                    delegate: Processed_photos_delegate {
+                        width: processed_photos_list_view.width
+                        source_img_src: "file://" + String(model.src_img_path)
+                        extracted_face_img_src: "file://" + String(model.extracted_face_img_path)
+                        extracted_face_img_file_name: String(model.file_name)
+                        delete_from_processed_imgs_btn_m_area.onClicked: {
+                            individual_manager.delete_individual_face(index)
                         }
                     }
                 }
@@ -521,7 +273,7 @@ Item {
                     elide: Text.ElideRight
                     wrapMode: Text.WordWrap
                     text: selected_photos_list_view.currentItem !== null ?
-                          String(selected_photos_list_view.currentItem.selected_img_preview_file_name.text +
+                          String(selected_photos_list_view.currentItem.selected_img_preview_file_name +
                           "   " +
                           "(" +
                           selected_img.sourceSize.width + " x " + selected_img.sourceSize.height +
@@ -541,7 +293,7 @@ Item {
                     }
                     mipmap: true
                     fillMode: Image.PreserveAspectFit
-                    source: selected_photos_list_view.currentItem === null ? "" : selected_photos_list_view.currentItem.selected_img_preview.source
+                    source: selected_photos_list_view.currentItem === null ? "" : selected_photos_list_view.currentItem.selected_img_preview_src
                     onSourceChanged: {
                         image_handler.update_selected_img_path(source)
                     }

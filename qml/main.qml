@@ -106,6 +106,7 @@ Window {
                         left_vertical_menu_list_view.currentIndex = index
                         if(model.loader_path === "Qt.quit()") {
                             Qt.quit()
+                            return
                         }
                         page_loader.source = model.loader_path
                     }

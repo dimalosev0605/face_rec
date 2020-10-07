@@ -87,7 +87,7 @@ Window {
             }
             onClicked: {
                 selected_photos_list_view.incrementCurrentIndex()
-                img.source = selected_photos_list_view.currentItem.selected_img_preview.source
+                img.source = selected_photos_list_view.currentItem.selected_img_preview_src
             }
         }
         Canvas {
@@ -131,7 +131,7 @@ Window {
             }
             onClicked: {
                 selected_photos_list_view.decrementCurrentIndex()
-                img.source = selected_photos_list_view.currentItem.selected_img_preview.source
+                img.source = selected_photos_list_view.currentItem.selected_img_preview_src
             }
         }
         Canvas {

@@ -106,6 +106,7 @@ void Individual_file_manager::set_individual_name(const QString& name)
 
 void Individual_file_manager::cancel_individual_dir_creation() const
 {
+    if(path_to_individual_dir.isEmpty()) return;
     QDir dir(path_to_individual_dir);
     dir.removeRecursively();
 }

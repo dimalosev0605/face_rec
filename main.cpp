@@ -11,6 +11,8 @@ int main(int argc, char *argv[])
     QCoreApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
 
     QGuiApplication app(argc, argv);
+    app.setOrganizationName("QtMAI");
+    app.setOrganizationDomain("supernovaexplosion.ddns");
 
     qmlRegisterType<Selected_images_model>("Selected_images_model_qml", 1, 0, "Selected_images_model");
     qmlRegisterType<Image_handler>("Image_handler_qml", 1, 0, "Image_handler");
