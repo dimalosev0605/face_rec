@@ -11,6 +11,8 @@ Item {
     id: root
 
     Component.onCompleted: {
+        people_page_item.wait_loader.source = "qrc:/qml/Wait_page_2.qml"
+        people_page_item.wait_loader.item.image_handler = image_handler
         new_person_nickname_input.forceActiveFocus()
     }
 
@@ -44,6 +46,7 @@ Item {
     }
     Shortcut {
         sequence: "Esc"
+        enabled: !people_page_item.wait_loader.visible
         onActivated: {
             cancel_individual_creation_btn.m_area.clicked(null)
         }
@@ -54,7 +57,7 @@ Item {
         onImg_source_changed: {
             processed_img.source = ""
             processed_img.source = source
-            block_ui_rect.visible = false
+            people_page_item.wait_loader.visible = false
             extract_face_btn.enabled = false
         }
         onEnable_extract_face_btn: {
@@ -148,15 +151,14 @@ Item {
             Custom_button {
                 id: finish_person_creation_btn
                 anchors {
-                    right: parent.right
-                    rightMargin: parent.space_between_btns
+                    left: cancel_individual_creation_btn.right
+                    leftMargin: parent.space_between_btns
                     verticalCenter: new_person_nickname_input.verticalCenter
                 }
                 width: height * 4
                 height: new_person_nickname_input.height
                 text: "Add person"
-                enabled: processed_photos_list_view.count === 0 ? false : true
-                visible: !add_new_person_btn.visible
+                visible: processed_photos_list_view.count === 0 ? false : true
                 m_area.onClicked: {
                     people_page_item.loader.source = ""
                     main_qml.main_qml_sc.enabled = true
@@ -332,7 +334,7 @@ Item {
                             height: (parent.height - parent.spacing) / selected_img_row_buttons.number_of_rows
                             enabled: selected_photos_list_view.currentItem === null ? false : save_btn.enabled ? false : true
                             m_area.onClicked: {
-                                block_ui_rect.visible = true
+                                people_page_item.wait_loader.visible = true
                                 image_handler.hog()
                             }
                         }
@@ -343,7 +345,7 @@ Item {
                             height: (parent.height - parent.spacing) / selected_img_row_buttons.number_of_rows
                             enabled: selected_photos_list_view.currentItem === null ? false : save_btn.enabled ? false : true
                             m_area.onClicked: {
-                                block_ui_rect.visible = true
+                                people_page_item.wait_loader.visible = true
                                 image_handler.cnn()
                             }
                         }
@@ -359,7 +361,7 @@ Item {
                             height: (parent.height - parent.spacing) / selected_img_row_buttons.number_of_rows
                             enabled: selected_photos_list_view.currentItem === null ? false : save_btn.enabled ? false : true
                             m_area.onClicked: {
-                                block_ui_rect.visible = true
+                                people_page_item.wait_loader.visible = true
                                 image_handler.pyr_up()
                             }
                         }
@@ -370,7 +372,7 @@ Item {
                             height: (parent.height - parent.spacing) / selected_img_row_buttons.number_of_rows
                             enabled: selected_photos_list_view.currentItem === null ? false : save_btn.enabled ? false : true
                             m_area.onClicked: {
-                                block_ui_rect.visible = true
+                                people_page_item.wait_loader.visible = true
                                 image_handler.pyr_down()
                             }
                         }
@@ -426,7 +428,7 @@ Item {
                                         text: "Ok"
                                         m_area.onClicked: {
                                             if(width_input.acceptableInput && height_input.acceptableInput) {
-                                                block_ui_rect.visible = true
+                                                people_page_item.wait_loader.visible = true
                                                 image_handler.resize(width_input.text, height_input.text)
                                                 new_size_popup.close()
                                             }
@@ -520,7 +522,7 @@ Item {
                         width: (parent.width - parent.spacing) / 2
                         enabled: false
                         m_area.onClicked: {
-                            block_ui_rect.visible = true
+                            people_page_item.wait_loader.visible = true
                             image_handler.extract_face()
                             save_btn.enabled = true
                         }
@@ -542,40 +544,6 @@ Item {
                         }
                     }
                 }
-            }
-        }
-    }
-    Rectangle {
-        id: block_ui_rect
-        anchors.fill: parent
-        color: "gray"
-        visible: false
-        opacity: 0.7
-        BusyIndicator {
-            id: busy_indicator
-            anchors.centerIn: parent
-            height: 100
-            width: 100
-            running: block_ui_rect.visible
-        }
-        MouseArea {
-            id: block_ui_rect_m_area
-            anchors.fill: parent
-        }
-        Custom_button {
-            id: cancel_processing_btn
-            anchors {
-                top: busy_indicator.bottom
-                topMargin: 5
-                horizontalCenter: parent.horizontalCenter
-            }
-            height: 40
-            width: 150
-            pressed_color: "#ff0000"
-            text: "Cancel"
-            m_area.onClicked: {
-                image_handler.cancel()
-                block_ui_rect.visible = false
             }
         }
     }
