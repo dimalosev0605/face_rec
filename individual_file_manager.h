@@ -30,15 +30,6 @@ public:
         dir_creation_error
     };
 
-    // create unum with files types!
-    /*
-     * enum class Type {
-     * source_files
-     * temp_files
-     * extracted
-     * };
-     */
-
     Individual_file_manager();
     Status create_individual_dir() const;
 

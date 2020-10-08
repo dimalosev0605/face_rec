@@ -7,7 +7,6 @@
 
 #include "individual_file_manager.h"
 
-
 class Individual_manager: public QAbstractListModel
 {
     Q_OBJECT
@@ -36,7 +35,6 @@ public slots:
 
 signals:
     void message(const QString& message);
-
 };
 
 #endif // INDIVIDUAL_MANAGER_H

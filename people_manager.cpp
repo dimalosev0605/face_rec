@@ -6,10 +6,6 @@ People_manager::People_manager(QObject* parent)
     roles[static_cast<int>(RolesNames::individual_name)] = "individual_name";
     roles[static_cast<int>(RolesNames::avatar_path)] = "avatar_path";
     load_people();
-    qDebug() << "Loaded:";
-    for(const auto& elem : model_data) {
-        qDebug() << std::get<0>(elem) << " - " << std::get<1>(elem);
-    }
 }
 
 void People_manager::load_people()

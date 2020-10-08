@@ -90,14 +90,12 @@ bool Individual_manager::add_individual_face(const QString& source_img_path, con
     QFile extracted_face_img(QString{extracted_face_img_path}.remove("file://"));
 
     if(src_img.copy(src_copy_path) && extracted_face_img.copy(extracted_face_copy_path)) {
-        qDebug() << "Success copied!";
         beginInsertRows(QModelIndex(), model_data.size(), model_data.size());
         model_data.push_back(std::tuple<QString, QString, QString>{src_copy_path, extracted_face_copy_path, QUrl(src_copy_path).fileName()});
         endInsertRows();
         return true;
     }
     else {
-        qDebug() << "Copy error.";
         src_img.remove(src_copy_path);
         extracted_face_img.remove(extracted_face_img_path);
         return false;
@@ -119,9 +117,6 @@ void Individual_manager::delete_individual_face(const int index)
         model_data.clear();
         endRemoveRows();
         model_copy.removeAt(index);
-    }
-    else {
-        qDebug() << "remove error";
     }
 
     for(int i = index; i < model_copy.size(); ++i) {
