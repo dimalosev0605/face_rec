@@ -28,9 +28,8 @@ public:
     virtual QVariant data(const QModelIndex& index, int role) const override;
 
 public slots:
-//    void add_new_individual();
-//    void delete_individual();
-
+    void update_people_list();
+    void delete_individual(const int index);
 };
 
 #endif // PEOPLE_MANAGER_H

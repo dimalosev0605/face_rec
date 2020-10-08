@@ -14,12 +14,16 @@ void People_manager::load_people()
     QDir data_dir(data_dir_path);
     data_dir.setFilter(QDir::Dirs | QDir::NoDotAndDotDot);
     const auto people_list = data_dir.entryList();
+
+    if(people_list.isEmpty()) return;
+    beginInsertRows(QModelIndex(), 0, people_list.size() - 1);
     for(const auto& elem : people_list) {
         individual_file_manager.set_individual_name(elem);
         const auto first_img_path = individual_file_manager.get_path_to_source_files_dir()
                 + '/' + individual_file_manager.get_individual_name() + "_0";
         model_data.push_back(std::tuple<QString, QString>(elem, first_img_path));
     }
+    endInsertRows();
 }
 
 QHash<int, QByteArray> People_manager::roleNames() const
@@ -49,4 +53,26 @@ QVariant People_manager::data(const QModelIndex &index, int role) const
     }
 
     return QVariant{};
+}
+
+void People_manager::update_people_list()
+{
+    if(model_data.isEmpty()) return;
+
+    beginRemoveRows(QModelIndex(), 0, model_data.size() - 1);
+    model_data.clear();
+    endRemoveRows();
+
+    load_people();
+}
+
+void People_manager::delete_individual(const int index)
+{
+    if(index < 0 || index >= model_data.size()) return;
+
+    beginRemoveRows(QModelIndex(), index, index);
+    individual_file_manager.set_individual_name(std::get<0>(model_data[index]));
+    individual_file_manager.cancel_individual_dir_creation();
+    model_data.remove(index);
+    endRemoveRows();
 }

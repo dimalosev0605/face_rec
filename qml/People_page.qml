@@ -13,6 +13,7 @@ Item {
 
     property alias loader: loader
     property alias wait_loader: wait_loader
+    property alias people_manager: people_manager
 
     People_manager {
         id: people_manager
@@ -110,59 +111,13 @@ Item {
                 }
                 model: people_manager
                 clip: true
-                delegate: Rectangle {
-                    id: delegate
+                delegate: People_list_delegate {
                     width: people_list_view.width - people_list_view_scroll_bar.implicitWidth
-                    height: 60
-                    radius: 2
-                    property color hovered_color: "#d4d4d4"
-                    property color default_color: "#ffffff"
-                    property color highlighted_color: "#999999"
-                    color: individual_avatar_m_area.containsMouse ?
-                               individual_avatar_m_area.pressed ?
-                               highlighted_color : hovered_color : default_color
-                    Image {
-                        id: individual_avatar
-                        anchors {
-                            left: parent.left
-                            leftMargin: 5
-                            verticalCenter: parent.verticalCenter
-                        }
-                        property int space_between_top_and_bottom_of_delegate: 10
-                        height: parent.height - space_between_top_and_bottom_of_delegate
-                        width: height
-                        asynchronous: true
-                        mipmap: true
-                        fillMode: Image.PreserveAspectCrop
-                        source: "file://" + model.avatar_path
-                        layer.enabled: true
-                        layer.effect: OpacityMask {
-                            maskSource: Rectangle {
-                                width: individual_avatar.width
-                                height: individual_avatar.height
-                                radius: 5
-                            }
-                        }
-                    }
-                    Text {
-                        anchors {
-                            left: individual_avatar.right
-                        }
-                        width: delegate.width - individual_avatar.width - individual_avatar.anchors.leftMargin
-                        height: delegate.height
-                        verticalAlignment: Text.AlignVCenter
-                        horizontalAlignment: Text.AlignHCenter
-                        fontSizeMode: Text.Fit
-                        minimumPointSize: 1
-                        font.pointSize: 10
-                        elide: Text.ElideRight
-                        wrapMode: Text.WordWrap
-                        text: String(model.individual_name)
-                    }
-                    MouseArea {
-                        id: individual_avatar_m_area
-                        anchors.fill: parent
-                        hoverEnabled: true
+                    avatar_path: "file://" + model.avatar_path
+                    individual_name: model.individual_name
+                    delete_individual_btn_m_area.onClicked: {
+                        people_list_view.currentIndex = index
+                        people_manager.delete_individual(index)
                     }
                 }
                 ScrollBar.vertical: people_list_view_scroll_bar

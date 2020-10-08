@@ -15,6 +15,12 @@ Item {
         people_page_item.wait_loader.item.image_handler = image_handler
         new_person_nickname_input.forceActiveFocus()
     }
+    Component.onDestruction: {
+        if(processed_photos_list_view.count === 0 && new_person_nickname_input.text !== "") {
+            individual_manager.cancel_individual_creation()
+        }
+        main_qml_sc.enabled = true
+    }
 
     FileDialog {
         id: file_dialog
@@ -162,6 +168,7 @@ Item {
                 m_area.onClicked: {
                     people_page_item.loader.source = ""
                     main_qml.main_qml_sc.enabled = true
+                    people_page_item.people_manager.update_people_list()
                 }
             }
 

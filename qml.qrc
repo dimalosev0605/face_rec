@@ -17,5 +17,7 @@
         <file>qml/People_page_items/Selected_photos_delegate.qml</file>
         <file>qml/People_page_items/Processed_photos_delegate.qml</file>
         <file>qml/Wait_page_2.qml</file>
+        <file>qml/People_list_delegate.qml</file>
+        <file>left_vertical_menu_bar_icons/Cross_Icon.png</file>
     </qresource>
 </RCC>
