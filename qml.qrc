@@ -19,5 +19,6 @@
         <file>qml/Wait_page_2.qml</file>
         <file>qml/People_list_delegate.qml</file>
         <file>left_vertical_menu_bar_icons/Cross_Icon.png</file>
+        <file>qml/Edit_individual_page.qml</file>
     </qresource>
 </RCC>

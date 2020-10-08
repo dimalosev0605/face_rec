@@ -8,6 +8,7 @@ Rectangle {
     property alias avatar_path: individual_avatar.source
     property alias individual_name: individual_name.text
     property alias delete_individual_btn_m_area: delete_individual_btn_m_area
+    property alias individual_avatar_m_area: individual_avatar_m_area
 
     height: 60
     radius: 2

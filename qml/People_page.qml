@@ -119,6 +119,12 @@ Item {
                         people_list_view.currentIndex = index
                         people_manager.delete_individual(index)
                     }
+                    individual_avatar_m_area.onDoubleClicked: {
+                        people_list_view.currentIndex = index
+                        wait_loader.source = "qrc:/qml/Wait_page.qml"
+                        loader.source = ""
+                        loader.source = "qrc:/qml/Edit_individual_page.qml"
+                    }
                 }
                 ScrollBar.vertical: people_list_view_scroll_bar
                 ScrollBar {
@@ -143,10 +149,18 @@ Item {
             height: parent.height
             visible: false
             onStatusChanged: {
-                if(loader.status === Loader.Ready) {
+                if(loader.status === Loader.Ready && loader.source.toString() === "qrc:/qml/People_page_items/Add_new_person_page.qml") {
+                    console.log("Loader loaded Add new person page.")
                     wait_loader.visible = false
                     loader.visible = true
                     main_qml.main_qml_sc.enabled = false
+                }
+                if(loader.status === Loader.Ready && loader.source.toString() === "qrc:/qml/Edit_individual_page.qml") {
+                    console.log("Loader loaded Edit page.")
+                    wait_loader.visible = false
+                    loader.visible = true
+                    main_qml.main_qml_sc.enabled = false
+                    loader.item.edited_individual_name = people_list_view.currentItem.individual_name
                 }
             }
         }

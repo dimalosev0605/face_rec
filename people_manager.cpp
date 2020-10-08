@@ -57,11 +57,11 @@ QVariant People_manager::data(const QModelIndex &index, int role) const
 
 void People_manager::update_people_list()
 {
-    if(model_data.isEmpty()) return;
-
-    beginRemoveRows(QModelIndex(), 0, model_data.size() - 1);
-    model_data.clear();
-    endRemoveRows();
+    if(!model_data.isEmpty()) {
+        beginRemoveRows(QModelIndex(), 0, model_data.size() - 1);
+        model_data.clear();
+        endRemoveRows();
+    }
 
     load_people();
 }

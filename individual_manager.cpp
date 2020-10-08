@@ -41,6 +41,7 @@ bool Individual_manager::create_individual_dir(const QString& name)
 
 void Individual_manager::cancel_individual_creation()
 {
+    if(individual_file_manager.get_individual_name().isEmpty()) return;
     individual_file_manager.cancel_individual_dir_creation();
 }
 
@@ -142,5 +143,29 @@ void Individual_manager::delete_individual_face(const int index)
 
     beginInsertRows(QModelIndex(), 0, model_copy.size() - 1);
     model_data = model_copy;
+    endInsertRows();
+}
+
+void Individual_manager::load_individual_imgs()
+{
+    individual_file_manager.set_individual_name(m_individual_name);
+
+    QDir dir;
+    dir.setFilter(QDir::Files);
+    const auto src_imgs_path = individual_file_manager.get_path_to_source_files_dir();
+    dir.setPath(src_imgs_path);
+    const auto src_imgs = dir.entryInfoList();
+
+    const auto extr_face_imgs_path = individual_file_manager.get_path_to_extracted_faces_dir();
+    dir.setPath(extr_face_imgs_path);
+    const auto extr_face_imgs = dir.entryInfoList();
+
+    if(src_imgs.empty()) return;
+    beginInsertRows(QModelIndex(), 0, src_imgs.size() - 1);
+    for(int i = 0; i < src_imgs.size(); ++i) {
+        std::tuple<QString, QString, QString> elem =
+                std::tuple<QString, QString, QString>(src_imgs[i].filePath(), extr_face_imgs[i].filePath(), src_imgs[i].fileName());
+        model_data.push_back(elem);
+    }
     endInsertRows();
 }
