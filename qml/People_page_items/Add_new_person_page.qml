@@ -253,10 +253,9 @@ Item {
                 width: parent.width / 2
                 implicitWidth: 1
             }
-            Rectangle {
+            Item {
                 height: parent.height
                 implicitWidth: parent.width / 2
-                color: "#ffb3b3"
 
                 Text {
                     id: selected_img_info
@@ -453,10 +452,9 @@ Item {
                     }
                 }
             }
-            Rectangle {
+            Item {
                 height: parent.height
                 implicitWidth: parent.width / 2
-                color: "#ccffff"
 
                 Text {
                     id: processed_img_info
