@@ -96,7 +96,57 @@ Item {
                 placeholderText: "Enter person nickname"
                 text: edited_individual_name
                 onTextChanged: {
-                    image_handler.set_current_individual_name(text)
+                    console.log("onTextChanged")
+                    if(individual_nickname_input.readOnly) {
+                        console.log("Set current individual name")
+                        image_handler.set_current_individual_name(text)
+                    }
+                }
+//                onAccepted: {
+//                    console.log("onAccepted")
+//                }
+                readOnly: true
+                property int right_space: 5
+                rightPadding: edit_btn.width + right_space
+                Rectangle {
+                    id: edit_btn
+                    anchors{
+                        right: parent.right
+                        rightMargin: parent.right_space
+                        verticalCenter: parent.verticalCenter
+                    }
+                    height: parent.height * 0.8
+                    width: height
+                    radius: 5
+                    color: edit_btn_m_area.containsMouse ? edit_btn_m_area.pressed ?
+                                                               "#00ff00" : "#cccccc" : "transparent"
+                    Image {
+                        anchors {
+                            fill: parent
+                        }
+                        source: individual_nickname_input.readOnly ?
+                                    "qrc:/left_vertical_menu_bar_icons/Edit_icon.png" :
+                                    "qrc:/left_vertical_menu_bar_icons/ok_icon.png"
+                        mipmap: true
+                        fillMode: Image.PreserveAspectFit
+                    }
+                    MouseArea {
+                        id: edit_btn_m_area
+                        anchors.fill: parent
+                        hoverEnabled: true
+                        onClicked: {
+                            if(individual_nickname_input.readOnly) {
+                                individual_nickname_input.readOnly = false
+                            }
+                            else {
+                                if(individual_nickname_input.text === "") return
+                                individual_manager.change_nickname(individual_nickname_input.text)
+                                console.log("Nickname changed. Update all files.")
+                                individual_nickname_input.readOnly = true
+                                individual_nickname_input.focus = false
+                            }
+                        }
+                    }
                 }
             }
 
@@ -177,8 +227,15 @@ Item {
                     model: Individual_manager {
                         id: individual_manager
                         individual_name: edited_individual_name
+                        onIndividual_nameChanged: {
+                            selected_images_model.clear()
+                        }
                         onMessage: {
                             console.log("Message in QML: " + message)
+                        }
+                        onUpdate_people_model: {
+                            image_handler.set_current_individual_name(new_nick)
+                            people_page_item.people_manager.update_people_list()
                         }
                     }
                     clip: true

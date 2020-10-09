@@ -121,9 +121,14 @@ Item {
                     }
                     individual_avatar_m_area.onDoubleClicked: {
                         people_list_view.currentIndex = index
-                        wait_loader.source = "qrc:/qml/Wait_page.qml"
-                        loader.source = ""
-                        loader.source = "qrc:/qml/Edit_individual_page.qml"
+                        if(loader.source.toString() === "qrc:/qml/Edit_individual_page.qml") {
+                            loader.item.edited_individual_name = people_list_view.currentItem.individual_name
+                            return
+                        }
+                        else {
+                            wait_loader.source = "qrc:/qml/Wait_page.qml"
+                            loader.source = "qrc:/qml/Edit_individual_page.qml"
+                        }
                     }
                 }
                 ScrollBar.vertical: people_list_view_scroll_bar

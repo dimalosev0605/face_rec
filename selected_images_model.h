@@ -27,6 +27,7 @@ public:
 public slots:
     void accept_images(const QList<QUrl>& file_urls);
     void delete_image(const int index);
+    void clear();
 };
 
 #endif // SELECTED_IMAGES_MODEL_H

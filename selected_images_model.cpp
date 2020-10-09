@@ -60,3 +60,12 @@ void Selected_images_model::delete_image(const int index)
     model_data.removeAt(index);
     endRemoveRows();
 }
+
+void Selected_images_model::clear()
+{
+    if(!model_data.isEmpty()) {
+        beginRemoveRows(QModelIndex(), 0, model_data.size() - 1);
+        model_data.clear();
+        endRemoveRows();
+    }
+}

@@ -20,5 +20,7 @@
         <file>qml/People_list_delegate.qml</file>
         <file>left_vertical_menu_bar_icons/Cross_Icon.png</file>
         <file>qml/Edit_individual_page.qml</file>
+        <file>left_vertical_menu_bar_icons/Edit_icon.png</file>
+        <file>left_vertical_menu_bar_icons/ok_icon.png</file>
     </qresource>
 </RCC>

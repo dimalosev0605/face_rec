@@ -41,10 +41,12 @@ public slots:
     void cancel_individual_creation();
     bool add_individual_face(const QString& source_img_path, const QString& extracted_face_img_path);
     void delete_individual_face(const int index);
+    void change_nickname(const QString& new_nickname);
 
 signals:
     void message(const QString& message);
     void individual_nameChanged();
+    void update_people_model(const QString& new_nick);
 };
 
 #endif // INDIVIDUAL_MANAGER_H
