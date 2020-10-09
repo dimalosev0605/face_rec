@@ -4,6 +4,8 @@ import QtGraphicalEffects 1.0
 
 import People_manager_qml 1.0
 
+import "delegates"
+
 Item {
     id: people_page_item
 
@@ -111,7 +113,7 @@ Item {
                 }
                 model: people_manager
                 clip: true
-                delegate: People_list_delegate {
+                delegate: People_list {
                     width: people_list_view.width - people_list_view_scroll_bar.implicitWidth
                     avatar_path: "file://" + model.avatar_path
                     individual_name: model.individual_name

@@ -1,8 +1,6 @@
 import QtQuick 2.12
 import QtQuick.Controls 2.15
 
-import "People_page_items"
-
 import Image_handler_qml 1.0
 
 Rectangle {

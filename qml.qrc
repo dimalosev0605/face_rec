@@ -1,26 +1,25 @@
 <RCC>
     <qresource prefix="/">
         <file>qml/main.qml</file>
-        <file>left_vertical_menu_bar_icons/help.jpg</file>
-        <file>left_vertical_menu_bar_icons/exit.png</file>
-        <file>left_vertical_menu_bar_icons/people.png</file>
-        <file>left_vertical_menu_bar_icons/recognition.png</file>
         <file>qml/Help_page.qml</file>
         <file>qml/People_page.qml</file>
-        <file>qml/People_page_items/add_new_icon.png</file>
-        <file>qml/People_page_items/Add_new_person_page.qml</file>
-        <file>qml/People_page_items/trash_icon.png</file>
-        <file>qml/People_page_items/Full_screen_img.qml</file>
-        <file>qml/People_page_items/Custom_button.qml</file>
+        <file>qml/Add_new_person_page.qml</file>
+        <file>qml/Full_screen_img.qml</file>
+        <file>qml/Custom_button.qml</file>
         <file>qml/Wait_page.qml</file>
         <file>qml/Left_vertical_menu_bar_model.qml</file>
-        <file>qml/People_page_items/Selected_photos_delegate.qml</file>
-        <file>qml/People_page_items/Processed_photos_delegate.qml</file>
         <file>qml/Wait_page_2.qml</file>
-        <file>qml/People_list_delegate.qml</file>
-        <file>left_vertical_menu_bar_icons/Cross_Icon.png</file>
         <file>qml/Edit_individual_page.qml</file>
-        <file>left_vertical_menu_bar_icons/Edit_icon.png</file>
-        <file>left_vertical_menu_bar_icons/ok_icon.png</file>
+        <file>qml/delegates/Selected_photos.qml</file>
+        <file>qml/delegates/Processed_photos.qml</file>
+        <file>qml/delegates/People_list.qml</file>
+        <file>qml/icons/help.jpg</file>
+        <file>qml/icons/exit.png</file>
+        <file>qml/icons/people.png</file>
+        <file>qml/icons/recognition.png</file>
+        <file>qml/icons/trash.png</file>
+        <file>qml/icons/cross.png</file>
+        <file>qml/icons/edit.png</file>
+        <file>qml/icons/ok.png</file>
     </qresource>
 </RCC>

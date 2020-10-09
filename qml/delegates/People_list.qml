@@ -42,6 +42,15 @@ Rectangle {
                 radius: 5
             }
         }
+        MouseArea {
+            anchors.fill: parent
+            onClicked: {
+                people_list_view.currentIndex = index
+                var comp = Qt.createComponent("qrc:/qml/Full_screen_img.qml")
+                var win = comp.createObject(people_page_item, { img_source: individual_avatar.source, window_type: false })
+                win.show()
+            }
+        }
     }
     Text {
         id: individual_name
@@ -82,7 +91,7 @@ Rectangle {
             mipmap: true
             asynchronous: true
             fillMode: Image.PreserveAspectFit
-            source: "qrc:/left_vertical_menu_bar_icons/Cross_Icon.png"
+            source: "qrc:/qml/icons/cross.png"
         }
         MouseArea {
             id: delete_individual_btn_m_area

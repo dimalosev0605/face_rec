@@ -11,14 +11,12 @@ Rectangle {
     property color default_color: "#ffffff"
     property color highlighted_color: "#999999"
 
-//    property alias selected_img_preview: selected_img_preview
     property alias selected_img_preview_src: selected_img_preview.source
     property alias selected_img_preview_file_name: selected_img_preview_file_name.text
 
     property alias delegate_body_m_area: delegate_body_m_area
     property alias delete_from_selected_imgs_btn_m_area: delete_from_selected_imgs_btn_m_area
 
-//    property string selected_img_src // for full screen window.
     Image {
         id: selected_img_preview
         anchors {
@@ -44,7 +42,7 @@ Rectangle {
             anchors.fill: parent
             onClicked: {
                 selected_photos_list_view.currentIndex = index
-                var comp = Qt.createComponent("Full_screen_img.qml")
+                var comp = Qt.createComponent("qrc:/qml/Full_screen_img.qml")
                 var win = comp.createObject(root, { img_source: selected_img_preview.source, window_type: true })
                 win.show()
             }
@@ -99,7 +97,7 @@ Rectangle {
             mipmap: true
             asynchronous: true
             fillMode: Image.PreserveAspectFit
-            source: "qrc:/qml/People_page_items/trash_icon.png"
+            source: "qrc:/qml/icons/trash.png"
         }
         MouseArea {
             id: delete_from_selected_imgs_btn_m_area

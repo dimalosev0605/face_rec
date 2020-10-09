@@ -44,7 +44,7 @@ Rectangle {
         MouseArea {
             anchors.fill: parent
             onClicked: {
-                var comp = Qt.createComponent("Full_screen_img.qml")
+                var comp = Qt.createComponent("qrc:/qml/Full_screen_img.qml")
                 var win = comp.createObject(root, { img_source: src_img.source, window_type: false })
                 win.show()
             }
@@ -70,7 +70,7 @@ Rectangle {
             mipmap: true
             asynchronous: true
             fillMode: Image.PreserveAspectFit
-            source: "qrc:/qml/People_page_items/trash_icon.png"
+            source: "qrc:/qml/icons/trash.png"
         }
         MouseArea {
             id: delete_from_processed_imgs_btn_m_area
@@ -102,7 +102,7 @@ Rectangle {
         MouseArea {
             anchors.fill: parent
             onClicked: {
-                var comp = Qt.createComponent("Full_screen_img.qml")
+                var comp = Qt.createComponent("qrc:/qml/Full_screen_img.qml")
                 var win = comp.createObject(root, { img_source: extracted_face_img.source, window_type: false })
                 win.show()
             }

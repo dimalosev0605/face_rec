@@ -7,6 +7,8 @@ import Selected_images_model_qml 1.0
 import Image_handler_qml 1.0
 import Individual_manager_qml 1.0
 
+import "delegates"
+
 Item {
     id: root
 
@@ -198,7 +200,7 @@ Item {
                         save_btn.enabled = false
                         processed_img.source = ""
                     }
-                    delegate: Selected_photos_delegate {
+                    delegate: Selected_photos {
                         width: selected_photos_list_view.width
                         color: (ListView.isCurrentItem ? highlighted_color :
                                                         delegate_body_m_area.containsMouse ?
@@ -240,7 +242,7 @@ Item {
                     }
                     clip: true
                     currentIndex: -1
-                    delegate: Processed_photos_delegate {
+                    delegate: Processed_photos {
                         width: processed_photos_list_view.width
                         source_img_src: "file://" + String(model.src_img_path)
                         extracted_face_img_src: "file://" + String(model.extracted_face_img_path)
@@ -309,7 +311,7 @@ Item {
                         anchors.fill: parent
                         onClicked: {
                             if(selected_img.source.toString() === "") return
-                            var comp = Qt.createComponent("Full_screen_img.qml")
+                            var comp = Qt.createComponent("qrc:/qml/Full_screen_img.qml")
                             var win = comp.createObject(root, { img_source: selected_img.source, window_type: true })
                             win.show()
                         }
@@ -502,7 +504,7 @@ Item {
                         anchors.fill: parent
                         onClicked: {
                             if(processed_img.source.toString() === "") return
-                            var comp = Qt.createComponent("Full_screen_img.qml")
+                            var comp = Qt.createComponent("qrc:/qml/Full_screen_img.qml")
                             var win = comp.createObject(root, { img_source: processed_img.source, window_type: false })
                             win.show()
                         }
