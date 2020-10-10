@@ -96,7 +96,10 @@ Item {
                         add_new_people_btn_canvas.requestPaint()
                     }
                     onClicked: {
+                        if(loader.source.toString() === "qrc:/qml/main_pages/people_page/Add_new_person_page.qml") return
                         wait_loader.source = "qrc:/qml/common/Wait_page.qml"
+                        wait_loader.visible = true
+                        loader.visible = false
                         loader.source = "qrc:/qml/main_pages/people_page/Add_new_person_page.qml"
                     }
                 }
@@ -123,9 +126,13 @@ Item {
                     }
                     individual_avatar_m_area.onDoubleClicked: {
                         people_list_view.currentIndex = index
+
+                        wait_loader.source = "qrc:/qml/common/Wait_page.qml"
+                        wait_loader.visible = true
+
                         if(loader.source.toString() === "qrc:/qml/main_pages/people_page/Edit_individual_page.qml") {
                             loader.item.edited_individual_name = people_list_view.currentItem.individual_name
-                            return
+                            wait_loader.visible = false
                         }
                         else {
                             wait_loader.source = "qrc:/qml/common/Wait_page.qml"
@@ -154,7 +161,6 @@ Item {
             id: loader
             asynchronous: true
             height: parent.height
-            visible: false
             onStatusChanged: {
                 if(loader.status === Loader.Ready && loader.source.toString() === "qrc:/qml/main_pages/people_page/Add_new_person_page.qml") {
                     console.log("Loader loaded Add new person page.")
@@ -174,7 +180,8 @@ Item {
         Loader {
             id: wait_loader
             height: parent.height
-            visible: true
+            visible: false
+            source: "qrc:/qml/common/Wait_page.qml"
         }
     }
 }

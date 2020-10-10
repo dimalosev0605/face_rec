@@ -103,6 +103,7 @@ Window {
                     anchors.fill: parent
                     hoverEnabled: true
                     onClicked: {
+                        wait_page_loader.visible = true
                         left_vertical_menu_list_view.currentIndex = index
                         if(model.loader_path === "Qt.quit()") {
                             Qt.quit()
@@ -122,5 +123,24 @@ Window {
             top: parent.top
             bottom: parent.bottom
         }
+        visible: false
+        asynchronous: true
+        onStatusChanged: {
+            if(page_loader.status === Loader.Ready) {
+                wait_page_loader.visible = false
+                page_loader.visible = true
+            }
+        }
+    }
+    Loader {
+        id: wait_page_loader
+        source: "qrc:/qml/common/Wait_page.qml"
+        anchors {
+            left: left_vertical_menu_bar.right
+            right: parent.right
+            top: parent.top
+            bottom: parent.bottom
+        }
+        visible: false
     }
 }
