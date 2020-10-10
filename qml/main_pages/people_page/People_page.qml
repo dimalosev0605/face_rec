@@ -4,7 +4,7 @@ import QtGraphicalEffects 1.0
 
 import People_manager_qml 1.0
 
-import "delegates"
+import "../../delegates"
 
 Item {
     id: people_page_item
@@ -96,8 +96,8 @@ Item {
                         add_new_people_btn_canvas.requestPaint()
                     }
                     onClicked: {
-                        wait_loader.source = "qrc:/qml/Wait_page.qml"
-                        loader.source = "qrc:/qml/People_page_items/Add_new_person_page.qml"
+                        wait_loader.source = "qrc:/qml/common/Wait_page.qml"
+                        loader.source = "qrc:/qml/main_pages/people_page/Add_new_person_page.qml"
                     }
                 }
             }
@@ -123,13 +123,13 @@ Item {
                     }
                     individual_avatar_m_area.onDoubleClicked: {
                         people_list_view.currentIndex = index
-                        if(loader.source.toString() === "qrc:/qml/Edit_individual_page.qml") {
+                        if(loader.source.toString() === "qrc:/qml/main_pages/people_page/Edit_individual_page.qml") {
                             loader.item.edited_individual_name = people_list_view.currentItem.individual_name
                             return
                         }
                         else {
-                            wait_loader.source = "qrc:/qml/Wait_page.qml"
-                            loader.source = "qrc:/qml/Edit_individual_page.qml"
+                            wait_loader.source = "qrc:/qml/common/Wait_page.qml"
+                            loader.source = "qrc:/qml/main_pages/people_page/Edit_individual_page.qml"
                         }
                     }
                 }
@@ -156,13 +156,13 @@ Item {
             height: parent.height
             visible: false
             onStatusChanged: {
-                if(loader.status === Loader.Ready && loader.source.toString() === "qrc:/qml/People_page_items/Add_new_person_page.qml") {
+                if(loader.status === Loader.Ready && loader.source.toString() === "qrc:/qml/main_pages/people_page/Add_new_person_page.qml") {
                     console.log("Loader loaded Add new person page.")
                     wait_loader.visible = false
                     loader.visible = true
                     main_qml.main_qml_sc.enabled = false
                 }
-                if(loader.status === Loader.Ready && loader.source.toString() === "qrc:/qml/Edit_individual_page.qml") {
+                if(loader.status === Loader.Ready && loader.source.toString() === "qrc:/qml/main_pages/people_page/Edit_individual_page.qml") {
                     console.log("Loader loaded Edit page.")
                     wait_loader.visible = false
                     loader.visible = true

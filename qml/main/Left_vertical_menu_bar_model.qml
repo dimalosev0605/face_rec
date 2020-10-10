@@ -4,7 +4,7 @@ ListModel {
     ListElement {
         menu_option_text: "People"
         menu_option_icon_path: "qrc:/qml/icons/people.png"
-        loader_path: "qrc:/qml/People_page.qml"
+        loader_path: "qrc:/qml/main_pages/people_page/People_page.qml"
     }
     ListElement {
         menu_option_text: "Recognition"
@@ -19,6 +19,6 @@ ListModel {
     ListElement {
         menu_option_text: "Help"
         menu_option_icon_path: "qrc:/qml/icons/help.jpg"
-        loader_path: "qrc:/qml/Help_page.qml"
+        loader_path: "qrc:/qml/main_pages/help_page/Help_page.qml"
     }
 }

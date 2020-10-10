@@ -2,6 +2,8 @@ import QtQuick 2.12
 import QtQuick.Controls 2.15
 import QtGraphicalEffects 1.0
 
+import "../common"
+
 Rectangle {
     id: delegate
 
@@ -46,7 +48,7 @@ Rectangle {
             anchors.fill: parent
             onClicked: {
                 people_list_view.currentIndex = index
-                var comp = Qt.createComponent("qrc:/qml/Full_screen_img.qml")
+                var comp = Qt.createComponent("qrc:/qml/common/Full_screen_img.qml")
                 var win = comp.createObject(people_page_item, { img_source: individual_avatar.source, window_type: false })
                 win.show()
             }

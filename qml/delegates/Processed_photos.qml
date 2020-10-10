@@ -2,6 +2,8 @@ import QtQuick 2.12
 import QtQuick.Controls 2.15
 import QtGraphicalEffects 1.0
 
+import "../common"
+
 Rectangle {
     id: processed_imgs_delegate
     height: 60
@@ -44,7 +46,7 @@ Rectangle {
         MouseArea {
             anchors.fill: parent
             onClicked: {
-                var comp = Qt.createComponent("qrc:/qml/Full_screen_img.qml")
+                var comp = Qt.createComponent("qrc:/qml/common/Full_screen_img.qml")
                 var win = comp.createObject(root, { img_source: src_img.source, window_type: false })
                 win.show()
             }
@@ -102,7 +104,7 @@ Rectangle {
         MouseArea {
             anchors.fill: parent
             onClicked: {
-                var comp = Qt.createComponent("qrc:/qml/Full_screen_img.qml")
+                var comp = Qt.createComponent("qrc:/qml/common/Full_screen_img.qml")
                 var win = comp.createObject(root, { img_source: extracted_face_img.source, window_type: false })
                 win.show()
             }

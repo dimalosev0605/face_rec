@@ -2,6 +2,8 @@ import QtQuick 2.12
 import QtQuick.Controls 2.15
 import QtGraphicalEffects 1.0
 
+import "../common"
+
 Rectangle {
     id: delegate
     height: 60
@@ -42,7 +44,7 @@ Rectangle {
             anchors.fill: parent
             onClicked: {
                 selected_photos_list_view.currentIndex = index
-                var comp = Qt.createComponent("qrc:/qml/Full_screen_img.qml")
+                var comp = Qt.createComponent("qrc:/qml/common/Full_screen_img.qml")
                 var win = comp.createObject(root, { img_source: selected_img_preview.source, window_type: true })
                 win.show()
             }

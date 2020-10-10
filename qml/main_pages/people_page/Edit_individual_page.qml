@@ -7,23 +7,21 @@ import Selected_images_model_qml 1.0
 import Image_handler_qml 1.0
 import Individual_manager_qml 1.0
 
-import "delegates"
+import "../../delegates"
+import "../../common"
 
 Item {
     id: root
 
+    property string edited_individual_name
+
     Component.onCompleted: {
-        people_page_item.wait_loader.source = "qrc:/qml/Wait_page_2.qml"
+        people_page_item.wait_loader.source = "qrc:/qml/common/Wait_page_2.qml"
         people_page_item.wait_loader.item.image_handler = image_handler
-        new_person_nickname_input.forceActiveFocus()
     }
     Component.onDestruction: {
-        if(processed_photos_list_view.count === 0 && new_person_nickname_input.text !== "") {
-            individual_manager.cancel_individual_creation()
-        }
-        main_qml_sc.enabled = true
+        main_qml.main_qml_sc.enabled = true
     }
-
     FileDialog {
         id: file_dialog
         title: "Please choose files"
@@ -56,7 +54,8 @@ Item {
         sequence: "Esc"
         enabled: !people_page_item.wait_loader.visible
         onActivated: {
-            cancel_individual_creation_btn.m_area.clicked(null)
+            people_page_item.loader.source = ""
+            main_qml.main_qml_sc.enabled = true
         }
     }
 
@@ -73,6 +72,7 @@ Item {
         }
     }
 
+
     SplitView {
         anchors.fill: parent
         orientation: Qt.Vertical
@@ -85,7 +85,7 @@ Item {
         Item {
             implicitHeight: parent.height / 2
             TextField {
-                id: new_person_nickname_input
+                id: individual_nickname_input
                 anchors {
                     left: parent.left
                     leftMargin: 10
@@ -95,97 +95,89 @@ Item {
                 width: 200
                 height: 30
                 placeholderText: "Enter person nickname"
-                Keys.onReturnPressed: {
-                    add_new_person_btn.m_area.clicked(null)
+                text: edited_individual_name
+                onTextChanged: {
+                    console.log("onTextChanged")
+                    if(individual_nickname_input.readOnly) {
+                        console.log("Set current individual name")
+                        image_handler.set_current_individual_name(text)
+                    }
+                }
+//                onAccepted: {
+//                    console.log("onAccepted")
+//                }
+                readOnly: true
+                property int right_space: 5
+                rightPadding: edit_btn.width + right_space
+                Rectangle {
+                    id: edit_btn
+                    anchors{
+                        right: parent.right
+                        rightMargin: parent.right_space
+                        verticalCenter: parent.verticalCenter
+                    }
+                    height: parent.height * 0.8
+                    width: height
+                    radius: 5
+                    color: edit_btn_m_area.containsMouse ? edit_btn_m_area.pressed ?
+                                                               "#00ff00" : "#cccccc" : "transparent"
+                    Image {
+                        anchors {
+                            fill: parent
+                        }
+                        source: individual_nickname_input.readOnly ?
+                                    "qrc:/qml/icons/edit.png" :
+                                    "qrc:/qml/icons/ok.png"
+                        mipmap: true
+                        fillMode: Image.PreserveAspectFit
+                    }
+                    MouseArea {
+                        id: edit_btn_m_area
+                        anchors.fill: parent
+                        hoverEnabled: true
+                        onClicked: {
+                            if(individual_nickname_input.readOnly) {
+                                individual_nickname_input.readOnly = false
+                            }
+                            else {
+                                if(individual_nickname_input.text === "") return
+                                individual_manager.change_nickname(individual_nickname_input.text)
+                                console.log("Nickname changed. Update all files.")
+                                individual_nickname_input.readOnly = true
+                                individual_nickname_input.focus = false
+                            }
+                        }
+                    }
                 }
             }
 
             property int space_between_btns: 10
             Custom_button {
-                id: add_new_person_btn
-                anchors {
-                    left: new_person_nickname_input.right
-                    leftMargin: parent.space_between_btns
-                    verticalCenter: new_person_nickname_input.verticalCenter
-                }
-                width: height * 4
-                height: new_person_nickname_input.height
-                enabled: new_person_nickname_input.text === "" ? false : true
-                text: "Create new person"
-                m_area.onClicked: {
-                    if(individual_manager.create_individual_dir(new_person_nickname_input.text)) {
-                        add_new_person_btn.visible = false
-                        new_person_nickname_input.enabled = false
-                        image_handler.set_current_individual_name(new_person_nickname_input.text)
-                    }
-                }
-            }
-            Custom_button {
                 id: select_photos_btn
                 anchors {
-                    left: new_person_nickname_input.right
+                    left: individual_nickname_input.right
                     leftMargin: parent.space_between_btns
-                    top: new_person_nickname_input.top
+                    top: individual_nickname_input.top
                 }
-                visible: !add_new_person_btn.visible
                 width: height * 4
-                height: new_person_nickname_input.height
+                height: individual_nickname_input.height
                 text: "Select photos"
                 m_area.onClicked: {
                     file_dialog.open()
-                }
-            }
-            Custom_button {
-                id: cancel_individual_creation_btn
-                anchors {
-                    left: select_photos_btn.right
-                    leftMargin: parent.space_between_btns
-                    top: select_photos_btn.top
-                }
-                visible: true
-                width: height * 4
-                height: new_person_nickname_input.height
-                default_color: "#ffaf99"
-                hovered_color: "#ff4000"
-                pressed_color: "#e63900"
-                border_pressed_color: "#661400"
-                text: "Cancel"
-                m_area.onClicked: {
-                    individual_manager.cancel_individual_creation()
-                    people_page_item.loader.source = ""
-                    main_qml.main_qml_sc.enabled = true
-                }
-            }
-            Custom_button {
-                id: finish_person_creation_btn
-                anchors {
-                    left: cancel_individual_creation_btn.right
-                    leftMargin: parent.space_between_btns
-                    verticalCenter: new_person_nickname_input.verticalCenter
-                }
-                width: height * 4
-                height: new_person_nickname_input.height
-                text: "Add person"
-                visible: processed_photos_list_view.count === 0 ? false : true
-                m_area.onClicked: {
-                    people_page_item.loader.source = ""
-                    main_qml.main_qml_sc.enabled = true
-                    people_page_item.people_manager.update_people_list()
                 }
             }
 
             Item {
                 id: selected_photos_frame
                 anchors {
-                    top: new_person_nickname_input.bottom
+                    top: individual_nickname_input.bottom
                     topMargin: 10
                     left: parent.left
                     leftMargin: 5
                 }
-                visible: !add_new_person_btn.visible
                 property int space_between_frames: 10
                 width: (parent.width - anchors.leftMargin - processed_photos_frame.anchors.rightMargin - space_between_frames) / 2
-                height: parent.height - new_person_nickname_input.height - new_person_nickname_input.anchors.topMargin -
+                height: parent.height - individual_nickname_input.height - individual_nickname_input.anchors.topMargin -
                         selected_photos_frame.anchors.topMargin - space_between_frames
 
                 ListView {
@@ -228,7 +220,6 @@ Item {
                     right: parent.right
                     rightMargin: selected_photos_frame.anchors.leftMargin
                 }
-                visible: !add_new_person_btn.visible
                 width: selected_photos_frame.width
                 height: selected_photos_frame.height
                 ListView {
@@ -236,8 +227,16 @@ Item {
                     anchors.fill: parent
                     model: Individual_manager {
                         id: individual_manager
+                        individual_name: edited_individual_name
+                        onIndividual_nameChanged: {
+                            selected_images_model.clear()
+                        }
                         onMessage: {
                             console.log("Message in QML: " + message)
+                        }
+                        onUpdate_people_model: {
+                            image_handler.set_current_individual_name(new_nick)
+                            people_page_item.people_manager.update_people_list()
                         }
                     }
                     clip: true
@@ -311,7 +310,7 @@ Item {
                         anchors.fill: parent
                         onClicked: {
                             if(selected_img.source.toString() === "") return
-                            var comp = Qt.createComponent("qrc:/qml/Full_screen_img.qml")
+                            var comp = Qt.createComponent("qrc:/qml/common/Full_screen_img.qml")
                             var win = comp.createObject(root, { img_source: selected_img.source, window_type: true })
                             win.show()
                         }
@@ -504,7 +503,7 @@ Item {
                         anchors.fill: parent
                         onClicked: {
                             if(processed_img.source.toString() === "") return
-                            var comp = Qt.createComponent("qrc:/qml/Full_screen_img.qml")
+                            var comp = Qt.createComponent("qrc:/qml/common/Full_screen_img.qml")
                             var win = comp.createObject(root, { img_source: processed_img.source, window_type: false })
                             win.show()
                         }
