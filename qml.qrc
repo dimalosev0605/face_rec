@@ -21,5 +21,6 @@
         <file>qml/icons/cross.png</file>
         <file>qml/icons/edit.png</file>
         <file>qml/icons/ok.png</file>
+        <file>qml/main/Default_page.qml</file>
     </qresource>
 </RCC>

@@ -9,7 +9,7 @@ Rectangle {
         anchors.centerIn: parent
         height: 100
         width: 100
-        running: parent.visible
+//        running: parent.visible
     }
     MouseArea {
         anchors.fill: parent

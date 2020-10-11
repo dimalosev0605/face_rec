@@ -15,12 +15,28 @@ Item {
 
     property string edited_individual_name
 
+    objectName: "qrc:/qml/main_pages/people_page/Edit_individual_page.qml"
+
+    visible: false
+
+    property var edit_individual_wait_page: null
+
     Component.onCompleted: {
-        people_page_item.wait_loader.source = "qrc:/qml/common/Wait_page_2.qml"
-        people_page_item.wait_loader.item.image_handler = image_handler
+        console.log("Edit_individual_page.qml completed")
+
+        var component = Qt.createComponent("qrc:/qml/common/Wait_page_2.qml")
+        edit_individual_wait_page = component.createObject(root,
+                                                   {
+                                                       x: 0,
+                                                       y: 0,
+                                                       width: root.width,
+                                                       height: root.height,
+                                                       image_handler: image_handler
+                                                   });
     }
     Component.onDestruction: {
-        main_qml.main_qml_sc.enabled = true
+        console.log("Edit_individual_page.qml destroyed")
+//        main_qml.main_qml_sc.enabled = true
     }
     FileDialog {
         id: file_dialog
@@ -52,10 +68,12 @@ Item {
     }
     Shortcut {
         sequence: "Esc"
-        enabled: !people_page_item.wait_loader.visible
         onActivated: {
-            people_page_item.loader.source = ""
             main_qml.main_qml_sc.enabled = true
+            people_page_item.people_page_page_obj.object.visible = false
+            people_page_item.people_page_page_obj.object.destroy(1000)
+            people_page_item.people_page_page_obj = null
+            people_page_item.people_page_default_page_obj.visible = true
         }
     }
 
@@ -64,7 +82,8 @@ Item {
         onImg_source_changed: {
             processed_img.source = ""
             processed_img.source = source
-            people_page_item.wait_loader.visible = false
+            edit_individual_wait_page.visible = false
+//            people_page_item.wait_loader.visible = false
             extract_face_btn.enabled = false
         }
         onEnable_extract_face_btn: {
@@ -141,8 +160,8 @@ Item {
                             }
                             else {
                                 if(individual_nickname_input.text === "") return
-                                individual_manager.change_nickname(individual_nickname_input.text)
                                 console.log("Nickname changed. Update all files.")
+                                individual_manager.change_nickname(individual_nickname_input.text)
                                 individual_nickname_input.readOnly = true
                                 individual_nickname_input.focus = false
                             }
@@ -341,7 +360,8 @@ Item {
                             height: (parent.height - parent.spacing) / selected_img_row_buttons.number_of_rows
                             enabled: selected_photos_list_view.currentItem === null ? false : save_btn.enabled ? false : true
                             m_area.onClicked: {
-                                people_page_item.wait_loader.visible = true
+                                edit_individual_wait_page.visible = false
+//                                people_page_item.wait_loader.visible = true
                                 image_handler.hog()
                             }
                         }
@@ -352,7 +372,8 @@ Item {
                             height: (parent.height - parent.spacing) / selected_img_row_buttons.number_of_rows
                             enabled: selected_photos_list_view.currentItem === null ? false : save_btn.enabled ? false : true
                             m_area.onClicked: {
-                                people_page_item.wait_loader.visible = true
+                                edit_individual_wait_page.visible = false
+//                                people_page_item.wait_loader.visible = true
                                 image_handler.cnn()
                             }
                         }
@@ -368,7 +389,8 @@ Item {
                             height: (parent.height - parent.spacing) / selected_img_row_buttons.number_of_rows
                             enabled: selected_photos_list_view.currentItem === null ? false : save_btn.enabled ? false : true
                             m_area.onClicked: {
-                                people_page_item.wait_loader.visible = true
+                                edit_individual_wait_page.visible = false
+//                                people_page_item.wait_loader.visible = true
                                 image_handler.pyr_up()
                             }
                         }
@@ -379,7 +401,8 @@ Item {
                             height: (parent.height - parent.spacing) / selected_img_row_buttons.number_of_rows
                             enabled: selected_photos_list_view.currentItem === null ? false : save_btn.enabled ? false : true
                             m_area.onClicked: {
-                                people_page_item.wait_loader.visible = true
+                                edit_individual_wait_page.visible = false
+//                                people_page_item.wait_loader.visible = true
                                 image_handler.pyr_down()
                             }
                         }
@@ -435,7 +458,8 @@ Item {
                                         text: "Ok"
                                         m_area.onClicked: {
                                             if(width_input.acceptableInput && height_input.acceptableInput) {
-                                                people_page_item.wait_loader.visible = true
+                                                edit_individual_wait_page.visible = false
+//                                                people_page_item.wait_loader.visible = true
                                                 image_handler.resize(width_input.text, height_input.text)
                                                 new_size_popup.close()
                                             }
@@ -528,7 +552,8 @@ Item {
                         width: (parent.width - parent.spacing) / 2
                         enabled: false
                         m_area.onClicked: {
-                            people_page_item.wait_loader.visible = true
+                            edit_individual_wait_page.visible = false
+//                            people_page_item.wait_loader.visible = true
                             image_handler.extract_face()
                             save_btn.enabled = true
                         }

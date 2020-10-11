@@ -7,6 +7,12 @@ Rectangle {
 
     property Image_handler image_handler
 
+    visible: false
+
+    Component.onDestruction: {
+        console.log("Wait_page_2 destroyed")
+    }
+
     color: "gray"
     opacity: 0.7
     BusyIndicator {
@@ -32,16 +38,20 @@ Rectangle {
         text: "Cancel"
         m_area.onClicked: {
             image_handler.cancel()
-            people_page_item.wait_loader.visible = false
+            add_new_person_wait_page.visible = false
+//            people_page_item.wait_loader.visible = false
         }
     }
-    Shortcut {
-        id: esc_sc
-        sequence: "Esc"
-        enabled: parent.visible
-        onActivated: {
-            console.log("Wait_page_2.qml Shortcut")
-            cancel_processing_btn.m_area.clicked(null)
-        }
-    }
+//    Shortcut {
+//        id: esc_sc
+//        sequence: "Esc"
+//        enabled: parent.visible
+//        onEnabledChanged: {
+//            console.log("ENABELED =" + enabled)
+//        }
+//        onActivated: {
+//            console.log("Wait_page_2.qml Shortcut")
+//            cancel_processing_btn.m_area.clicked(null)
+//        }
+//    }
 }

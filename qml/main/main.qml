@@ -2,6 +2,7 @@ import QtQuick 2.12
 import QtQuick.Window 2.12
 import QtQuick.Controls 2.15
 
+
 Window {
     id: main_qml
     visible: true
@@ -9,12 +10,40 @@ Window {
     height: 800
 
     property alias main_qml_sc: main_qml_sc
+    property var main_default_page_obj: null
+    property var main_page_obj: null
+    property var main_wait_page_obj: null
 
+    Component.onCompleted: {
+        var component = Qt.createComponent("qrc:/qml/main/Default_page.qml");
+        main_default_page_obj = component.createObject(main_qml,
+                                                  {
+                                                      "x": Qt.binding(function(){return left_vertical_menu_bar.width}),
+                                                      y: 0,
+                                                      "width": Qt.binding(function(){ return main_qml.width - left_vertical_menu_bar.width}),
+                                                      "height": Qt.binding(function(){ return main_qml.height})
+                                                  });
+        component = Qt.createComponent("qrc:/qml/common/Wait_page.qml")
+        main_wait_page_obj = component.createObject(main_qml,
+                                           {
+                                               "x": Qt.binding(function(){return left_vertical_menu_bar.width}),
+                                               y: 0,
+                                               "width": Qt.binding(function(){ return main_qml.width - left_vertical_menu_bar.width}),
+                                               "height": Qt.binding(function(){ return main_qml.height}),
+                                               visible: false
+                                           });
+    }
     Shortcut {
         id: main_qml_sc
         sequence: "Esc"
         onActivated: {
-            page_loader.source = ""
+            main_wait_page_obj.visible = true
+            if(main_page_obj !== null) {
+                main_page_obj.object.destroy()
+                main_page_obj = null
+            }
+            main_wait_page_obj.visible = false
+            main_default_page_obj.visible = true
         }
     }
     Rectangle {
@@ -103,44 +132,43 @@ Window {
                     anchors.fill: parent
                     hoverEnabled: true
                     onClicked: {
-                        wait_page_loader.visible = true
                         left_vertical_menu_list_view.currentIndex = index
                         if(model.loader_path === "Qt.quit()") {
                             Qt.quit()
                             return
                         }
-                        page_loader.source = model.loader_path
+
+                        if(main_page_obj !== null) {
+                            if(main_page_obj.object.objectName.toString() === model.loader_path) return
+                        }
+
+                        main_default_page_obj.visible = false
+                        main_wait_page_obj.visible = true
+                        if(main_page_obj !== null) {
+                            main_page_obj.object.visible = false
+                            main_page_obj.object.destroy(1000)
+                            main_page_obj = null
+                        }
+
+                        var component = Qt.createComponent(model.loader_path);
+                        main_page_obj = component.incubateObject(main_qml,
+                                                        {
+                                                            "x": Qt.binding(function(){return left_vertical_menu_bar.width}),
+                                                            y: 0,
+                                                            "width": Qt.binding(function(){ return main_qml.width - left_vertical_menu_bar.width}),
+                                                            "height": Qt.binding(function(){ return main_qml.height})
+                                                        });
+                        if(main_page_obj.status !== Component.Ready) {
+                            main_page_obj.onStatusChanged = function(status) {
+                                if(status === Component.Ready) {
+                                    main_wait_page_obj.visible = false
+                                    main_page_obj.visible = true
+                                }
+                            }
+                        }
                     }
                 }
             }
         }
-    }
-    Loader {
-        id: page_loader
-        anchors {
-            left: left_vertical_menu_bar.right
-            right: parent.right
-            top: parent.top
-            bottom: parent.bottom
-        }
-        visible: false
-        asynchronous: true
-        onStatusChanged: {
-            if(page_loader.status === Loader.Ready) {
-                wait_page_loader.visible = false
-                page_loader.visible = true
-            }
-        }
-    }
-    Loader {
-        id: wait_page_loader
-        source: "qrc:/qml/common/Wait_page.qml"
-        anchors {
-            left: left_vertical_menu_bar.right
-            right: parent.right
-            top: parent.top
-            bottom: parent.bottom
-        }
-        visible: false
     }
 }

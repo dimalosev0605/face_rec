@@ -13,16 +13,40 @@ import "../../common"
 Item {
     id: root
 
+    objectName: "qrc:/qml/main_pages/people_page/Add_new_person_page.qml"
+    visible: false
+
+    property var add_new_person_wait_page: null
+
     Component.onCompleted: {
-        people_page_item.wait_loader.source = "qrc:/qml/common/Wait_page_2.qml"
-        people_page_item.wait_loader.item.image_handler = image_handler
+        console.log("Add_new_person completed!")
         new_person_nickname_input.forceActiveFocus()
+
+        var component = Qt.createComponent("qrc:/qml/common/Wait_page_2.qml")
+        add_new_person_wait_page = component.createObject(root,
+                                                   {
+                                                       x: 0,
+                                                       y: 0,
+                                                       width: root.width,
+                                                       height: root.height,
+                                                       image_handler: image_handler
+                                                   });
+
+//        people_page_item.wait_loader.source = "qrc:/qml/common/Wait_page_2.qml"
+//        people_page_item.wait_loader.item.image_handler = image_handler
     }
+
     Component.onDestruction: {
-        if(processed_photos_list_view.count === 0 && new_person_nickname_input.text !== "") {
-            individual_manager.cancel_individual_creation()
-        }
-        main_qml_sc.enabled = true
+        console.log("Add_new_person_page destroyed")
+//        if(processed_photos_list_view.count === 0 && new_person_nickname_input.text !== "") {
+//            individual_manager.cancel_individual_creation()
+//        }
+        main_qml.main_qml_sc.enabled = true
+
+        // походу сам удаляется)?
+//        if(add_new_person_wait_page.object !== null) {
+//            add_new_person_wait_page.object.destory()
+//        }
     }
 
     FileDialog {
@@ -55,8 +79,8 @@ Item {
     }
     Shortcut {
         sequence: "Esc"
-        enabled: !people_page_item.wait_loader.visible
         onActivated: {
+            console.log("Add_new_person_pageq.qml Short cut")
             cancel_individual_creation_btn.m_area.clicked(null)
         }
     }
@@ -66,7 +90,8 @@ Item {
         onImg_source_changed: {
             processed_img.source = ""
             processed_img.source = source
-            people_page_item.wait_loader.visible = false
+            add_new_person_wait_page.visible = false
+//            people_page_item.wait_loader.visible = false
             extract_face_btn.enabled = false
         }
         onEnable_extract_face_btn: {
@@ -153,8 +178,10 @@ Item {
                 text: "Cancel"
                 m_area.onClicked: {
                     individual_manager.cancel_individual_creation()
-                    people_page_item.loader.source = ""
-                    main_qml.main_qml_sc.enabled = true
+                    people_page_item.people_page_page_obj.object.visible = false
+                    people_page_item.people_page_page_obj.object.destroy(1000)
+                    people_page_item.people_page_page_obj = null
+                    people_page_item.people_page_default_page_obj.visible = true
                 }
             }
             Custom_button {
@@ -169,9 +196,13 @@ Item {
                 text: "Add person"
                 visible: processed_photos_list_view.count === 0 ? false : true
                 m_area.onClicked: {
-                    people_page_item.loader.source = ""
-                    main_qml.main_qml_sc.enabled = true
+//                    people_page_item.loader.source = ""
                     people_page_item.people_manager.update_people_list()
+                    people_page_item.people_page_page_obj.object.visible = false
+                    people_page_item.people_page_page_obj.object.destroy(1000)
+                    people_page_item.people_page_page_obj = null
+                    people_page_item.people_page_default_page_obj.visible = true
+                    main_qml.main_qml_sc.enabled = true
                 }
             }
 
@@ -343,7 +374,8 @@ Item {
                             height: (parent.height - parent.spacing) / selected_img_row_buttons.number_of_rows
                             enabled: selected_photos_list_view.currentItem === null ? false : save_btn.enabled ? false : true
                             m_area.onClicked: {
-                                people_page_item.wait_loader.visible = true
+//                                people_page_item.wait_loader.visible = true
+                                add_new_person_wait_page.visible = true
                                 image_handler.hog()
                             }
                         }
@@ -354,7 +386,8 @@ Item {
                             height: (parent.height - parent.spacing) / selected_img_row_buttons.number_of_rows
                             enabled: selected_photos_list_view.currentItem === null ? false : save_btn.enabled ? false : true
                             m_area.onClicked: {
-                                people_page_item.wait_loader.visible = true
+//                                people_page_item.wait_loader.visible = true
+                                add_new_person_wait_page.visible = true
                                 image_handler.cnn()
                             }
                         }
@@ -370,7 +403,8 @@ Item {
                             height: (parent.height - parent.spacing) / selected_img_row_buttons.number_of_rows
                             enabled: selected_photos_list_view.currentItem === null ? false : save_btn.enabled ? false : true
                             m_area.onClicked: {
-                                people_page_item.wait_loader.visible = true
+//                                people_page_item.wait_loader.visible = true
+                                add_new_person_wait_page.visible = true
                                 image_handler.pyr_up()
                             }
                         }
@@ -381,7 +415,8 @@ Item {
                             height: (parent.height - parent.spacing) / selected_img_row_buttons.number_of_rows
                             enabled: selected_photos_list_view.currentItem === null ? false : save_btn.enabled ? false : true
                             m_area.onClicked: {
-                                people_page_item.wait_loader.visible = true
+//                                people_page_item.wait_loader.visible = true
+                                add_new_person_wait_page.visible = true
                                 image_handler.pyr_down()
                             }
                         }
@@ -437,7 +472,8 @@ Item {
                                         text: "Ok"
                                         m_area.onClicked: {
                                             if(width_input.acceptableInput && height_input.acceptableInput) {
-                                                people_page_item.wait_loader.visible = true
+                                                add_new_person_wait_page.visible = true
+//                                                people_page_item.wait_loader.visible = true
                                                 image_handler.resize(width_input.text, height_input.text)
                                                 new_size_popup.close()
                                             }
@@ -530,7 +566,8 @@ Item {
                         width: (parent.width - parent.spacing) / 2
                         enabled: false
                         m_area.onClicked: {
-                            people_page_item.wait_loader.visible = true
+                            add_new_person_wait_page.visible = true
+//                            people_page_item.wait_loader.visible = true
                             image_handler.extract_face()
                             save_btn.enabled = true
                         }
