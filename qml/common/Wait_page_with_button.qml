@@ -4,15 +4,15 @@ import QtQuick.Controls 2.15
 import Image_handler_qml 1.0
 
 Rectangle {
+    id: root
 
     property Image_handler image_handler
 
-    visible: false
-
     Component.onDestruction: {
-        console.log("Wait_page_2 destroyed")
+        console.log("Wait_page_with_button destroyed. id = " + root)
     }
 
+    visible: false
     color: "gray"
     opacity: 0.7
     BusyIndicator {
@@ -20,7 +20,6 @@ Rectangle {
         anchors.centerIn: parent
         height: 100
         width: 100
-        running: parent.visible
     }
     MouseArea {
         anchors.fill: parent
@@ -38,20 +37,7 @@ Rectangle {
         text: "Cancel"
         m_area.onClicked: {
             image_handler.cancel()
-            add_new_person_wait_page.visible = false
-//            people_page_item.wait_loader.visible = false
+            root.visible = false
         }
     }
-//    Shortcut {
-//        id: esc_sc
-//        sequence: "Esc"
-//        enabled: parent.visible
-//        onEnabledChanged: {
-//            console.log("ENABELED =" + enabled)
-//        }
-//        onActivated: {
-//            console.log("Wait_page_2.qml Shortcut")
-//            cancel_processing_btn.m_area.clicked(null)
-//        }
-//    }
 }

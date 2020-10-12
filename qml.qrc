@@ -5,7 +5,7 @@
         <file>qml/common/Full_screen_img.qml</file>
         <file>qml/common/Custom_button.qml</file>
         <file>qml/common/Wait_page.qml</file>
-        <file>qml/common/Wait_page_2.qml</file>
+        <file>qml/common/Wait_page_with_button.qml</file>
         <file>qml/main_pages/help_page/Help_page.qml</file>
         <file>qml/main_pages/people_page/People_page.qml</file>
         <file>qml/main_pages/people_page/Add_new_person_page.qml</file>

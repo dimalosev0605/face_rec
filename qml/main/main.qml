@@ -9,41 +9,43 @@ Window {
     width: 1400
     height: 800
 
-    property alias main_qml_sc: main_qml_sc
-    property var main_default_page_obj: null
-    property var main_page_obj: null
-    property var main_wait_page_obj: null
+    property alias esc_sc: esc_sc
+
+    property var default_page: null
+    property var page: null
+    property var wait_page: null
 
     Component.onCompleted: {
-        var component = Qt.createComponent("qrc:/qml/main/Default_page.qml");
-        main_default_page_obj = component.createObject(main_qml,
-                                                  {
-                                                      "x": Qt.binding(function(){return left_vertical_menu_bar.width}),
-                                                      y: 0,
-                                                      "width": Qt.binding(function(){ return main_qml.width - left_vertical_menu_bar.width}),
-                                                      "height": Qt.binding(function(){ return main_qml.height})
-                                                  });
-        component = Qt.createComponent("qrc:/qml/common/Wait_page.qml")
-        main_wait_page_obj = component.createObject(main_qml,
-                                           {
-                                               "x": Qt.binding(function(){return left_vertical_menu_bar.width}),
-                                               y: 0,
-                                               "width": Qt.binding(function(){ return main_qml.width - left_vertical_menu_bar.width}),
-                                               "height": Qt.binding(function(){ return main_qml.height}),
-                                               visible: false
-                                           });
+        var default_page_component = Qt.createComponent("qrc:/qml/main/Default_page.qml");
+        default_page = default_page_component.createObject(main_qml,
+                                                           {
+                                                               "x": Qt.binding(function(){return left_vertical_menu_bar.width}),
+                                                               y: 0,
+                                                               "width": Qt.binding(function(){ return main_qml.width - left_vertical_menu_bar.width}),
+                                                               "height": Qt.binding(function(){ return main_qml.height})
+                                                           });
+
+        var wait_page_component = Qt.createComponent("qrc:/qml/common/Wait_page.qml")
+        wait_page = wait_page_component.createObject(main_qml,
+                                                     {
+                                                         "x": Qt.binding(function(){return left_vertical_menu_bar.width}),
+                                                         y: 0,
+                                                         "width": Qt.binding(function(){ return main_qml.width - left_vertical_menu_bar.width}),
+                                                         "height": Qt.binding(function(){ return main_qml.height})
+                                                     });
     }
     Shortcut {
-        id: main_qml_sc
+        id: esc_sc
         sequence: "Esc"
         onActivated: {
-            main_wait_page_obj.visible = true
-            if(main_page_obj !== null) {
-                main_page_obj.object.destroy()
-                main_page_obj = null
+            wait_page.visible = true
+            if(page !== null) {
+                page.object.visible = false
+                page.object.destroy(1000)
+                page = null
             }
-            main_wait_page_obj.visible = false
-            main_default_page_obj.visible = true
+            wait_page.visible = false
+            default_page.visible = true
         }
     }
     Rectangle {
@@ -138,31 +140,31 @@ Window {
                             return
                         }
 
-                        if(main_page_obj !== null) {
-                            if(main_page_obj.object.objectName.toString() === model.loader_path) return
+                        if(page !== null) {
+                            if(page.object.objectName.toString() === model.loader_path) return
                         }
 
-                        main_default_page_obj.visible = false
-                        main_wait_page_obj.visible = true
-                        if(main_page_obj !== null) {
-                            main_page_obj.object.visible = false
-                            main_page_obj.object.destroy(1000)
-                            main_page_obj = null
+                        default_page.visible = false
+                        wait_page.visible = true
+                        if(page !== null) {
+                            page.object.visible = false
+                            page.object.destroy(1000)
+                            page = null
                         }
 
                         var component = Qt.createComponent(model.loader_path);
-                        main_page_obj = component.incubateObject(main_qml,
+                        page = component.incubateObject(main_qml,
                                                         {
                                                             "x": Qt.binding(function(){return left_vertical_menu_bar.width}),
                                                             y: 0,
                                                             "width": Qt.binding(function(){ return main_qml.width - left_vertical_menu_bar.width}),
                                                             "height": Qt.binding(function(){ return main_qml.height})
                                                         });
-                        if(main_page_obj.status !== Component.Ready) {
-                            main_page_obj.onStatusChanged = function(status) {
+                        if(page.status !== Component.Ready) {
+                            page.onStatusChanged = function(status) {
                                 if(status === Component.Ready) {
-                                    main_wait_page_obj.visible = false
-                                    main_page_obj.visible = true
+                                    wait_page.visible = false
+                                    page.visible = true
                                 }
                             }
                         }

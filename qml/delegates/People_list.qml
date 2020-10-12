@@ -49,7 +49,7 @@ Rectangle {
             onClicked: {
                 people_list_view.currentIndex = index
                 var comp = Qt.createComponent("qrc:/qml/common/Full_screen_img.qml")
-                var win = comp.createObject(people_page_item, { img_source: individual_avatar.source, window_type: false })
+                var win = comp.createObject(people_page_qml, { img_source: individual_avatar.source, window_type: false })
                 win.show()
             }
         }

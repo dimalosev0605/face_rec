@@ -7,38 +7,38 @@ import People_manager_qml 1.0
 import "../../delegates"
 
 Item {
-    id: people_page_item
+    id: people_page_qml
     objectName: "qrc:/qml/main_pages/people_page/People_page.qml"
 
     property alias people_manager: people_manager
 
-    property var people_page_default_page_obj: null
-    property var people_page_page_obj: null
-    property var people_page_wait_page_obj: null
+    property var default_page: null
+    property var page: null
+    property var wait_page: null
 
     Component.onDestruction: {
-        console.log("People_page destroyed")
+        console.log("People_page destroyed. id = " + people_page_qml)
+        main_qml.esc_sc.enabled = true
     }
 
     Component.onCompleted: {
         search_people_input.forceActiveFocus()
-        var component = Qt.createComponent("qrc:/qml/main/Default_page.qml");
-        people_page_default_page_obj = component.createObject(split_view,
-                                                           {
-                                                               "x": Qt.binding(function(){ return people_list.width}),
-                                                               y: 0,
-                                                               "width": Qt.binding(function(){ return people_page_item.width - people_list.width}),
-                                                               "height": Qt.binding(function(){ return people_page_item.height})
-                                                           });
-        component = Qt.createComponent("qrc:/qml/common/Wait_page.qml")
-        people_page_wait_page_obj = component.createObject(split_view,
-                                                           {
-                                                               "x": Qt.binding(function(){ return people_list.width}),
-                                                               y: 0,
-                                                               "width": Qt.binding(function(){ return people_page_item.width - people_list.width}),
-                                                               "height": Qt.binding(function(){ return people_page_item.height}),
-                                                               visible: false
-                                                           });
+        var default_page_component = Qt.createComponent("qrc:/qml/main/Default_page.qml");
+        default_page = default_page_component.createObject(split_view,
+                                              {
+                                                    "x": Qt.binding(function(){ return people_list.width}),
+                                                    y: 0,
+                                                    "width": Qt.binding(function(){ return people_page_qml.width - people_list.width}),
+                                                    "height": Qt.binding(function(){ return people_page_qml.height})
+                                              });
+        var wait_page_component = Qt.createComponent("qrc:/qml/common/Wait_page.qml")
+        wait_page = wait_page_component.createObject(split_view,
+                                           {
+                                                    "x": Qt.binding(function(){ return people_list.width}),
+                                                    y: 0,
+                                                    "width": Qt.binding(function(){ return people_page_qml.width - people_list.width}),
+                                                    "height": Qt.binding(function(){ return people_page_qml.height})
+                                           });
     }
 
     People_manager { id: people_manager }
@@ -119,32 +119,32 @@ Item {
                     }
                     onClicked: {
 
-                        if(people_page_page_obj !== null) {
-                            if(people_page_page_obj.object.objectName.toString() === "qrc:/qml/main_pages/people_page/Add_new_person_page.qml") return
+                        if(page !== null) {
+                            if(page.object.objectName.toString() === "qrc:/qml/main_pages/people_page/Add_new_person_page.qml") return
                         }
 
-                        people_page_default_page_obj.visible = false
-                        people_page_wait_page_obj.visible = true
-                        if(people_page_page_obj !== null) {
-                            people_page_page_obj.object.visible = false
-                            people_page_page_obj.object.destroy(1000)
-                            people_page_page_obj = null
+                        default_page.visible = false
+                        wait_page.visible = true
+                        if(page !== null) {
+                            page.object.visible = false
+                            page.object.destroy(1000)
+                            page = null
                         }
 
                         var component = Qt.createComponent("qrc:/qml/main_pages/people_page/Add_new_person_page.qml")
-                        people_page_page_obj = component.incubateObject(split_view,
+                        page = component.incubateObject(split_view,
                                                                       {
                                                                           "x": Qt.binding(function(){ return people_list.width}),
                                                                           y: 0,
-                                                                          "width": Qt.binding(function(){ return people_page_item.width - people_list.width}),
-                                                                          "height": Qt.binding(function(){ return people_page_item.height})
+                                                                          "width": Qt.binding(function(){ return people_page_qml.width - people_list.width}),
+                                                                          "height": Qt.binding(function(){ return people_page_qml.height})
                                                                       });
-                        if(people_page_page_obj.status !== Component.Ready) {
-                            people_page_page_obj.onStatusChanged = function(status) {
+                        if(page.status !== Component.Ready) {
+                            page.onStatusChanged = function(status) {
                                 if(status === Component.Ready) {
-                                    people_page_wait_page_obj.visible = false
-                                    people_page_page_obj.object.visible = true
-                                    main_qml_sc.enabled = false
+                                    wait_page.visible = false
+                                    page.object.visible = true
+                                    esc_sc.enabled = false
                                 }
                             }
                         }
@@ -169,13 +169,13 @@ Item {
                     individual_name: model.individual_name
                     delete_individual_btn_m_area.onClicked: {
                         people_list_view.currentIndex = index
-                        if(people_page_page_obj !== null) {
-                            if(people_page_page_obj.object.objectName.toString() === "qrc:/qml/main_pages/people_page/Edit_individual_page.qml") {
-                                if(people_page_page_obj.object.edited_individual_name === people_list_view.currentItem.individual_name) {
-                                    people_page_page_obj.object.visible = false
-                                    people_page_page_obj.object.destroy(1000)
-                                    people_page_page_obj = null
-                                    people_page_default_page_obj.visible = true
+                        if(page !== null) {
+                            if(page.object.objectName.toString() === "qrc:/qml/main_pages/people_page/Edit_individual_page.qml") {
+                                if(page.object.edited_individual_name === people_list_view.currentItem.individual_name) {
+                                    page.object.visible = false
+                                    page.object.destroy(1000)
+                                    page = null
+                                    default_page.visible = true
                                 }
                             }
                         }
@@ -184,41 +184,41 @@ Item {
                     individual_avatar_m_area.onDoubleClicked: {
                         people_list_view.currentIndex = index
 
-                        if(people_page_page_obj !== null) {
-                            if(people_page_page_obj.object.objectName.toString() === "qrc:/qml/main_pages/people_page/Edit_individual_page.qml") {
-                                if(people_page_page_obj.object.edited_individual_name === people_list_view.currentItem.individual_name) {
+                        if(page !== null) {
+                            if(page.object.objectName.toString() === "qrc:/qml/main_pages/people_page/Edit_individual_page.qml") {
+                                if(page.object.edited_individual_name === people_list_view.currentItem.individual_name) {
                                     return
                                 }
                                 else {
-                                    people_page_page_obj.object.edited_individual_name = people_list_view.currentItem.individual_name
+                                    page.object.edited_individual_name = people_list_view.currentItem.individual_name
                                     return
                                 }
                             }
                         }
 
-                        people_page_default_page_obj.visible = false
-                        people_page_wait_page_obj.visible = true
-                        if(people_page_page_obj !== null) {
-                            people_page_page_obj.object.visible = false
-                            people_page_page_obj.object.destroy(1000)
-                            people_page_page_obj = null
+                        default_page.visible = false
+                        wait_page.visible = true
+                        if(page !== null) {
+                            page.object.visible = false
+                            page.object.destroy(1000)
+                            page = null
                         }
 
                         var component = Qt.createComponent("qrc:/qml/main_pages/people_page/Edit_individual_page.qml")
-                        people_page_page_obj = component.incubateObject(split_view,
-                                                                      {
-                                                                          "x": Qt.binding(function(){ return people_list.width}),
-                                                                          y: 0,
-                                                                          "width": Qt.binding(function(){ return people_page_item.width - people_list.width}),
-                                                                          "height": Qt.binding(function(){ return people_page_item.height}),
-                                                                          edited_individual_name: people_list_view.currentItem.individual_name
-                                                                      });
-                        if(people_page_page_obj.status !== Component.Ready) {
-                            people_page_page_obj.onStatusChanged = function(status) {
+                        page = component.incubateObject(split_view,
+                                                        {
+                                                            "x": Qt.binding(function(){ return people_list.width}),
+                                                            y: 0,
+                                                            "width": Qt.binding(function(){ return people_page_qml.width - people_list.width}),
+                                                            "height": Qt.binding(function(){ return people_page_qml.height}),
+                                                            edited_individual_name: people_list_view.currentItem.individual_name
+                                                        });
+                        if(page.status !== Component.Ready) {
+                            page.onStatusChanged = function(status) {
                                 if(status === Component.Ready) {
-                                    people_page_wait_page_obj.visible = false
-                                    people_page_page_obj.object.visible = true
-                                    main_qml_sc.enabled = false
+                                    wait_page.visible = false
+                                    page.object.visible = true
+                                    esc_sc.enabled = false
                                 }
                             }
                         }
