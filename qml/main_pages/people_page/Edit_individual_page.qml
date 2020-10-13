@@ -269,7 +269,7 @@ Item {
                         extracted_face_img_src: "file://" + String(model.extracted_face_img_path)
                         extracted_face_img_file_name: String(model.file_name)
                         delete_from_processed_imgs_btn_m_area.onClicked: {
-                            individual_manager.delete_individual_face(index)
+                            individual_manager.delete_face(index)
                         }
                     }
                 }
@@ -562,7 +562,7 @@ Item {
                         width: (parent.width - parent.spacing) / 2
                         enabled: false
                         m_area.onClicked: {
-                            if(individual_manager.add_individual_face(selected_img.source.toString(),
+                            if(individual_manager.add_face(selected_img.source.toString(),
                                                                processed_img.source.toString())) {
                                 image_handler.cancel()
                                 save_btn.enabled = false

@@ -29,16 +29,19 @@ Item {
                                                        y: 0,
                                                        width: Qt.binding(function() { return root.width}),
                                                        height: Qt.binding(function() { return root.height}),
-                                                       image_handler: image_handler
+                                                       image_handler: image_handler,
+                                                       processed_img: processed_img
                                                    });
         main_qml.esc_sc.enabled = false
     }
 
     Component.onDestruction: {
         console.log("Add_new_person_page destroyed. id = " + root)
-        if(processed_photos_list_view.count === 0 && new_person_nickname_input.text !== "") {
-            individual_manager.cancel_individual_creation()
-        }
+        // говорить, что вы не сохранили данные. Точно хотите выйти?
+//        if(processed_photos_list_view.count === 0 && new_person_nickname_input.text !== "") {
+//            individual_manager.cancel_creation()
+//        }
+        individual_manager.cancel_creation()
         if(people_page_qml.page === null) {
             main_qml.esc_sc.enabled = true
         }
@@ -131,9 +134,9 @@ Item {
                 width: height * 4
                 height: new_person_nickname_input.height
                 enabled: new_person_nickname_input.text === "" ? false : true
-                text: "Create new person"
+                text: "Add new person"
                 m_area.onClicked: {
-                    if(individual_manager.create_individual_dir(new_person_nickname_input.text)) {
+                    if(individual_manager.add_new(new_person_nickname_input.text)) {
                         add_new_person_btn.visible = false
                         new_person_nickname_input.enabled = false
                         image_handler.set_current_individual_name(new_person_nickname_input.text)
@@ -171,7 +174,7 @@ Item {
                 border_pressed_color: "#661400"
                 text: "Cancel"
                 m_area.onClicked: {
-                    individual_manager.cancel_individual_creation()
+                    individual_manager.cancel_creation()
                     people_page_qml.page.object.visible = false
                     people_page_qml.page.object.destroy(1000)
                     people_page_qml.page = null
@@ -272,7 +275,7 @@ Item {
                         extracted_face_img_src: "file://" + String(model.extracted_face_img_path)
                         extracted_face_img_file_name: String(model.file_name)
                         delete_from_processed_imgs_btn_m_area.onClicked: {
-                            individual_manager.delete_individual_face(index)
+                            individual_manager.delete_face(index)
                         }
                     }
                 }
@@ -565,7 +568,7 @@ Item {
                         width: (parent.width - parent.spacing) / 2
                         enabled: false
                         m_area.onClicked: {
-                            if(individual_manager.add_individual_face(selected_img.source.toString(),
+                            if(individual_manager.add_face(selected_img.source.toString(),
                                                                processed_img.source.toString())) {
                                 image_handler.cancel()
                                 save_btn.enabled = false

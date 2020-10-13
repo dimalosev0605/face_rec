@@ -87,10 +87,51 @@ QString Individual_file_manager::get_path_to_temp_file(const QString& prefix, co
     return path;
 }
 
+QString Individual_file_manager::get_path_to_random_source_file() const
+{
+    QDir srcs_dir(get_path_to_source_files_dir());
+    srcs_dir.setFilter(QDir::Files | QDir::NoDotAndDotDot);
+    const auto number_of_files = static_cast<int>(srcs_dir.count());
+
+    std::srand(std::time(nullptr));
+    const int random_number = std::rand() % number_of_files;
+
+    return QString {get_path_to_source_files_dir() +
+                    '/' + individual_name +
+                    '_' + QString::number(random_number)
+                    };
+}
+
+QString Individual_file_manager::get_path_to_source_file_by_number(const int number) const
+{
+    return QString{get_path_to_source_files_dir() + '/' + individual_name + '_' + QString::number(number)};
+}
+
+QString Individual_file_manager::get_path_to_extr_face_file_by_number(const int number) const
+{
+    return QString{get_path_to_extracted_faces_dir() + '/' + individual_name + '_' + QString::number(number)};
+}
+
 QString Individual_file_manager::get_path_to_extracted_faces_dir() const
 {
     const auto path = path_to_individual_dir + '/' + extracted_faces_dir;
     return path;
+}
+
+QString Individual_file_manager::generate_path_for_copy_of_source_file() const
+{
+    QDir srcs_dir(get_path_to_source_files_dir());
+    srcs_dir.setFilter(QDir::Files);
+    const auto number_of_files = srcs_dir.count();
+    return QString{get_path_to_source_files_dir() + '/' + individual_name + '_' + QString::number(number_of_files)};
+}
+
+QString Individual_file_manager::generate_path_for_copy_of_extr_face_file() const
+{
+    QDir extr_faces_dir(get_path_to_extracted_faces_dir());
+    extr_faces_dir.setFilter(QDir::Files);
+    const auto number_of_files = extr_faces_dir.count();
+    return QString{get_path_to_extracted_faces_dir() + '/' + individual_name + '_' + QString::number(number_of_files)};
 }
 
 QString Individual_file_manager::get_name() const

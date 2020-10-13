@@ -12,7 +12,6 @@ class People_manager: public QAbstractListModel
     Q_OBJECT
     QHash<int, QByteArray> roles;
     QVector<std::tuple<QString, QString>> model_data; // 1 -> individual name, 2 -> avatar path.
-    Individual_file_manager individual_file_manager;
 
 private:
     QHash<int, QByteArray> roleNames() const override;

@@ -7,6 +7,7 @@ Rectangle {
     id: root
 
     property Image_handler image_handler
+    property Image processed_img
 
     Component.onDestruction: {
         console.log("Wait_page_with_button destroyed. id = " + root)
@@ -37,6 +38,7 @@ Rectangle {
         text: "Cancel"
         m_area.onClicked: {
             image_handler.cancel()
+            processed_img.source = ""
             root.visible = false
         }
     }

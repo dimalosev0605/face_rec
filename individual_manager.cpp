@@ -13,7 +13,7 @@ QHash<int, QByteArray> Individual_manager::roleNames() const
     return roles;
 }
 
-bool Individual_manager::create_individual_dir(const QString& name)
+bool Individual_manager::add_new(const QString& name)
 {
     individual_file_manager.set_name(name);
 
@@ -39,9 +39,8 @@ bool Individual_manager::create_individual_dir(const QString& name)
     return false;
 }
 
-void Individual_manager::cancel_individual_creation()
+void Individual_manager::cancel_creation()
 {
-    if(individual_file_manager.get_name().isEmpty()) return;
     individual_file_manager.delete_dir();
 }
 
@@ -72,38 +71,31 @@ QVariant Individual_manager::data(const QModelIndex &index, int role) const
     return QVariant{};
 }
 
-bool Individual_manager::add_individual_face(const QString& source_img_path, const QString& extracted_face_img_path)
+bool Individual_manager::add_face(const QString& source_img_path, const QString& extracted_face_img_path)
 {
-    const auto src_files_path = individual_file_manager.get_path_to_source_files_dir();
+    const auto src_copy_to_path = individual_file_manager.generate_path_for_copy_of_source_file();
+    const auto extr_face_copy_to_path = individual_file_manager.generate_path_for_copy_of_extr_face_file();
 
-    QDir dir(src_files_path);
-    dir.setFilter(QDir::Files);
-    const auto number_of_files = dir.count();
+    const QString src_copy_from_path = QString{source_img_path}.remove("file://");
+    const QString extr_face_copy_from_path = QString{extracted_face_img_path}.remove("file://");
 
-    const QString src_copy_path = src_files_path + '/' +
-            individual_file_manager.get_name() + '_' + QString::number(number_of_files);
+    QFile src_file(src_copy_from_path);
+    QFile extr_face_file(extr_face_copy_from_path);
 
-    const auto extracted_faces_path = individual_file_manager.get_path_to_extracted_faces_dir();
-    const QString extracted_face_copy_path = extracted_faces_path + '/' +
-            individual_file_manager.get_name() + '_' + QString::number(number_of_files);
-
-    QFile src_img(QString{source_img_path}.remove("file://"));
-    QFile extracted_face_img(QString{extracted_face_img_path}.remove("file://"));
-
-    if(src_img.copy(src_copy_path) && extracted_face_img.copy(extracted_face_copy_path)) {
+    if(src_file.copy(src_copy_to_path) && extr_face_file.copy(extr_face_copy_to_path)) {
         beginInsertRows(QModelIndex(), model_data.size(), model_data.size());
-        model_data.push_back(std::tuple<QString, QString, QString>{src_copy_path, extracted_face_copy_path, QUrl(src_copy_path).fileName()});
+        model_data.push_back(std::tuple<QString, QString, QString>(src_copy_to_path, extr_face_copy_to_path, QUrl(src_copy_to_path).fileName()));
         endInsertRows();
         return true;
     }
     else {
-        src_img.remove(src_copy_path);
-        extracted_face_img.remove(extracted_face_img_path);
+        src_file.remove(src_copy_to_path);
+        extr_face_file.remove(extr_face_copy_from_path);
         return false;
     }
 }
 
-void Individual_manager::delete_individual_face(const int index)
+void Individual_manager::delete_face(const int index)
 {
     if(index < 0 || index >= model_data.size()) return;
 
@@ -112,48 +104,35 @@ void Individual_manager::delete_individual_face(const int index)
 
     QFile src_file;
     QFile extr_face_file;
-    auto model_copy = model_data;
     if(src_file.remove(src_path) && extr_face_file.remove(extracted_face_path)) {
         beginRemoveRows(QModelIndex(), 0, model_data.size() - 1);
-        model_data.clear();
         endRemoveRows();
-        model_copy.removeAt(index);
+        model_data.removeAt(index);
     }
 
-    for(int i = index; i < model_copy.size(); ++i) {
-        QString new_name = individual_file_manager.get_path_to_source_files_dir() +
-                '/' + individual_file_manager.get_name() + '_' + QString::number(i);
-        QFile file(std::get<0>(model_copy[i]));
-        std::get<0>(model_copy[i]) = new_name;
-        file.rename(new_name);
+    for(int i = index; i < model_data.size(); ++i) {
+        const QString new_src_file_name = individual_file_manager.get_path_to_source_file_by_number(i);
+        QFile old_src_file(std::get<0>(model_data[i]));
+        std::get<0>(model_data[i]) = new_src_file_name;
+        old_src_file.rename(new_src_file_name);
+
+        const QString new_extr_face_file_name = individual_file_manager.get_path_to_extr_face_file_by_number(i);
+        QFile old_extr_face_file(std::get<1>(model_data[i]));
+        std::get<1>(model_data[i]) = new_extr_face_file_name;
+        old_extr_face_file.rename(new_extr_face_file_name);
+
+        QString new_file_name = individual_file_manager.get_name() + '_' + QString::number(i);
+        std::get<2>(model_data[i]) = new_file_name;
     }
 
-    for(int i = index; i < model_copy.size(); ++i) {
-        QString new_name = individual_file_manager.get_path_to_extracted_faces_dir() +
-                '/' + individual_file_manager.get_name() + '_' + QString::number(i);
-        QFile file(std::get<1>(model_copy[i]));
-        std::get<1>(model_copy[i]) = new_name;
-        file.rename(new_name);
+    if(!model_data.isEmpty()) {
+        beginInsertRows(QModelIndex(), 0, model_data.size() - 1);
+        endInsertRows();
     }
-
-    for(int i = index; i < model_copy.size(); ++i) {
-        QString new_name = individual_file_manager.get_name() + '_' + QString::number(i);
-        std::get<2>(model_copy[i]) = new_name;
-    }
-
-    beginInsertRows(QModelIndex(), 0, model_copy.size() - 1);
-    model_data = model_copy;
-    endInsertRows();
 }
 
-void Individual_manager::load_individual_imgs()
+void Individual_manager::load_individual_data()
 {
-    if(!model_data.isEmpty()) {
-        beginRemoveRows(QModelIndex(), 0, model_data.size() - 1);
-        model_data.clear();
-        endRemoveRows();
-    }
-
     individual_file_manager.set_name(m_individual_name);
 
     QDir dir;
@@ -174,6 +153,15 @@ void Individual_manager::load_individual_imgs()
         model_data.push_back(elem);
     }
     endInsertRows();
+}
+
+void Individual_manager::clear()
+{
+    if(!model_data.isEmpty()) {
+        beginRemoveRows(QModelIndex(), 0, model_data.size() - 1);
+        model_data.clear();
+        endRemoveRows();
+    }
 }
 
 void Individual_manager::change_nickname(const QString& new_nickname)

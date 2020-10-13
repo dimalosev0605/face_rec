@@ -21,7 +21,8 @@ private:
     Individual_file_manager individual_file_manager;
 
 private:
-    void load_individual_imgs();
+    void load_individual_data();
+    void clear();
 
 public:
     enum class RolesNames {
@@ -34,13 +35,13 @@ public:
     virtual QVariant data(const QModelIndex& index, int role) const override;
 
     QString individual_name() const { return m_individual_name; }
-    void setIndividual_name(const QString& name) { m_individual_name = name; emit individual_nameChanged(); load_individual_imgs(); }
+    void setIndividual_name(const QString& name) { m_individual_name = name; emit individual_nameChanged(); clear(); load_individual_data(); }
 
 public slots:
-    bool create_individual_dir(const QString& name);
-    void cancel_individual_creation();
-    bool add_individual_face(const QString& source_img_path, const QString& extracted_face_img_path);
-    void delete_individual_face(const int index);
+    bool add_new(const QString& name);
+    void cancel_creation();
+    bool add_face(const QString& source_img_path, const QString& extracted_face_img_path);
+    void delete_face(const int index);
     void change_nickname(const QString& new_nickname);
 
 signals:
