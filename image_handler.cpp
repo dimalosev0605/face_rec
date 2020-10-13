@@ -21,7 +21,7 @@ void Image_handler::update_selected_img_path(const QString& new_path)
 
 void Image_handler::set_current_individual_name(const QString& name)
 {
-    individual_file_manager.set_individual_name(name);
+    individual_file_manager.set_name(name);
 }
 
 bool Image_handler::check_img_existense(const QString& path)
@@ -33,7 +33,7 @@ bool Image_handler::check_img_existense(const QString& path)
 
 void Image_handler::load_processing_image(dlib::matrix<dlib::rgb_pixel>& img, const QString& path, const QString& prefix)
 {
-    const auto processing_img_path = individual_file_manager.get_path_to_temp_files_dir(prefix, QUrl(path).fileName());
+    const auto processing_img_path = individual_file_manager.get_path_to_temp_file(prefix, QUrl(path).fileName());
     QFile img_file;
     if(img_file.exists(processing_img_path)) {
         dlib::load_image(img, processing_img_path.toStdString());
@@ -47,7 +47,7 @@ QString Image_handler::save_processed_image(dlib::matrix<dlib::rgb_pixel>& img, 
 {
     cv::Mat cv_mat = dlib::toMat(img);
     QImage q_img(cv_mat.data, cv_mat.cols, cv_mat.rows, cv_mat.step, QImage::Format_RGB888);
-    const auto q_img_path = individual_file_manager.get_path_to_temp_files_dir(prefix, QUrl(path).fileName());
+    const auto q_img_path = individual_file_manager.get_path_to_temp_file(prefix, QUrl(path).fileName());
     if(q_img.save(q_img_path)) {
         return q_img_path;
     }

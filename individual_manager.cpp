@@ -15,9 +15,9 @@ QHash<int, QByteArray> Individual_manager::roleNames() const
 
 bool Individual_manager::create_individual_dir(const QString& name)
 {
-    individual_file_manager.set_individual_name(name);
+    individual_file_manager.set_name(name);
 
-    auto status_code = individual_file_manager.create_individual_dir();
+    auto status_code = individual_file_manager.create_dir();
 
     switch(status_code) {
 
@@ -41,8 +41,8 @@ bool Individual_manager::create_individual_dir(const QString& name)
 
 void Individual_manager::cancel_individual_creation()
 {
-    if(individual_file_manager.get_individual_name().isEmpty()) return;
-    individual_file_manager.cancel_individual_dir_creation();
+    if(individual_file_manager.get_name().isEmpty()) return;
+    individual_file_manager.delete_dir();
 }
 
 int Individual_manager::rowCount([[maybe_unused]]const QModelIndex& index) const
@@ -81,11 +81,11 @@ bool Individual_manager::add_individual_face(const QString& source_img_path, con
     const auto number_of_files = dir.count();
 
     const QString src_copy_path = src_files_path + '/' +
-            individual_file_manager.get_individual_name() + '_' + QString::number(number_of_files);
+            individual_file_manager.get_name() + '_' + QString::number(number_of_files);
 
     const auto extracted_faces_path = individual_file_manager.get_path_to_extracted_faces_dir();
     const QString extracted_face_copy_path = extracted_faces_path + '/' +
-            individual_file_manager.get_individual_name() + '_' + QString::number(number_of_files);
+            individual_file_manager.get_name() + '_' + QString::number(number_of_files);
 
     QFile src_img(QString{source_img_path}.remove("file://"));
     QFile extracted_face_img(QString{extracted_face_img_path}.remove("file://"));
@@ -122,7 +122,7 @@ void Individual_manager::delete_individual_face(const int index)
 
     for(int i = index; i < model_copy.size(); ++i) {
         QString new_name = individual_file_manager.get_path_to_source_files_dir() +
-                '/' + individual_file_manager.get_individual_name() + '_' + QString::number(i);
+                '/' + individual_file_manager.get_name() + '_' + QString::number(i);
         QFile file(std::get<0>(model_copy[i]));
         std::get<0>(model_copy[i]) = new_name;
         file.rename(new_name);
@@ -130,14 +130,14 @@ void Individual_manager::delete_individual_face(const int index)
 
     for(int i = index; i < model_copy.size(); ++i) {
         QString new_name = individual_file_manager.get_path_to_extracted_faces_dir() +
-                '/' + individual_file_manager.get_individual_name() + '_' + QString::number(i);
+                '/' + individual_file_manager.get_name() + '_' + QString::number(i);
         QFile file(std::get<1>(model_copy[i]));
         std::get<1>(model_copy[i]) = new_name;
         file.rename(new_name);
     }
 
     for(int i = index; i < model_copy.size(); ++i) {
-        QString new_name = individual_file_manager.get_individual_name() + '_' + QString::number(i);
+        QString new_name = individual_file_manager.get_name() + '_' + QString::number(i);
         std::get<2>(model_copy[i]) = new_name;
     }
 
@@ -154,7 +154,7 @@ void Individual_manager::load_individual_imgs()
         endRemoveRows();
     }
 
-    individual_file_manager.set_individual_name(m_individual_name);
+    individual_file_manager.set_name(m_individual_name);
 
     QDir dir;
     dir.setFilter(QDir::Files);
@@ -186,8 +186,8 @@ void Individual_manager::change_nickname(const QString& new_nickname)
         return;
     }
 
-    const QString old_individual_name = individual_file_manager.get_individual_name();
-//    individual_file_manager.set_individual_name(new_nickname);
+    const QString old_individual_name = individual_file_manager.get_name();
+//    individual_file_manager.set_name(new_nickname);
 
     QDir dir;
     dir.setFilter(QDir::Files);

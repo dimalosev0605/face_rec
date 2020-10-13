@@ -3,8 +3,8 @@
 Selected_images_model::Selected_images_model(QObject* parent)
     : QAbstractListModel(parent)
 {
-    roles[static_cast<int>(RolesNames::file_path)] = "file_path";
-    roles[static_cast<int>(RolesNames::file_name)] = "file_name";
+    roles[static_cast<int>(RolesNames::img_file_path)] = "img_file_path";
+    roles[static_cast<int>(RolesNames::img_file_name)] = "img_file_name";
 }
 
 QHash<int, QByteArray> Selected_images_model::roleNames() const
@@ -23,11 +23,11 @@ QVariant Selected_images_model::data(const QModelIndex& index, int role) const
     if(row < 0 || row >= model_data.size()) return QVariant{};
 
     switch (role) {
-    case static_cast<int>(RolesNames::file_path): {
+    case static_cast<int>(RolesNames::img_file_path): {
         return model_data[row].url();
     }
 
-    case static_cast<int>(RolesNames::file_name): {
+    case static_cast<int>(RolesNames::img_file_name): {
         return model_data[row].fileName();
     }
     }
@@ -35,22 +35,23 @@ QVariant Selected_images_model::data(const QModelIndex& index, int role) const
     return QVariant{};
 }
 
-void Selected_images_model::accept_images(const QList<QUrl>& file_urls)
+void Selected_images_model::accept_images(const QList<QUrl>& urls)
 {
-    if(file_urls.isEmpty()) return;
+    if(urls.isEmpty()) return;
 
-    QList<QUrl> new_imgs;
-    for(const auto& i : file_urls) {
+    QVector<QUrl> new_imgs;
+    for(const auto& i : urls) {
         if(!model_data.contains(i)) {
             new_imgs.push_back(i);
         }
     }
 
-    beginInsertRows(QModelIndex(), model_data.size(), model_data.size() + new_imgs.size() - 1);
-    for(const auto& i : new_imgs) {
-        model_data.push_back(i);
+    if(!new_imgs.empty()) {
+        model_data.reserve(model_data.size() + new_imgs.size());
+        beginInsertRows(QModelIndex(), model_data.size(), model_data.size() + new_imgs.size() - 1);
+        std::move(new_imgs.begin(), new_imgs.end(), std::back_inserter(model_data));
+        endInsertRows();
     }
-    endInsertRows();
 }
 
 void Selected_images_model::delete_image(const int index)

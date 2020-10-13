@@ -30,19 +30,19 @@ public:
         dir_creation_error
     };
 
-    Individual_file_manager();
-    Status create_individual_dir() const;
+    explicit Individual_file_manager();
+    Status create_dir() const;
 
     QString get_path_to_data_dir() const;
     QString get_path_to_source_files_dir() const;
     QString get_path_to_temp_files_dir() const;
-    QString get_path_to_temp_files_dir(const QString& prefix, const QString& filename) const;
+    QString get_path_to_temp_file(const QString& prefix, const QString& filename) const;
     QString get_path_to_extracted_faces_dir() const;
 
-    QString get_individual_name() const;
-    void set_individual_name(const QString& name);
+    QString get_name() const;
+    void set_name(const QString& name);
 
-    void cancel_individual_dir_creation() const ;
+    void delete_dir() const;
     void delete_temp_files() const;
 };
 

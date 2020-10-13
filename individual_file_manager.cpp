@@ -40,7 +40,7 @@ bool Individual_file_manager::create_extracted_faces_dir() const
     return dir.mkdir(path);
 }
 
-Individual_file_manager::Status Individual_file_manager::create_individual_dir() const
+Individual_file_manager::Status Individual_file_manager::create_dir() const
 {
     const auto path = path_to_individual_dir;
     QDir dir(path);
@@ -53,7 +53,7 @@ Individual_file_manager::Status Individual_file_manager::create_individual_dir()
                 return Status::success_individual_dir_creation;
             }
             else {
-                cancel_individual_dir_creation();
+                delete_dir();
                 return Status::dir_creation_error;
             }
         }
@@ -81,7 +81,7 @@ QString Individual_file_manager::get_path_to_temp_files_dir() const
     return path;
 }
 
-QString Individual_file_manager::get_path_to_temp_files_dir(const QString& prefix, const QString& filename) const
+QString Individual_file_manager::get_path_to_temp_file(const QString& prefix, const QString& filename) const
 {
     const auto path = path_to_individual_dir + '/' + temp_files_dir + '/' + prefix + filename;
     return path;
@@ -93,20 +93,20 @@ QString Individual_file_manager::get_path_to_extracted_faces_dir() const
     return path;
 }
 
-QString Individual_file_manager::get_individual_name() const
+QString Individual_file_manager::get_name() const
 {
     return individual_name;
 }
 
-void Individual_file_manager::set_individual_name(const QString& name)
+void Individual_file_manager::set_name(const QString& name)
 {
     individual_name = name;
     path_to_individual_dir = get_path_to_data_dir() + '/' + individual_name;
 }
 
-void Individual_file_manager::cancel_individual_dir_creation() const
+void Individual_file_manager::delete_dir() const
 {
-    if(path_to_individual_dir.isEmpty()) return;
+    if(individual_name.isEmpty()) return;
     QDir dir(path_to_individual_dir);
     dir.removeRecursively();
 }

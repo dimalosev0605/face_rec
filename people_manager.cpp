@@ -18,9 +18,9 @@ void People_manager::load_people()
     if(people_list.isEmpty()) return;
     beginInsertRows(QModelIndex(), 0, people_list.size() - 1);
     for(const auto& elem : people_list) {
-        individual_file_manager.set_individual_name(elem);
+        individual_file_manager.set_name(elem);
         const auto first_img_path = individual_file_manager.get_path_to_source_files_dir()
-                + '/' + individual_file_manager.get_individual_name() + "_0";
+                + '/' + individual_file_manager.get_name() + "_0";
         model_data.push_back(std::tuple<QString, QString>(elem, first_img_path));
     }
     endInsertRows();
@@ -71,8 +71,8 @@ void People_manager::delete_individual(const int index)
     if(index < 0 || index >= model_data.size()) return;
 
     beginRemoveRows(QModelIndex(), index, index);
-    individual_file_manager.set_individual_name(std::get<0>(model_data[index]));
-    individual_file_manager.cancel_individual_dir_creation();
+    individual_file_manager.set_name(std::get<0>(model_data[index]));
+    individual_file_manager.delete_dir();
     model_data.remove(index);
     endRemoveRows();
 }

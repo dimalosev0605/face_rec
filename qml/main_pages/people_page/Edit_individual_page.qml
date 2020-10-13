@@ -221,8 +221,8 @@ Item {
                                                         delegate_body_m_area.pressed ?
                                                         highlighted_color : hovered_color :
                                                         default_color)
-                        selected_img_preview_src: model.file_path
-                        selected_img_preview_file_name: model.file_name
+                        selected_img_preview_src: model.img_file_path
+                        selected_img_preview_file_name: model.img_file_name
                         delegate_body_m_area.onClicked: {
                             selected_photos_list_view.currentIndex = index
                         }
