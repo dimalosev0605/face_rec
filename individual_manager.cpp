@@ -131,25 +131,27 @@ void Individual_manager::delete_face(const int index)
     }
 }
 
-void Individual_manager::load_individual_data()
+void Individual_manager::load_data()
 {
-    individual_file_manager.set_name(m_individual_name);
-
     QDir dir;
     dir.setFilter(QDir::Files);
-    const auto src_imgs_path = individual_file_manager.get_path_to_source_files_dir();
-    dir.setPath(src_imgs_path);
-    const auto src_imgs = dir.entryInfoList();
 
-    const auto extr_face_imgs_path = individual_file_manager.get_path_to_extracted_faces_dir();
-    dir.setPath(extr_face_imgs_path);
-    const auto extr_face_imgs = dir.entryInfoList();
+    const auto src_files_dir_path = individual_file_manager.get_path_to_source_files_dir();
+    dir.setPath(src_files_dir_path);
+    const auto sources = dir.entryInfoList();
 
-    if(src_imgs.empty()) return;
-    beginInsertRows(QModelIndex(), 0, src_imgs.size() - 1);
-    for(int i = 0; i < src_imgs.size(); ++i) {
+    const auto extr_faces_dir_path = individual_file_manager.get_path_to_extracted_faces_dir();
+    dir.setPath(extr_faces_dir_path);
+    const auto extr_faces = dir.entryInfoList();
+
+    if(sources.isEmpty() || extr_faces.isEmpty()) return;
+    if(sources.size() != extr_faces.size()) return;
+
+    const int last_row_number = sources.size() - 1;
+    beginInsertRows(QModelIndex(), 0, last_row_number);
+    for(int i = 0; i < sources.size(); ++i) {
         std::tuple<QString, QString, QString> elem =
-                std::tuple<QString, QString, QString>(src_imgs[i].filePath(), extr_face_imgs[i].filePath(), src_imgs[i].fileName());
+                std::tuple<QString, QString, QString>(sources[i].filePath(), extr_faces[i].filePath(), sources[i].fileName());
         model_data.push_back(elem);
     }
     endInsertRows();
@@ -166,59 +168,54 @@ void Individual_manager::clear()
 
 void Individual_manager::change_nickname(const QString& new_nickname)
 {
-    qDebug() << "new_nickname = " << new_nickname;
-    auto data_dir_path = individual_file_manager.get_path_to_data_dir();
+    edited_individual_name = new_nickname;
+
+    const auto data_dir_path = individual_file_manager.get_path_to_data_dir();
     QDir data_dir(data_dir_path);
     if(data_dir.exists(new_nickname)) {
-        qDebug() << "Such nick already exists.";
+        emit message("Such nick already exists.");
         return;
     }
 
     const QString old_individual_name = individual_file_manager.get_name();
-//    individual_file_manager.set_name(new_nickname);
 
     QDir dir;
     dir.setFilter(QDir::Files);
 
-    const auto src_imgs_path = individual_file_manager.get_path_to_source_files_dir();
-    dir.setPath(src_imgs_path);
-    const auto src_imgs = dir.entryInfoList();
-
-    qDebug() << "Before renaming:";
-    for(auto& i : src_imgs) {
-        qDebug() << i.filePath();
-    }
+    const auto source_files_dir_path = individual_file_manager.get_path_to_source_files_dir();
+    dir.setPath(source_files_dir_path);
+    const auto sources = dir.entryInfoList();
 
     int number = 0;
-    for(auto& file : src_imgs) {
+    for(auto& file : sources) {
         QFile rename_file(file.filePath());
-        QString new_name = file.path() + '/' + new_nickname + '_' + QString::number(number);
-//        qDebug() << "rename: " << rename_file.fileName() << " to: " << new_name;
-        rename_file.rename(new_name);
+        QString new_source_file_name = file.path() + '/' + new_nickname + '_' + QString::number(number);
+        rename_file.rename(new_source_file_name);
         ++number;
     }
 
-    const auto extracted_faces_path = individual_file_manager.get_path_to_extracted_faces_dir();
-    dir.setPath(extracted_faces_path);
-    const auto extr_face_imgs = dir.entryInfoList();
+    const auto extracted_faces_dir_path = individual_file_manager.get_path_to_extracted_faces_dir();
+    dir.setPath(extracted_faces_dir_path);
+    const auto extr_faces = dir.entryInfoList();
 
     number = 0;
-    for(auto& file : extr_face_imgs) {
+    for(auto& file : extr_faces) {
         QFile rename_file(file.filePath());
-        QString new_name = file.path() + '/' + new_nickname + '_' + QString::number(number);
-//        qDebug() << "rename: " << rename_file.fileName() << " to: " << new_name;
-        rename_file.rename(new_name);
+        QString new_extracted_face_file_name = file.path() + '/' + new_nickname + '_' + QString::number(number);
+        rename_file.rename(new_extracted_face_file_name);
         ++number;
-    }
-
-    qDebug() << "After renaming:";
-    for(auto& i : extr_face_imgs) {
-        qDebug() << i.filePath();
     }
 
     data_dir.rename(old_individual_name, new_nickname);
 
-    setIndividual_name(new_nickname);
+    clear();
+    load_data();
+}
 
-    update_people_model(new_nickname);
+void Individual_manager::set_edited_individual_name(const QString& name)
+{
+    edited_individual_name = name;
+    individual_file_manager.set_name(edited_individual_name);
+    clear();
+    load_data();
 }

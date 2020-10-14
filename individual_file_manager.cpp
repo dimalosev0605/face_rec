@@ -93,6 +93,8 @@ QString Individual_file_manager::get_path_to_random_source_file() const
     srcs_dir.setFilter(QDir::Files | QDir::NoDotAndDotDot);
     const auto number_of_files = static_cast<int>(srcs_dir.count());
 
+    if(number_of_files == 0) return QString{};
+
     std::srand(std::time(nullptr));
     const int random_number = std::rand() % number_of_files;
 

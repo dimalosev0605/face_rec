@@ -30,6 +30,15 @@ void People_manager::load_people()
     endInsertRows();
 }
 
+void People_manager::clear()
+{
+    if(!model_data.isEmpty()) {
+        beginRemoveRows(QModelIndex(), 0, model_data.size() - 1);
+        model_data.clear();
+        endRemoveRows();
+    }
+}
+
 QHash<int, QByteArray> People_manager::roleNames() const
 {
     return roles;
@@ -61,12 +70,7 @@ QVariant People_manager::data(const QModelIndex &index, int role) const
 
 void People_manager::update_people_list()
 {
-    if(!model_data.isEmpty()) {
-        beginRemoveRows(QModelIndex(), 0, model_data.size() - 1);
-        model_data.clear();
-        endRemoveRows();
-    }
-
+    clear();
     load_people();
 }
 

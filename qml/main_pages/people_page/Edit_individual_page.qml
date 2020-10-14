@@ -15,6 +15,29 @@ Item {
 
     property string edited_individual_name
 
+    // Purpose of the "flag": if while editing user delete all extracted faces and want to swith to another individual we must delete this individual directory and update people_list.
+    // But when we dynamically create this page the processed_photos_list_view.count == 0, consequently we don't delete this individual.
+    property bool flag: true
+    onEdited_individual_nameChanged: {
+        if(flag) {
+            flag = false
+            individual_manager.set_edited_individual_name(edited_individual_name)
+            selected_images_model.clear()
+        }
+        else {
+            if(processed_photos_list_view.count === 0) {
+                individual_manager.cancel_creation()
+                people_page_qml.people_manager.update_people_list()
+                people_page_qml.page.object.visible = false
+                people_page_qml.page.object.destroy(1000)
+                people_page_qml.page = null
+                people_page_qml.default_page.visible = true
+            }
+            individual_manager.set_edited_individual_name(edited_individual_name)
+            selected_images_model.clear()
+        }
+    }
+
     objectName: "qrc:/qml/main_pages/people_page/Edit_individual_page.qml"
 
     visible: false
@@ -22,16 +45,17 @@ Item {
     property var wait_page: null
 
     Component.onCompleted: {
-        console.log("Edit_individual_page.qml completed")
+        console.log("Edit_individual_page.qml completed, id = " + root)
 
         var wait_page_component = Qt.createComponent("qrc:/qml/common/Wait_page_with_button.qml")
         wait_page = wait_page_component.createObject(root,
                                                    {
-                                                        x: 0,
-                                                        y: 0,
-                                                        width: Qt.binding(function() { return root.width}),
-                                                        height: Qt.binding(function() { return root.height}),
-                                                        image_handler: image_handler
+                                                        "x": Qt.binding(function(){ return 0}),
+                                                        "y": Qt.binding(function(){ return 0}),
+                                                        "width": Qt.binding(function() { return root.width}),
+                                                        "height": Qt.binding(function() { return root.height}),
+                                                        image_handler: image_handler,
+                                                        processed_img: processed_img
                                                    });
         main_qml.esc_sc.enabled = false
     }
@@ -40,6 +64,9 @@ Item {
         console.log("Edit_individual_page destroyed. id = " + root)
         if(people_page_qml.page === null) {
             main_qml.esc_sc.enabled = true
+        }
+        if(processed_photos_list_view.count === 0) {
+            individual_manager.cancel_creation()
         }
     }
     FileDialog {
@@ -163,10 +190,20 @@ Item {
                             }
                             else {
                                 if(individual_nickname_input.text === "") return
-                                console.log("Nickname changed. Update all files.")
+                                // GUI crushed.
+//                                console.log("Nickname changed. Update all files.")
+//                                individual_manager.change_nickname(individual_nickname_input.text)
+//                                individual_nickname_input.readOnly = true
+//                                individual_nickname_input.focus = false
+//                                image_handler.set_current_individual_name(individual_nickname_input.text)
+//                                people_page_qml.people_manager.update_people_list()
+
                                 individual_manager.change_nickname(individual_nickname_input.text)
-                                individual_nickname_input.readOnly = true
-                                individual_nickname_input.focus = false
+                                people_page_qml.people_manager.update_people_list()
+                                people_page_qml.page.object.visible = false
+                                people_page_qml.page.object.destroy(1000)
+                                people_page_qml.page = null
+                                people_page_qml.default_page.visible = true
                             }
                         }
                     }
@@ -249,16 +286,8 @@ Item {
                     anchors.fill: parent
                     model: Individual_manager {
                         id: individual_manager
-                        individual_name: edited_individual_name
-                        onIndividual_nameChanged: {
-                            selected_images_model.clear()
-                        }
                         onMessage: {
                             console.log("Message in QML: " + message)
-                        }
-                        onUpdate_people_model: {
-                            image_handler.set_current_individual_name(new_nick)
-                            people_page_qml.people_manager.update_people_list()
                         }
                     }
                     clip: true

@@ -27,7 +27,7 @@ Item {
         default_page = default_page_component.createObject(split_view,
                                               {
                                                     "x": Qt.binding(function(){ return people_list.width}),
-                                                    y: 0,
+                                                    "y": Qt.binding(function(){ return 0}),
                                                     "width": Qt.binding(function(){ return people_page_qml.width - people_list.width}),
                                                     "height": Qt.binding(function(){ return people_page_qml.height})
                                               });
@@ -35,7 +35,7 @@ Item {
         wait_page = wait_page_component.createObject(split_view,
                                            {
                                                     "x": Qt.binding(function(){ return people_list.width}),
-                                                    y: 0,
+                                                    "y": Qt.binding(function(){ return 0}),
                                                     "width": Qt.binding(function(){ return people_page_qml.width - people_list.width}),
                                                     "height": Qt.binding(function(){ return people_page_qml.height})
                                            });
@@ -135,7 +135,7 @@ Item {
                         page = component.incubateObject(split_view,
                                                                       {
                                                                           "x": Qt.binding(function(){ return people_list.width}),
-                                                                          y: 0,
+                                                                          "y": Qt.binding(function(){ return 0}),
                                                                           "width": Qt.binding(function(){ return people_page_qml.width - people_list.width}),
                                                                           "height": Qt.binding(function(){ return people_page_qml.height})
                                                                       });
@@ -190,6 +190,7 @@ Item {
                                     return
                                 }
                                 else {
+                                    // Here.
                                     page.object.edited_individual_name = people_list_view.currentItem.individual_name
                                     return
                                 }
@@ -208,7 +209,7 @@ Item {
                         page = component.incubateObject(split_view,
                                                         {
                                                             "x": Qt.binding(function(){ return people_list.width}),
-                                                            y: 0,
+                                                            "y": Qt.binding(function(){ return 0}),
                                                             "width": Qt.binding(function(){ return people_page_qml.width - people_list.width}),
                                                             "height": Qt.binding(function(){ return people_page_qml.height}),
                                                             edited_individual_name: people_list_view.currentItem.individual_name

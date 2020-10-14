@@ -16,6 +16,7 @@ class People_manager: public QAbstractListModel
 private:
     QHash<int, QByteArray> roleNames() const override;
     void load_people();
+    void clear();
 
 public:
     enum class RolesNames {

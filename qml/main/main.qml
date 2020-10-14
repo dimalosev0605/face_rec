@@ -20,7 +20,7 @@ Window {
         default_page = default_page_component.createObject(main_qml,
                                                            {
                                                                "x": Qt.binding(function(){return left_vertical_menu_bar.width}),
-                                                               y: 0,
+                                                               "y": Qt.binding(function(){ return 0}),
                                                                "width": Qt.binding(function(){ return main_qml.width - left_vertical_menu_bar.width}),
                                                                "height": Qt.binding(function(){ return main_qml.height})
                                                            });
@@ -29,7 +29,7 @@ Window {
         wait_page = wait_page_component.createObject(main_qml,
                                                      {
                                                          "x": Qt.binding(function(){return left_vertical_menu_bar.width}),
-                                                         y: 0,
+                                                         "y": Qt.binding(function(){ return 0}),
                                                          "width": Qt.binding(function(){ return main_qml.width - left_vertical_menu_bar.width}),
                                                          "height": Qt.binding(function(){ return main_qml.height})
                                                      });
@@ -156,7 +156,7 @@ Window {
                         page = component.incubateObject(main_qml,
                                                         {
                                                             "x": Qt.binding(function(){return left_vertical_menu_bar.width}),
-                                                            y: 0,
+                                                            "y": Qt.binding(function(){ return 0}),
                                                             "width": Qt.binding(function(){ return main_qml.width - left_vertical_menu_bar.width}),
                                                             "height": Qt.binding(function(){ return main_qml.height})
                                                         });

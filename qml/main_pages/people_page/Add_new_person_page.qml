@@ -25,10 +25,10 @@ Item {
         var wait_page_component = Qt.createComponent("qrc:/qml/common/Wait_page_with_button.qml")
         wait_page = wait_page_component.createObject(root,
                                                    {
-                                                       x: 0,
-                                                       y: 0,
-                                                       width: Qt.binding(function() { return root.width}),
-                                                       height: Qt.binding(function() { return root.height}),
+                                                       "x": Qt.binding(function(){ return 0}),
+                                                       "y": Qt.binding(function(){ return 0}),
+                                                       "width": Qt.binding(function() { return root.width}),
+                                                       "height": Qt.binding(function() { return root.height}),
                                                        image_handler: image_handler,
                                                        processed_img: processed_img
                                                    });
@@ -37,11 +37,13 @@ Item {
 
     Component.onDestruction: {
         console.log("Add_new_person_page destroyed. id = " + root)
-        // говорить, что вы не сохранили данные. Точно хотите выйти?
-//        if(processed_photos_list_view.count === 0 && new_person_nickname_input.text !== "") {
-//            individual_manager.cancel_creation()
+        if(processed_photos_list_view.count === 0 && new_person_nickname_input.text !== "") {
+            individual_manager.cancel_creation()
+        }
+        // GUI crushed. Individual added only by finish_person_creation_btn click, because I commented this lines.
+//        if(people_page_qml.page !== null && processed_photos_list_view.count !== 0 && new_person_nickname_input.text !== "") {
+//            people_page_qml.people_manager.update_people_list()
 //        }
-        individual_manager.cancel_creation()
         if(people_page_qml.page === null) {
             main_qml.esc_sc.enabled = true
         }
