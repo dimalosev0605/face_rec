@@ -13,8 +13,16 @@ Item {
     property alias people_manager: people_manager
 
     property var default_page: null
-    property var page: null
+    property var default_page_comp: Qt.createComponent("qrc:/qml/main/Default_page.qml", people_page_qml);
+
+    property var edit_page: null
+    property var edit_page_comp: Qt.createComponent("qrc:/qml/main_pages/people_page/Edit_individual_page.qml", people_page_qml)
+
     property var wait_page: null
+    property var wait_page_comp: Qt.createComponent("qrc:/qml/common/Wait_page.qml", people_page_qml)
+
+    property var add_new_person_page: null
+    property var add_new_person_page_comp: Qt.createComponent("qrc:/qml/main_pages/people_page/Add_new_person_page.qml", people_page_qml)
 
     Component.onDestruction: {
         console.log("People_page destroyed. id = " + people_page_qml)
@@ -23,22 +31,20 @@ Item {
 
     Component.onCompleted: {
         search_people_input.forceActiveFocus()
-        var default_page_component = Qt.createComponent("qrc:/qml/main/Default_page.qml");
-        default_page = default_page_component.createObject(split_view,
-                                              {
+        default_page = default_page_comp.createObject(split_view,
+                                                {
                                                     "x": Qt.binding(function(){ return people_list.width}),
                                                     "y": Qt.binding(function(){ return 0}),
                                                     "width": Qt.binding(function(){ return people_page_qml.width - people_list.width}),
                                                     "height": Qt.binding(function(){ return people_page_qml.height})
-                                              });
-        var wait_page_component = Qt.createComponent("qrc:/qml/common/Wait_page.qml")
-        wait_page = wait_page_component.createObject(split_view,
-                                           {
+                                                });
+        wait_page = wait_page_comp.createObject(split_view,
+                                                {
                                                     "x": Qt.binding(function(){ return people_list.width}),
                                                     "y": Qt.binding(function(){ return 0}),
                                                     "width": Qt.binding(function(){ return people_page_qml.width - people_list.width}),
                                                     "height": Qt.binding(function(){ return people_page_qml.height})
-                                           });
+                                                });
     }
 
     People_manager { id: people_manager }
@@ -118,33 +124,33 @@ Item {
                         add_new_people_btn_canvas.requestPaint()
                     }
                     onClicked: {
-
-                        if(page !== null) {
-                            if(page.object.objectName.toString() === "qrc:/qml/main_pages/people_page/Add_new_person_page.qml") return
+                        if(edit_page !== null) {
+                            edit_page.object.visible = false
+                            edit_page.object.destroy(1000)
+                            edit_page = null
+                            default_page.visible = true
                         }
-
-                        default_page.visible = false
-                        wait_page.visible = true
-                        if(page !== null) {
-                            page.object.visible = false
-                            page.object.destroy(1000)
-                            page = null
+                        if(add_new_person_page !== null) {
+                            return
                         }
+                        else {
+                            default_page.visible = false
+                            wait_page.visible = true
 
-                        var component = Qt.createComponent("qrc:/qml/main_pages/people_page/Add_new_person_page.qml")
-                        page = component.incubateObject(split_view,
-                                                                      {
-                                                                          "x": Qt.binding(function(){ return people_list.width}),
-                                                                          "y": Qt.binding(function(){ return 0}),
-                                                                          "width": Qt.binding(function(){ return people_page_qml.width - people_list.width}),
-                                                                          "height": Qt.binding(function(){ return people_page_qml.height})
-                                                                      });
-                        if(page.status !== Component.Ready) {
-                            page.onStatusChanged = function(status) {
-                                if(status === Component.Ready) {
-                                    wait_page.visible = false
-                                    page.object.visible = true
-                                    esc_sc.enabled = false
+                            add_new_person_page = add_new_person_page_comp.incubateObject(split_view,
+                                                                          {
+                                                                              "x": Qt.binding(function(){ return people_list.width}),
+                                                                              "y": Qt.binding(function(){ return 0}),
+                                                                              "width": Qt.binding(function(){ return people_page_qml.width - people_list.width}),
+                                                                              "height": Qt.binding(function(){ return people_page_qml.height})
+                                                                          });
+                            if(add_new_person_page.status !== Component.Ready) {
+                                add_new_person_page.onStatusChanged = function(status) {
+                                    if(status === Component.Ready) {
+                                        wait_page.visible = false
+                                        add_new_person_page.object.visible = true
+                                        esc_sc.enabled = false
+                                    }
                                 }
                             }
                         }
@@ -169,57 +175,58 @@ Item {
                     individual_name: model.individual_name
                     delete_individual_btn_m_area.onClicked: {
                         people_list_view.currentIndex = index
-                        if(page !== null) {
-                            if(page.object.objectName.toString() === "qrc:/qml/main_pages/people_page/Edit_individual_page.qml") {
-                                if(page.object.edited_individual_name === people_list_view.currentItem.individual_name) {
-                                    page.object.visible = false
-                                    page.object.destroy(1000)
-                                    page = null
-                                    default_page.visible = true
-                                }
+                        if(edit_page !== null) {
+                            if(edit_page.object.edited_individual_name === people_list_view.currentItem.individual_name) {
+                                edit_page.object.visible = false
+                                edit_page.object.destroy(1000)
+                                edit_page = null
+                                default_page.visible = true
                             }
                         }
                         people_manager.delete_individual(index)
                     }
                     individual_avatar_m_area.onDoubleClicked: {
+
+                        if(add_new_person_page !== null) {
+                            add_new_person_page.object.visible = false
+                            add_new_person_page.object.destroy(1000)
+                            add_new_person_page = null
+                            default_page.visible = true
+                        }
+
                         people_list_view.currentIndex = index
 
-                        if(page !== null) {
-                            if(page.object.objectName.toString() === "qrc:/qml/main_pages/people_page/Edit_individual_page.qml") {
-                                if(page.object.edited_individual_name === people_list_view.currentItem.individual_name) {
-                                    return
-                                }
-                                else {
-                                    // Here.
-                                    page.object.edited_individual_name = people_list_view.currentItem.individual_name
-                                    return
-                                }
+                        if(edit_page !== null) {
+                            if(edit_page.object.edited_individual_name === people_list_view.currentItem.individual_name) {
+                                return
+                            }
+                            else {
+                                edit_page.object.x = Qt.binding(function(){ return people_list.width})
+                                edit_page.object.y = Qt.binding(function(){ return 0})
+                                edit_page.object.width = Qt.binding(function(){ return people_page_qml.width - people_list.width})
+                                edit_page.object.height = Qt.binding(function(){ return people_page_qml.height})
+                                edit_page.object.edited_individual_name = people_list_view.currentItem.individual_name
+                                return
                             }
                         }
-
-                        default_page.visible = false
-                        wait_page.visible = true
-                        if(page !== null) {
-                            page.object.visible = false
-                            page.object.destroy(1000)
-                            page = null
-                        }
-
-                        var component = Qt.createComponent("qrc:/qml/main_pages/people_page/Edit_individual_page.qml")
-                        page = component.incubateObject(split_view,
-                                                        {
-                                                            "x": Qt.binding(function(){ return people_list.width}),
-                                                            "y": Qt.binding(function(){ return 0}),
-                                                            "width": Qt.binding(function(){ return people_page_qml.width - people_list.width}),
-                                                            "height": Qt.binding(function(){ return people_page_qml.height}),
-                                                            edited_individual_name: people_list_view.currentItem.individual_name
-                                                        });
-                        if(page.status !== Component.Ready) {
-                            page.onStatusChanged = function(status) {
-                                if(status === Component.Ready) {
-                                    wait_page.visible = false
-                                    page.object.visible = true
-                                    esc_sc.enabled = false
+                        else {
+                            default_page.visible = false
+                            wait_page.visible = true
+                            edit_page = edit_page_comp.incubateObject(split_view,
+                                                            {
+                                                                "x": Qt.binding(function(){ return people_list.width}),
+                                                                "y": Qt.binding(function(){ return 0}),
+                                                                "width": Qt.binding(function(){ return people_page_qml.width - people_list.width}),
+                                                                "height": Qt.binding(function(){ return people_page_qml.height}),
+                                                                edited_individual_name: people_list_view.currentItem.individual_name,
+                                                            });
+                            if(edit_page.status !== Component.Ready) {
+                                edit_page.onStatusChanged = function(status) {
+                                    if(status === Component.Ready) {
+                                        wait_page.visible = false
+                                        edit_page.object.visible = true
+                                        esc_sc.enabled = false
+                                    }
                                 }
                             }
                         }

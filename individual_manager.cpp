@@ -133,6 +133,8 @@ void Individual_manager::delete_face(const int index)
 
 void Individual_manager::load_data()
 {
+    individual_file_manager.set_name(edited_individual_name);
+
     QDir dir;
     dir.setFilter(QDir::Files);
 

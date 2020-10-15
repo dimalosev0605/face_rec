@@ -40,11 +40,11 @@ Item {
         if(processed_photos_list_view.count === 0 && new_person_nickname_input.text !== "") {
             individual_manager.cancel_creation()
         }
-        // GUI crushed. Individual added only by finish_person_creation_btn click, because I commented this lines.
-//        if(people_page_qml.page !== null && processed_photos_list_view.count !== 0 && new_person_nickname_input.text !== "") {
-//            people_page_qml.people_manager.update_people_list()
-//        }
-        if(people_page_qml.page === null) {
+        if(processed_photos_list_view.count !== 0 && new_person_nickname_input.text !== "") {
+            // it works, but people_page destroyed firstly if user click on help page.
+            people_page_qml.people_manager.update_people_list()
+        }
+        if(people_page_qml.edit_page === null) {
             main_qml.esc_sc.enabled = true
         }
     }
@@ -177,9 +177,9 @@ Item {
                 text: "Cancel"
                 m_area.onClicked: {
                     individual_manager.cancel_creation()
-                    people_page_qml.page.object.visible = false
-                    people_page_qml.page.object.destroy(1000)
-                    people_page_qml.page = null
+                    people_page_qml.add_new_person_page.object.visible = false
+                    people_page_qml.add_new_person_page.object.destroy(1000)
+                    people_page_qml.add_new_person_page = null
                     people_page_qml.default_page.visible = true
                 }
             }
@@ -196,9 +196,9 @@ Item {
                 visible: processed_photos_list_view.count === 0 ? false : true
                 m_area.onClicked: {
                     people_page_qml.people_manager.update_people_list()
-                    people_page_qml.page.object.visible = false
-                    people_page_qml.page.object.destroy(1000)
-                    people_page_qml.page = null
+                    people_page_qml.add_new_person_page.object.visible = false
+                    people_page_qml.add_new_person_page.object.destroy(1000)
+                    people_page_qml.add_new_person_page = null
                     people_page_qml.default_page.visible = true
                 }
             }

@@ -59,7 +59,7 @@ QString Image_handler::save_processed_image(dlib::matrix<dlib::rgb_pixel>& img, 
 void Image_handler::update_processed_img(const QString& processing_img_path, dlib::matrix<dlib::rgb_pixel>& img, const QString& prefix)
 {
     const auto path = save_processed_image(img, processing_img_path, prefix);
-    qDebug() << "processed img saved, path = " << path;
+//    qDebug() << "processed img saved, path = " << path;
     if(!path.isEmpty()) {
         emit img_source_changed("file://" + path);
     }

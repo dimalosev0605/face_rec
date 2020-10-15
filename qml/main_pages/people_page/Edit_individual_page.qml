@@ -28,10 +28,6 @@ Item {
             if(processed_photos_list_view.count === 0) {
                 individual_manager.cancel_creation()
                 people_page_qml.people_manager.update_people_list()
-                people_page_qml.page.object.visible = false
-                people_page_qml.page.object.destroy(1000)
-                people_page_qml.page = null
-                people_page_qml.default_page.visible = true
             }
             individual_manager.set_edited_individual_name(edited_individual_name)
             selected_images_model.clear()
@@ -61,7 +57,7 @@ Item {
     }
 
     Component.onDestruction: {
-        console.log("Edit_individual_page destroyed. id = " + root)
+        console.log("Edit_individual_page destroyed. root = " + root + ", parent = " + parent)
         if(people_page_qml.page === null) {
             main_qml.esc_sc.enabled = true
         }
@@ -101,9 +97,9 @@ Item {
         sequence: "Esc"
         onActivated: {
             console.log("Edit_individual_page.qml Short Cut.")
-            people_page_qml.page.object.visible = false
-            people_page_qml.page.object.destroy(1000)
-            people_page_qml.page = null
+            people_page_qml.edit_page.object.visible = false
+            people_page_qml.edit_page.object.destroy(1000)
+            people_page_qml.edit_page = null
             people_page_qml.default_page.visible = true
         }
     }
@@ -146,15 +142,10 @@ Item {
                 placeholderText: "Enter person nickname"
                 text: edited_individual_name
                 onTextChanged: {
-                    console.log("onTextChanged")
                     if(individual_nickname_input.readOnly) {
-                        console.log("Set current individual name")
                         image_handler.set_current_individual_name(text)
                     }
                 }
-//                onAccepted: {
-//                    console.log("onAccepted")
-//                }
                 readOnly: true
                 property int right_space: 5
                 rightPadding: edit_btn.width + right_space
@@ -190,20 +181,12 @@ Item {
                             }
                             else {
                                 if(individual_nickname_input.text === "") return
-                                // GUI crushed.
-//                                console.log("Nickname changed. Update all files.")
-//                                individual_manager.change_nickname(individual_nickname_input.text)
-//                                individual_nickname_input.readOnly = true
-//                                individual_nickname_input.focus = false
-//                                image_handler.set_current_individual_name(individual_nickname_input.text)
-//                                people_page_qml.people_manager.update_people_list()
-
+                                console.log("Nickname changed. Update all files.")
                                 individual_manager.change_nickname(individual_nickname_input.text)
+                                individual_nickname_input.readOnly = true
+                                individual_nickname_input.focus = false
+                                image_handler.set_current_individual_name(individual_nickname_input.text)
                                 people_page_qml.people_manager.update_people_list()
-                                people_page_qml.page.object.visible = false
-                                people_page_qml.page.object.destroy(1000)
-                                people_page_qml.page = null
-                                people_page_qml.default_page.visible = true
                             }
                         }
                     }
