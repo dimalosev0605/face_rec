@@ -57,8 +57,8 @@ Item {
     }
 
     Component.onDestruction: {
-        console.log("Edit_individual_page destroyed. root = " + root + ", parent = " + parent)
-        if(people_page_qml.page === null) {
+        console.log("Edit_individual_page destroyed. id = " + root)
+        if(people_page_qml.add_new_person_page === null) {
             main_qml.esc_sc.enabled = true
         }
         if(processed_photos_list_view.count === 0) {
