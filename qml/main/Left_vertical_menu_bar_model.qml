@@ -9,7 +9,7 @@ ListModel {
     ListElement {
         menu_option_text: "Recognition"
         menu_option_icon_path: "qrc:/qml/icons/recognition.png"
-        loader_path: ""
+        loader_path: "qrc:/qml/main_pages/recognition_page/Step_1.qml"
     }
     ListElement {
         menu_option_text: "Exit"
