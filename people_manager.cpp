@@ -86,3 +86,33 @@ void People_manager::delete_individual(const int index)
     model_data.remove(index);
     endRemoveRows();
 }
+
+void People_manager::accept_item(const QString& name, const QString& avatar_path)
+{
+    std::tuple<QString, QString> elem(std::tuple<QString, QString>(name, avatar_path));
+    beginInsertRows(QModelIndex(), model_data.size(), model_data.size());
+    model_data.push_back(elem);
+    endInsertRows();
+}
+
+void People_manager::delete_item(const int index)
+{
+    if(index < 0 || index >= model_data.size()) return;
+
+    const QString name = std::get<0>(model_data[index]);
+    const QString avatar_path = std::get<1>(model_data[index]);
+
+    beginRemoveRows(QModelIndex(), index, index);
+    model_data.remove(index);
+    endRemoveRows();
+
+    emit item_deleted(name, avatar_path);
+}
+
+void People_manager::delete_all_items()
+{
+    for(int i = 0; i < model_data.size(); ++i) {
+        emit item_deleted(std::get<0>(model_data[i]), std::get<1>(model_data[i]));
+    }
+    clear();
+}

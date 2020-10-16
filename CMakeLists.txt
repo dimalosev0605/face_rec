@@ -36,6 +36,9 @@ add_executable(face_rec
     individual_file_manager.h
     individual_file_manager.cpp
 
+    selected_people_model.h
+    selected_people_model.cpp
+
     qml.qrc)
 
 target_compile_definitions(face_rec

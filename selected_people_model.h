@@ -1,13 +1,11 @@
-#ifndef PEOPLE_MANAGER_H
-#define PEOPLE_MANAGER_H
+#ifndef SELECTED_PEOPLE_MODEL_H
+#define SELECTED_PEOPLE_MODEL_H
 
 #include <QAbstractListModel>
 #include <QDebug>
 #include <QUrl>
 
-#include "individual_file_manager.h"
-
-class People_manager: public QAbstractListModel
+class Selected_people_model: public QAbstractListModel
 {
     Q_OBJECT
     QHash<int, QByteArray> roles;
@@ -15,7 +13,6 @@ class People_manager: public QAbstractListModel
 
 private:
     QHash<int, QByteArray> roleNames() const override;
-    void load_people();
     void clear();
 
 public:
@@ -23,13 +20,11 @@ public:
         individual_name = Qt::UserRole,
         avatar_path
     };
-    explicit People_manager(QObject* parent = nullptr);
+    explicit Selected_people_model(QObject* parent = nullptr);
     virtual int rowCount(const QModelIndex &index = QModelIndex()) const override;
     virtual QVariant data(const QModelIndex& index, int role) const override;
 
 public slots:
-    void update_people_list();
-    void delete_individual(const int index);
     void accept_item(const QString& name, const QString& avatar_path);
     void delete_item(const int index);
     void delete_all_items();
@@ -38,4 +33,4 @@ signals:
     void item_deleted(const QString& name, const QString& avatar_path);
 };
 
-#endif // PEOPLE_MANAGER_H
+#endif // SELECTED_PEOPLE_MODEL_H

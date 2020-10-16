@@ -9,6 +9,8 @@ Rectangle {
 
     property string avatar_src
     property string nickname
+    property bool type
+    property alias m_area: button_m_area
 
     height: 60
     radius: 2
@@ -80,14 +82,14 @@ Rectangle {
         }
         height: root.height * 0.5
         width: height
-        color: button_m_area.containsMouse ? button_m_area.pressed ? "#00ff00" : "#cfcfcf" : "transparent"
+        color: button_m_area.containsMouse ? button_m_area.pressed ? type ? "#00ff00" : "#ff0000" : "#cfcfcf" : "transparent"
         radius: width / 2
         Image {
             anchors.fill: parent
             mipmap: true
             asynchronous: true
             fillMode: Image.PreserveAspectFit
-            source: "qrc:/qml/icons/add.png"
+            source: type ? "qrc:/qml/icons/add.png" : "qrc:/qml/icons/remove.png"
         }
         MouseArea {
             id: button_m_area
