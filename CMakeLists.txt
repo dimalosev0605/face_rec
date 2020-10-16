@@ -30,11 +30,14 @@ add_executable(face_rec
     individual_manager.h
     individual_manager.cpp
 
-    people_manager.h
-    people_manager.cpp
-
     individual_file_manager.h
     individual_file_manager.cpp
+
+    base_people_model.h
+    base_people_model.cpp
+
+    available_people_model.h
+    available_people_model.cpp
 
     selected_people_model.h
     selected_people_model.cpp

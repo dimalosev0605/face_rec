@@ -4,7 +4,7 @@
 #include "selected_images_model.h"
 #include "image_handler.h"
 #include "individual_manager.h"
-#include "people_manager.h"
+#include "available_people_model.h"
 #include "selected_people_model.h"
 
 int main(int argc, char *argv[])
@@ -18,7 +18,7 @@ int main(int argc, char *argv[])
     qmlRegisterType<Selected_images_model>("Selected_images_model_qml", 1, 0, "Selected_images_model");
     qmlRegisterType<Image_handler>("Image_handler_qml", 1, 0, "Image_handler");
     qmlRegisterType<Individual_manager>("Individual_manager_qml", 1, 0, "Individual_manager");
-    qmlRegisterType<People_manager>("People_manager_qml", 1, 0, "People_manager");
+    qmlRegisterType<Available_people_model>("Available_people_model_qml", 1, 0, "Available_people_model");
     qmlRegisterType<Selected_people_model>("Selected_people_model_qml", 1, 0, "Selected_people_model");
 
     QQmlApplicationEngine engine;

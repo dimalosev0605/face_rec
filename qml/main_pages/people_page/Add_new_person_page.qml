@@ -42,7 +42,7 @@ Item {
         }
         if(processed_photos_list_view.count !== 0 && new_person_nickname_input.text !== "") {
             // it works, but people_page destroyed firstly if user click on help page.
-            people_page_qml.people_manager.update_people_list()
+            people_page_qml.available_people_model.update()
         }
         if(people_page_qml.edit_page === null) {
             main_qml.esc_sc.enabled = true
@@ -195,7 +195,7 @@ Item {
                 text: "Add person"
                 visible: processed_photos_list_view.count === 0 ? false : true
                 m_area.onClicked: {
-                    people_page_qml.people_manager.update_people_list()
+                    people_page_qml.available_people_model.update()
                     people_page_qml.add_new_person_page.object.visible = false
                     people_page_qml.add_new_person_page.object.destroy(1000)
                     people_page_qml.add_new_person_page = null

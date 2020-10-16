@@ -27,7 +27,7 @@ Item {
         else {
             if(processed_photos_list_view.count === 0) {
                 individual_manager.cancel_creation()
-                people_page_qml.people_manager.update_people_list()
+                people_page_qml.available_people_model.update()
             }
             individual_manager.set_edited_individual_name(edited_individual_name)
             selected_images_model.clear()
@@ -186,7 +186,7 @@ Item {
                                 individual_nickname_input.readOnly = true
                                 individual_nickname_input.focus = false
                                 image_handler.set_current_individual_name(individual_nickname_input.text)
-                                people_page_qml.people_manager.update_people_list()
+                                people_page_qml.available_people_model.update()
                             }
                         }
                     }

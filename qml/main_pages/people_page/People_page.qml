@@ -2,7 +2,7 @@ import QtQuick 2.12
 import QtQuick.Controls 2.15
 import QtGraphicalEffects 1.0
 
-import People_manager_qml 1.0
+import Available_people_model_qml 1.0
 
 import "../../delegates"
 
@@ -10,7 +10,7 @@ Item {
     id: people_page_qml
     objectName: "qrc:/qml/main_pages/people_page/People_page.qml"
 
-    property alias people_manager: people_manager
+    property alias available_people_model: available_people_model
 
     property var default_page: null
     property var default_page_comp: Qt.createComponent("qrc:/qml/main/Default_page.qml", people_page_qml);
@@ -47,7 +47,7 @@ Item {
                                                 });
     }
 
-    People_manager { id: people_manager }
+    Available_people_model { id: available_people_model }
 
     SplitView {
         id: split_view
@@ -167,7 +167,7 @@ Item {
                     rightMargin: 1
                     bottom: parent.bottom
                 }
-                model: people_manager
+                model: available_people_model
                 clip: true
                 delegate: People_list {
                     width: people_list_view.width - people_list_view_scroll_bar.implicitWidth
@@ -183,7 +183,7 @@ Item {
                                 default_page.visible = true
                             }
                         }
-                        people_manager.delete_individual(index)
+                        available_people_model.delete_individual(index)
                     }
                     individual_avatar_m_area.onDoubleClicked: {
 

@@ -5,7 +5,7 @@ import QtQuick.Controls 2.15
 import "../../common"
 import "../../delegates"
 
-import People_manager_qml 1.0
+import Available_people_model_qml 1.0
 import Selected_people_model_qml 1.0
 
 Item {
@@ -110,10 +110,10 @@ Item {
             }
 //            width: parent.width - people_list_frame.border.width
             clip: true
-            model: People_manager {
-                id: people_manager
-                onItem_deleted: {
-                    selected_people_model.accept_item(name, avatar_path)
+            model: Available_people_model {
+                id: available_people_model
+                onItem_passed: {
+                    selected_people_model.accept_item(individual_name, avatar_path)
                 }
             }
             delegate: Recognition_people_list_delegate {
@@ -122,7 +122,7 @@ Item {
                 nickname: model.individual_name
                 type: true
                 m_area.onClicked: {
-                    people_manager.delete_item(index)
+                    available_people_model.pass_item(index)
                 }
             }
             ScrollBar.vertical: people_list_view_scroll_bar
@@ -168,7 +168,7 @@ Item {
                 radius: 3
             }
             onClicked: {
-                people_manager.delete_all_items()
+                available_people_model.pass_all_items()
             }
         }
         Button {
@@ -183,7 +183,7 @@ Item {
                 radius: 3
             }
             onClicked: {
-                selected_people_model.delete_all_items()
+                selected_people_model.pass_all_items()
             }
         }
     }
@@ -233,8 +233,8 @@ Item {
             clip: true
             model: Selected_people_model {
                 id: selected_people_model
-                onItem_deleted: {
-                    people_manager.accept_item(name, avatar_path)
+                onItem_passed: {
+                    available_people_model.accept_item(individual_name, avatar_path)
                 }
             }
             delegate: Recognition_people_list_delegate {
@@ -243,7 +243,7 @@ Item {
                 nickname: model.individual_name
                 type: false
                 m_area.onClicked: {
-                    selected_people_model.delete_item(index)
+                    selected_people_model.pass_item(index)
                 }
             }
             ScrollBar.vertical: selected_people_list_view_scroll_bar
