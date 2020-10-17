@@ -30,5 +30,6 @@
         <file>qml/icons/double_left_arrow.png</file>
         <file>qml/icons/double_right_arrow.png</file>
         <file>qml/icons/remove.png</file>
+        <file>qml/icons/next.png</file>
     </qresource>
 </RCC>

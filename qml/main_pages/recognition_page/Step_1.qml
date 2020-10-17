@@ -73,7 +73,7 @@ Item {
         anchors {
             top: title.bottom
             topMargin: 20
-            bottom: parent.bottom
+            bottom: next_btn.top
             bottomMargin: 20
             left: parent.left
             leftMargin: 50
@@ -103,6 +103,7 @@ Item {
                 top: people_list_frame_title.bottom
                 topMargin: 5
                 bottom: parent.bottom
+                bottomMargin: people_list_frame.border.width
                 leftMargin: people_list_frame.border.width
                 left: parent.left
                 right: parent.right
@@ -225,6 +226,7 @@ Item {
                 top: selected_people_list_frame_title.bottom
                 topMargin: people_list_view.anchors.topMargin
                 bottom: parent.bottom
+                bottomMargin: selected_people_list_frame.border.width
                 leftMargin: selected_people_list_frame.border.width
                 left: parent.left
                 right: parent.right
@@ -261,6 +263,32 @@ Item {
                            selected_people_list_view_scroll_bar.pressed ? "#000000" : "#cccccc"
                 }
             }
+        }
+    }
+    Button {
+        id: next_btn
+        anchors {
+            left: parent.left
+            leftMargin: 5
+            bottom: parent.bottom
+            bottomMargin: 5
+        }
+        width: 120
+        height: 40
+        text: "Next"
+        icon.source: "qrc:/qml/icons/next.png"
+        LayoutMirroring.enabled: true
+        hoverEnabled: true
+        enabled: selected_people_list_view.count !== 0
+        background: Rectangle {
+            implicitWidth: parent.width
+            implicitHeight: parent.height
+            border.width: 1
+            border.color: "#000000"
+            color: parent.enabled ? parent.hovered ? parent.pressed ? "#00ff00" : "#cfcfcf" : "transparent" : "#cfcfcf"
+            radius: 3
+        }
+        onClicked: {
         }
     }
 }
