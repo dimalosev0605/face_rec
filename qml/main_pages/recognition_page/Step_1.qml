@@ -19,6 +19,16 @@ Item {
     Component.onDestruction: {
         console.log("Step_1.qml destroyed, id = " + rec_page_step_1)
     }
+    Component {
+        id: step_2_comp
+        Step_2 {
+        }
+    }
+    Component {
+        id: wait_page_comp
+        Wait_page {
+        }
+    }
 
     Text {
         id: title
@@ -282,7 +292,16 @@ Item {
             radius: 3
         }
         onClicked: {
-            rec_page_stack_view.push("qrc:/qml/main_pages/recognition_page/Step_2.qml", StackView.Immediate)
+            rec_page_stack_view.push(wait_page_comp.createObject(), StackView.Immediate)
+            var obj = step_2_comp.incubateObject()
+            if(obj.status !== Component.Ready) {
+                obj.onStatusChanged = function(status) {
+                    if(status === Component.Ready) {
+                        rec_page_stack_view.push(obj.object, StackView.Immediate)
+                    }
+                }
+            }
+
         }
     }
 }
