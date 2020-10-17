@@ -15,18 +15,11 @@ Item {
 
     Component.onCompleted: {
         console.log("Step_1.qml created, id = " + rec_page_step_1)
-//        main_qml.esc_sc.enabled = false
     }
     Component.onDestruction: {
         console.log("Step_1.qml destroyed, id = " + rec_page_step_1)
-//        main_qml.esc_sc.enabled = true
     }
-//    Shortcut {
-//        sequence: "Esc"
-//        onActivated: {
-//            console.log("Step_1.qml Esc short cut.")
-//        }
-//    }
+
     Text {
         id: title
         anchors {
@@ -289,6 +282,7 @@ Item {
             radius: 3
         }
         onClicked: {
+            rec_page_stack_view.push("qrc:/qml/main_pages/recognition_page/Step_2.qml", StackView.Immediate)
         }
     }
 }

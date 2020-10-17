@@ -31,5 +31,8 @@
         <file>qml/icons/double_right_arrow.png</file>
         <file>qml/icons/remove.png</file>
         <file>qml/icons/next.png</file>
+        <file>qml/main_pages/recognition_page/Step_2.qml</file>
+        <file>qml/icons/back.png</file>
+        <file>qml/main_pages/recognition_page/Recognition_page_stack_view.qml</file>
     </qresource>
 </RCC>

@@ -10,6 +10,7 @@ Window {
     height: 800
 
     property alias esc_sc: esc_sc
+//    property alias left_vertical_menu_bar: left_vertical_menu_bar
 
     property var default_page: null
     property var page: null
