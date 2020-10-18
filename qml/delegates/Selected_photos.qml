@@ -89,7 +89,7 @@ Rectangle {
         height: parent.height * 0.5
         width: height * 0.85
         radius: 4
-        property color delete_btn_pressed_color: "#9c0303"
+        property color delete_btn_pressed_color: "#ff0000"
         color: delete_from_selected_imgs_btn_m_area.containsPress ?
                delete_btn_pressed_color : delete_from_selected_imgs_btn_m_area.containsMouse ?
                                           "gray" : delegate.color
@@ -99,7 +99,7 @@ Rectangle {
             mipmap: true
             asynchronous: true
             fillMode: Image.PreserveAspectFit
-            source: "qrc:/qml/icons/trash.png"
+            source: "qrc:/qml/icons/cross.png"
         }
         MouseArea {
             id: delete_from_selected_imgs_btn_m_area

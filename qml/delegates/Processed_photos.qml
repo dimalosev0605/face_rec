@@ -72,7 +72,7 @@ Rectangle {
             mipmap: true
             asynchronous: true
             fillMode: Image.PreserveAspectFit
-            source: "qrc:/qml/icons/trash.png"
+            source: "qrc:/qml/icons/cross.png"
         }
         MouseArea {
             id: delete_from_processed_imgs_btn_m_area

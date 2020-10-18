@@ -19,6 +19,21 @@ Item {
         console.log("Step_2.qml destroyed, id = " + root)
     }
 
+    Shortcut {
+        sequence: "Down"
+        onActivated: {
+            selected_photos_list_view.incrementCurrentIndex()
+        }
+        enabled: !selected_photos_popup.opened
+    }
+    Shortcut {
+        sequence: "Up"
+        onActivated: {
+            selected_photos_list_view.decrementCurrentIndex()
+        }
+        enabled: !selected_photos_popup.opened
+    }
+
     FileDialog {
         id: file_dialog
         title: "Please choose files"
@@ -27,7 +42,13 @@ Item {
         selectMultiple: true
         nameFilters: [ "Image files (*.jpg *.png *.jpeg)", "All files (*)" ]
         onAccepted: {
-            selected_images_model.accept_images(file_dialog.fileUrls)
+            if(selected_photos_list_view.count === 0) {
+                selected_images_model.accept_images(file_dialog.fileUrls)
+                selected_photos_list_view.currentIndex = 0
+            }
+            else {
+                selected_images_model.accept_images(file_dialog.fileUrls)
+            }
             file_dialog.close()
         }
         onRejected: {
@@ -75,7 +96,7 @@ Item {
         }
         property int space_between_frames: 200
         width: (parent.width - curr_img_frame.anchors.leftMargin - processed_img_frame.anchors.rightMargin - space_between_frames) / 2
-        height: parent.height / 2 * 0.7 // TODO
+        height: parent.height / 2 * 0.9 // TODO
         Text {
             id: current_img_frame_text
             anchors {
@@ -90,15 +111,15 @@ Item {
             elide: Text.ElideRight
             wrapMode: Text.WordWrap
             width: parent.width
-            height: 32
-            text: current_img.source.toString() === "" ? "Select photos" : "Current image"
+            height: 25
+            text: current_img.source.toString() === "" ? "Select photos ---------->" : "Current image"
         }
         Image {
             id: current_img
             anchors {
                 top: current_img_frame_text.bottom
                 topMargin: 5
-                bottom: parent.bottom
+                bottom: buttons_1_frame.top
                 bottomMargin: 5
             }
             width: parent.width
@@ -106,6 +127,17 @@ Item {
             asynchronous: true
             fillMode: Image.PreserveAspectFit
             source: selected_photos_list_view.currentItem === null ? "" : selected_photos_list_view.currentItem.selected_img_preview_src
+            MouseArea {
+                anchors.centerIn: parent
+                width: current_img.paintedWidth
+                height: current_img.paintedHeight
+                onClicked: {
+                    var comp = Qt.createComponent("qrc:/qml/common/Full_screen_img.qml")
+                    var win = comp.createObject(root, { img_source: current_img.source, window_type: true })
+                    win.show()
+                }
+                enabled: selected_photos_list_view.count !== 0
+            }
         }
         Button {
             id: select_photos_btn
@@ -133,6 +165,9 @@ Item {
             onClicked: {
                 file_dialog.open()
             }
+            hoverEnabled: true
+            ToolTip.visible: hovered
+            ToolTip.text: qsTr("Select photos")
         }
         Popup {
             id: selected_photos_popup
@@ -154,7 +189,7 @@ Item {
                 clip: true
                 currentIndex: -1
                 delegate: Selected_photos {
-                    width: selected_photos_list_view.width
+                    width: selected_photos_list_view.width - selected_photos_list_view_scroll_bar.implicitWidth
                     height: 50
                     color: (ListView.isCurrentItem ? highlighted_color :
                                                     delegate_body_m_area.containsMouse ?
@@ -166,10 +201,55 @@ Item {
                     delegate_body_m_area.onClicked: {
                         selected_photos_list_view.currentIndex = index
                     }
+                    delete_from_selected_imgs_btn_m_area.onClicked: {
+                        selected_images_model.delete_image(index)
+                    }
+                }
+                ScrollBar.vertical: selected_photos_list_view_scroll_bar
+                ScrollBar {
+                    id: selected_photos_list_view_scroll_bar
+                    active: true
+                    hoverEnabled: true
+                    orientation: Qt.Vertical
+                    size: 0.5
+                    contentItem: Rectangle {
+                        implicitWidth: 5
+                        radius: 2
+                        color: selected_photos_list_view_scroll_bar.hovered ?
+                               selected_photos_list_view_scroll_bar.pressed ? "#000000" : "#999999" :
+                               selected_photos_list_view_scroll_bar.pressed ? "#000000" : "#cccccc"
+                    }
+                }
+                Text {
+                    verticalAlignment: Text.AlignVCenter
+                    horizontalAlignment: Text.AlignHCenter
+                    fontSizeMode: Text.Fit
+                    minimumPointSize: 1
+                    font.pointSize: 15
+                    elide: Text.ElideRight
+                    wrapMode: Text.WordWrap
+                    width: parent.width - selected_photos_list_view_scroll_bar.implicitBackgroundWidth
+                    height: parent.height
+                    text: "List is empty."
+                    visible: selected_photos_list_view.count === 0
                 }
             }
-        }
+            Shortcut {
+                sequence: "Down"
+                enabled: selected_photos_popup.opened
+                onActivated: {
+                    selected_photos_list_view.incrementCurrentIndex()
+                }
+            }
+            Shortcut {
+                sequence: "Up"
+                enabled: selected_photos_popup.opened
+                onActivated: {
+                    selected_photos_list_view.decrementCurrentIndex()
+                }
+            }
 
+        }
         Button {
             id: show_selected_photos_btn
             anchors {
@@ -196,13 +276,113 @@ Item {
             onClicked: {
                 selected_photos_popup.open()
             }
+            hoverEnabled: true
+            ToolTip.visible: hovered
+            ToolTip.text: qsTr("Show list")
+        }
+        Rectangle {
+            id: buttons_1_frame
+            anchors {
+                bottom: buttons_2_frame.top
+                bottomMargin: 2
+                left: curr_img_frame.left
+                leftMargin: border.width + 3
+                right: curr_img_frame.right
+                rightMargin: border.width + 3
+            }
+            height: 30
+            border.width: 1
+            border.color: "#000000"
+            radius: 5
+            Row {
+                id: buttons_1_row
+                anchors {
+                    fill: parent
+                    margins: parent.border.width
+                }
+                spacing: 0
+                property int btns_count: 4
+                property real btns_width: (width - (btns_count - 1) * spacing) / btns_count
+                Custom_btn_2 {
+                    id: pyr_up_btn
+                    height: parent.height
+                    width: parent.btns_width
+                    text: "Pyr up"
+                    border_width: 1
+                    radius: 0
+                }
+                Custom_btn_2 {
+                    id: pyr_down_btn
+                    height: parent.height
+                    width: parent.btns_width
+                    text: "Pyr down"
+                    border_width: 1
+                    radius: 0
+                }
+                Custom_btn_2 {
+                    id: resize_btn
+                    height: parent.height
+                    width: parent.btns_width
+                    text: "Resize"
+                    border_width: 1
+                    radius: 0
+                }
+                Custom_btn_2 {
+                    id: cancel_btn
+                    height: parent.height
+                    width: parent.btns_width
+                    text: "Cancel"
+                    border_width: 1
+                    radius: 0
+                }
+            }
+        }
+        Rectangle {
+            id: buttons_2_frame
+            anchors {
+                bottom: parent.bottom
+                bottomMargin: 2
+                horizontalCenter: buttons_1_frame.horizontalCenter
+            }
+            height: buttons_1_frame.height
+            width: buttons_1_frame.width / 2
+            border.width: buttons_1_frame.border.width
+            border.color: "#000000"
+            radius: buttons_1_frame.radius
+            Row {
+                anchors {
+                    fill: parent
+                    margins: buttons_1_row.anchors.margins
+                }
+                spacing: buttons_1_row.spacing
+                property int btns_count: 2
+                property real btns_width: (width - (btns_count - 1) * spacing) / btns_count
+                Custom_btn_2 {
+                    id: hog_face_rec
+                    height: parent.height
+                    width: parent.btns_width
+                    text: "HOG"
+                    border_width: 1
+                    radius: 0
+                }
+                Custom_btn_2 {
+                    id: cnn_face_rec
+                    height: parent.height
+                    width: parent.btns_width
+                    text: "CNN"
+                    border_width: 1
+                    radius: 0
+                }
+            }
         }
     }
+
+
     Rectangle {
         id: processed_img_frame
-        border.width: 1
-        border.color: "#000000"
-        radius: 3
+        border.width: curr_img_frame.border.width
+        border.color: curr_img_frame.border.color
+        radius: curr_img_frame.radius
         anchors {
             top: curr_img_frame.anchors.top
             topMargin: curr_img_frame.anchors.topMargin
@@ -214,7 +394,7 @@ Item {
         Text {
             id: processed_img_frame_text
             anchors {
-                top: processed_img_frame.top
+                top: parent.top
                 topMargin: current_img_frame_text.anchors.topMargin
             }
             verticalAlignment: Text.AlignVCenter
@@ -233,14 +413,58 @@ Item {
             anchors {
                 top: processed_img_frame_text.bottom
                 topMargin: current_img.anchors.topMargin
-                bottom: parent.bottom
-                bottomMargin: curr_img_frame.anchors.bottomMargin
+                bottom: recognize_btn.top
+                bottomMargin: current_img.anchors.bottomMargin
             }
             width: parent.width
             mipmap: true
             asynchronous: true
             fillMode: Image.PreserveAspectFit
             source: "qrc:/qml/icons/trash.png"
+        }
+        Custom_btn_2 {
+            id: recognize_btn
+            anchors {
+                bottom: threshold_slider.top
+                bottomMargin: buttons_1_frame.anchors.bottomMargin
+                horizontalCenter: parent.horizontalCenter
+            }
+            height: buttons_1_frame.height
+            width: threshold_slider.width
+            text: "Recognize"
+            border_width: 1
+            radius: 3
+        }
+        Slider {
+            id: threshold_slider
+            anchors {
+                bottom: parent.bottom
+                bottomMargin: buttons_2_frame.anchors.bottomMargin
+                horizontalCenter: parent.horizontalCenter
+            }
+            height: buttons_2_frame.height
+            width: parent.width * 0.5
+            from: 0
+            to: 1
+            value: 0.5
+            stepSize: 0.01
+        }
+        Text {
+            id: curr_slider_value
+            anchors {
+                left: threshold_slider.right
+                top: threshold_slider.top
+            }
+            verticalAlignment: Text.AlignVCenter
+            horizontalAlignment: Text.AlignHCenter
+            fontSizeMode: Text.Fit
+            minimumPointSize: 1
+            font.pointSize: 10
+            elide: Text.ElideRight
+            wrapMode: Text.WordWrap
+            width: threshold_slider.height
+            height: width
+            text: threshold_slider.value.toFixed(2)
         }
     }
 

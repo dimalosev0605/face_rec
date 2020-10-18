@@ -36,5 +36,6 @@
         <file>qml/main_pages/recognition_page/Recognition_page_stack_view.qml</file>
         <file>qml/icons/menu.png</file>
         <file>qml/icons/show_list.png</file>
+        <file>qml/common/Custom_btn_2.qml</file>
     </qresource>
 </RCC>
