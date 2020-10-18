@@ -156,6 +156,7 @@ void Individual_file_manager::delete_dir() const
 
 void Individual_file_manager::delete_temp_files() const
 {
+    if(individual_name.isEmpty()) return;
     const auto path = get_path_to_temp_files_dir();
     QDir dir(path);
     dir.setFilter(QDir::Files);

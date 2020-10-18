@@ -4,6 +4,7 @@ import QtQuick.Controls 2.15
 import QtQuick.Dialogs 1.2
 
 import Selected_images_model_qml 1.0
+import Image_handler_qml 1.0
 import "../../delegates"
 import "../../common"
 
@@ -12,11 +13,34 @@ Item {
 
     objectName: "qrc:/qml/main_pages/recognition_page/Step_2.qml"
 
+    property var wait_page: null
+
     Component.onCompleted: {
         console.log("Step_2.qml created, id = " + root)
+
+        var wait_page_component = Qt.createComponent("qrc:/qml/common/Wait_page_with_button.qml")
+        wait_page = wait_page_component.createObject(root,
+                                                   {
+                                                       "x": Qt.binding(function(){ return 0}),
+                                                       "y": Qt.binding(function(){ return 0}),
+                                                       "width": Qt.binding(function() { return root.width}),
+                                                       "height": Qt.binding(function() { return root.height}),
+                                                       image_handler: image_handler,
+                                                       processed_img: processed_img
+                                                   });
+
     }
     Component.onDestruction: {
         console.log("Step_2.qml destroyed, id = " + root)
+    }
+
+    Image_handler {
+        id: image_handler
+        onImg_source_changed: {
+            processed_img.source = ""
+            processed_img.source = source
+            wait_page.visible = false
+        }
     }
 
     Shortcut {
@@ -112,7 +136,12 @@ Item {
             wrapMode: Text.WordWrap
             width: parent.width
             height: 25
-            text: current_img.source.toString() === "" ? "Select photos ---------->" : "Current image"
+            text: selected_photos_list_view.currentItem !== null ?
+                      String(selected_photos_list_view.currentItem.selected_img_preview_file_name +
+                      "   " +
+                      "(" +
+                      current_img.sourceSize.width + " x " + current_img.sourceSize.height +
+                      ")") : "Select photos --->"
         }
         Image {
             id: current_img
@@ -127,6 +156,10 @@ Item {
             asynchronous: true
             fillMode: Image.PreserveAspectFit
             source: selected_photos_list_view.currentItem === null ? "" : selected_photos_list_view.currentItem.selected_img_preview_src
+            onSourceChanged: {
+                image_handler.update_selected_img_path(source)
+            }
+
             MouseArea {
                 anchors.centerIn: parent
                 width: current_img.paintedWidth
@@ -310,6 +343,9 @@ Item {
                     text: "Pyr up"
                     border_width: 1
                     radius: 0
+                    onClicked: {
+//                        wait_page.visible = true
+                    }
                 }
                 Custom_btn_2 {
                     id: pyr_down_btn
@@ -318,6 +354,9 @@ Item {
                     text: "Pyr down"
                     border_width: 1
                     radius: 0
+                    onClicked: {
+//                        wait_page.visible = true
+                    }
                 }
                 Custom_btn_2 {
                     id: resize_btn
@@ -326,6 +365,52 @@ Item {
                     text: "Resize"
                     border_width: 1
                     radius: 0
+                    onClicked: {
+                        new_size_popup.open()
+                    }
+                    Popup {
+                        id: new_size_popup
+                        x: resize_btn.width
+                        y: resize_btn.height
+                        background: Rectangle {
+                            implicitWidth: resize_btn.width
+                            implicitHeight: col.item_h * 3 + 2 * col.spacing
+                            border.color: "#000000"
+                        }
+                        contentItem: Column {
+                            id: col
+                            property int item_h: 30
+                            spacing: 2
+                            TextField {
+                                id: width_input
+                                height: col.item_h
+                                width: parent.width
+                                placeholderText: "max 3840"
+                                text: processed_img.source.toString() === "" ? current_img.sourceSize.width : processed_img.sourceSize.width
+                                validator: IntValidator{bottom: 1; top: 3840;}
+                            }
+                            TextField {
+                                id: height_input
+                                height: col.item_h
+                                width: parent.width
+                                placeholderText: "max 2160"
+                                text: processed_img.source.toString() === "" ? current_img.sourceSize.height : processed_img.sourceSize.height
+                                wrapMode: TextInput.WrapAnywhere
+                                validator: IntValidator{bottom: 1; top: 2160;}
+                            }
+                            Custom_btn_2 {
+                                height: col.item_h
+                                width: parent.width
+                                text: "Ok"
+                                onClicked: {
+                                    if(width_input.acceptableInput && height_input.acceptableInput) {
+//                                        wait_page.visible = true
+//                                        new_size_popup.close()
+                                    }
+                                }
+                            }
+                        }
+                    }
                 }
                 Custom_btn_2 {
                     id: cancel_btn
@@ -334,6 +419,9 @@ Item {
                     text: "Cancel"
                     border_width: 1
                     radius: 0
+                    onClicked: {
+//                        processed_img.source = ""
+                    }
                 }
             }
         }
@@ -364,6 +452,9 @@ Item {
                     text: "HOG"
                     border_width: 1
                     radius: 0
+                    onClicked: {
+                        wait_page.visible = true
+                    }
                 }
                 Custom_btn_2 {
                     id: cnn_face_rec
@@ -372,6 +463,9 @@ Item {
                     text: "CNN"
                     border_width: 1
                     radius: 0
+                    onClicked: {
+//                        wait_page.visible = true
+                    }
                 }
             }
         }
@@ -420,7 +514,7 @@ Item {
             mipmap: true
             asynchronous: true
             fillMode: Image.PreserveAspectFit
-            source: "qrc:/qml/icons/trash.png"
+            source: ""
         }
         Custom_btn_2 {
             id: recognize_btn
