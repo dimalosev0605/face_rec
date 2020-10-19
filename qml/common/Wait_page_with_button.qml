@@ -1,12 +1,13 @@
 import QtQuick 2.12
 import QtQuick.Controls 2.15
 
-import Image_handler_qml 1.0
+//import Image_handler_qml 1.0
+import Add_new_person_image_handler_qml 1.0
 
 Rectangle {
     id: root
 
-    property Image_handler image_handler
+    property Add_new_person_image_handler add_new_person_image_handler: null
     property Image processed_img
 
     Component.onDestruction: {
@@ -37,7 +38,9 @@ Rectangle {
         pressed_color: "#ff0000"
         text: "Cancel"
         m_area.onClicked: {
-            image_handler.cancel()
+            if(add_new_person_image_handler !== null) {
+                add_new_person_image_handler.cancel()
+            }
             processed_img.source = ""
             root.visible = false
         }

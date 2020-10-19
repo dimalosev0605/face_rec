@@ -4,7 +4,7 @@ import QtQuick.Controls 2.15
 import QtQuick.Dialogs 1.2
 
 import Selected_images_model_qml 1.0
-import Image_handler_qml 1.0
+//import Image_handler_qml 1.0
 import "../../delegates"
 import "../../common"
 
@@ -25,8 +25,8 @@ Item {
                                                        "y": Qt.binding(function(){ return 0}),
                                                        "width": Qt.binding(function() { return root.width}),
                                                        "height": Qt.binding(function() { return root.height}),
-                                                       image_handler: image_handler,
-                                                       processed_img: processed_img
+//                                                       image_handler: image_handler,
+//                                                       processed_img: processed_img
                                                    });
 
     }
@@ -34,14 +34,14 @@ Item {
         console.log("Step_2.qml destroyed, id = " + root)
     }
 
-    Image_handler {
-        id: image_handler
-        onImg_source_changed: {
-            processed_img.source = ""
-            processed_img.source = source
-            wait_page.visible = false
-        }
-    }
+//    Image_handler {
+//        id: image_handler
+//        onImg_source_changed: {
+//            processed_img.source = ""
+//            processed_img.source = source
+//            wait_page.visible = false
+//        }
+//    }
 
     Shortcut {
         sequence: "Down"
@@ -157,7 +157,7 @@ Item {
             fillMode: Image.PreserveAspectFit
             source: selected_photos_list_view.currentItem === null ? "" : selected_photos_list_view.currentItem.selected_img_preview_src
             onSourceChanged: {
-                image_handler.update_selected_img_path(source)
+//                image_handler.update_selected_img_path(source)
             }
 
             MouseArea {

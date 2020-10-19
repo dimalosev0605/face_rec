@@ -9,6 +9,8 @@
 class Individual_file_manager
 {    
     static const QString data_dir;
+    static const QString shared_dir;
+
     static const QString source_files_dir;
     static const QString temp_files_dir;
     static const QString extracted_faces_dir;
@@ -19,6 +21,7 @@ class Individual_file_manager
 
 private:
     void create_data_dir() const;
+    void create_shared_dir() const;
     bool create_source_files_dir() const;
     bool create_temp_files_dir() const;
     bool create_extracted_faces_dir() const;
@@ -34,6 +37,7 @@ public:
     Status create_dir() const;
 
     QString get_path_to_data_dir() const;
+    QString get_path_to_shared_dir() const;
     QString get_path_to_source_files_dir() const;
     QString get_path_to_temp_files_dir() const;
     QString get_path_to_extracted_faces_dir() const;

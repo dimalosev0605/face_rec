@@ -42,6 +42,12 @@ add_executable(face_rec
     selected_people_model.h
     selected_people_model.cpp
 
+    base_image_handler.h
+    base_image_handler.cpp
+
+    add_new_person_image_handler.h
+    add_new_person_image_handler.cpp
+
     qml.qrc)
 
 target_compile_definitions(face_rec

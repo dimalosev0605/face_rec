@@ -1,6 +1,7 @@
 #include "individual_file_manager.h"
 
 const QString Individual_file_manager::data_dir = "data";
+const QString Individual_file_manager::shared_dir = "shared_dir";
 const QString Individual_file_manager::source_files_dir = "source_files";
 const QString Individual_file_manager::temp_files_dir = "temp_files";
 const QString Individual_file_manager::extracted_faces_dir = "extracted_faces";
@@ -8,11 +9,21 @@ const QString Individual_file_manager::extracted_faces_dir = "extracted_faces";
 Individual_file_manager::Individual_file_manager()
 {
     create_data_dir();
+    create_shared_dir();
 }
 
 void Individual_file_manager::create_data_dir() const
 {
     const auto path = app_dir_path + '/' + data_dir;
+    QDir dir(path);
+    if(!dir.exists()) {
+        dir.mkdir(path);
+    }
+}
+
+void Individual_file_manager::create_shared_dir() const
+{
+    const auto path = app_dir_path + '/' + shared_dir;
     QDir dir(path);
     if(!dir.exists()) {
         dir.mkdir(path);
@@ -69,6 +80,12 @@ QString Individual_file_manager::get_path_to_data_dir() const
     return path;
 }
 
+QString Individual_file_manager::get_path_to_shared_dir() const
+{
+    const auto path = app_dir_path + '/' + shared_dir;
+    return path;
+}
+
 QString Individual_file_manager::get_path_to_source_files_dir() const
 {
     const auto path = path_to_individual_dir + '/' + source_files_dir;
@@ -83,8 +100,14 @@ QString Individual_file_manager::get_path_to_temp_files_dir() const
 
 QString Individual_file_manager::get_path_to_temp_file(const QString& prefix, const QString& filename) const
 {
-    const auto path = path_to_individual_dir + '/' + temp_files_dir + '/' + prefix + filename;
-    return path;
+    if(individual_name.isEmpty()) {
+        const auto path = get_path_to_shared_dir() + '/' + prefix + filename;
+        return path;
+    }
+    else {
+        const auto path = path_to_individual_dir + '/' + temp_files_dir + '/' + prefix + filename;
+        return path;
+    }
 }
 
 QString Individual_file_manager::get_path_to_random_source_file() const
@@ -156,8 +179,7 @@ void Individual_file_manager::delete_dir() const
 
 void Individual_file_manager::delete_temp_files() const
 {
-    if(individual_name.isEmpty()) return;
-    const auto path = get_path_to_temp_files_dir();
+    const auto path = individual_name.isEmpty() ? get_path_to_shared_dir() : get_path_to_temp_files_dir();
     QDir dir(path);
     dir.setFilter(QDir::Files);
     for(auto& file : dir.entryList()) {
