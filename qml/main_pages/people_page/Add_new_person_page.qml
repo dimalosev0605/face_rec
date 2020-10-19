@@ -5,7 +5,7 @@ import QtGraphicalEffects 1.0
 
 import Selected_images_model_qml 1.0
 //import Image_handler_qml 1.0
-import Add_new_person_image_handler_qml 1.0
+import Add_new_face_image_handler_qml 1.0
 import Individual_manager_qml 1.0
 
 import "../../delegates"
@@ -30,7 +30,7 @@ Item {
                                                        "y": Qt.binding(function(){ return 0}),
                                                        "width": Qt.binding(function() { return root.width}),
                                                        "height": Qt.binding(function() { return root.height}),
-                                                       add_new_person_image_handler: add_new_person_image_handler,
+                                                       add_new_face_image_handler: add_new_face_image_handler,
                                                        processed_img: processed_img
                                                    });
         main_qml.esc_sc.enabled = false
@@ -86,8 +86,8 @@ Item {
         }
     }
 
-    Add_new_person_image_handler {
-        id: add_new_person_image_handler
+    Add_new_face_image_handler {
+        id: add_new_face_image_handler
         onImg_source_changed: {
             processed_img.source = ""
             processed_img.source = source
@@ -142,7 +142,7 @@ Item {
                     if(individual_manager.add_new(new_person_nickname_input.text)) {
                         add_new_person_btn.visible = false
                         new_person_nickname_input.enabled = false
-                        add_new_person_image_handler.set_current_individual_name(new_person_nickname_input.text)
+                        add_new_face_image_handler.set_current_individual_name(new_person_nickname_input.text)
                     }
                 }
             }
@@ -225,7 +225,7 @@ Item {
                     clip: true
                     currentIndex: -1
                     onCurrentIndexChanged: {
-                        add_new_person_image_handler.cancel()
+                        add_new_face_image_handler.cancel()
                         extract_face_btn.enabled = false
                         save_btn.enabled = false
                         processed_img.source = ""
@@ -243,7 +243,7 @@ Item {
                             selected_photos_list_view.currentIndex = index
                         }
                         delete_from_selected_imgs_btn_m_area.onClicked: {
-                            add_new_person_image_handler.cancel()
+                            add_new_face_image_handler.cancel()
                             extract_face_btn.enabled = false
                             processed_img.source = ""
                             selected_images_model.delete_image(index)
@@ -335,7 +335,7 @@ Item {
                     fillMode: Image.PreserveAspectFit
                     source: selected_photos_list_view.currentItem === null ? "" : selected_photos_list_view.currentItem.selected_img_preview_src
                     onSourceChanged: {
-                        add_new_person_image_handler.update_selected_img_path(source)
+                        add_new_face_image_handler.update_selected_img_path(source)
                     }
                     MouseArea {
                         anchors.fill: parent
@@ -373,7 +373,7 @@ Item {
                             enabled: selected_photos_list_view.currentItem === null ? false : save_btn.enabled ? false : true
                             m_area.onClicked: {
                                 wait_page.visible = true
-                                add_new_person_image_handler.hog()
+                                add_new_face_image_handler.hog()
                             }
                         }
                         Custom_button {
@@ -384,7 +384,7 @@ Item {
                             enabled: selected_photos_list_view.currentItem === null ? false : save_btn.enabled ? false : true
                             m_area.onClicked: {
                                 wait_page.visible = true
-                                add_new_person_image_handler.cnn()
+                                add_new_face_image_handler.cnn()
                             }
                         }
                     }
@@ -400,7 +400,7 @@ Item {
                             enabled: selected_photos_list_view.currentItem === null ? false : save_btn.enabled ? false : true
                             m_area.onClicked: {
                                 wait_page.visible = true
-                                add_new_person_image_handler.pyr_up()
+                                add_new_face_image_handler.pyr_up()
                             }
                         }
                         Custom_button {
@@ -411,7 +411,7 @@ Item {
                             enabled: selected_photos_list_view.currentItem === null ? false : save_btn.enabled ? false : true
                             m_area.onClicked: {
                                 wait_page.visible = true
-                                add_new_person_image_handler.pyr_down()
+                                add_new_face_image_handler.pyr_down()
                             }
                         }
                     }
@@ -467,7 +467,7 @@ Item {
                                         m_area.onClicked: {
                                             if(width_input.acceptableInput && height_input.acceptableInput) {
                                                 wait_page.visible = true
-                                                add_new_person_image_handler.resize(width_input.text, height_input.text)
+                                                add_new_face_image_handler.resize(width_input.text, height_input.text)
                                                 new_size_popup.close()
                                             }
                                         }
@@ -483,7 +483,7 @@ Item {
                             enabled: processed_img.source.toString() === "" ? false : true
                             m_area.onClicked: {
                                 processed_img.source = ""
-                                add_new_person_image_handler.cancel()
+                                add_new_face_image_handler.cancel()
                                 extract_face_btn.enabled = false
                                 save_btn.enabled = false
                             }
@@ -560,7 +560,7 @@ Item {
                         enabled: false
                         m_area.onClicked: {
                             wait_page.visible = true
-                            add_new_person_image_handler.extract_face()
+                            add_new_face_image_handler.extract_face()
                             save_btn.enabled = true
                         }
                     }
@@ -573,7 +573,7 @@ Item {
                         m_area.onClicked: {
                             if(individual_manager.add_face(selected_img.source.toString(),
                                                                processed_img.source.toString())) {
-                                add_new_person_image_handler.cancel()
+                                add_new_face_image_handler.cancel()
                                 save_btn.enabled = false
                                 processed_img.source = ""
                                 selected_images_model.delete_image(selected_photos_list_view.currentIndex)

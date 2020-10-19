@@ -45,8 +45,11 @@ add_executable(face_rec
     base_image_handler.h
     base_image_handler.cpp
 
-    add_new_person_image_handler.h
-    add_new_person_image_handler.cpp
+    add_new_face_image_handler.h
+    add_new_face_image_handler.cpp
+
+    face_recognition_image_handler.h
+    face_recognition_image_handler.cpp
 
     qml.qrc)
 

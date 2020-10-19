@@ -1,16 +1,11 @@
-#include "add_new_person_image_handler.h"
+#include "add_new_face_image_handler.h"
 
-Add_new_person_image_handler::Add_new_person_image_handler(QObject* parent)
+Add_new_face_image_handler::Add_new_face_image_handler(QObject* parent)
     : Base_image_handler(parent)
 {
-    std::thread load_model_thread([this]()
-    {
-        dlib::deserialize("shape_predictor_5_face_landmarks.dat") >> shape_predictor;
-    });
-    load_model_thread.detach();
 }
 
-void Add_new_person_image_handler::cnn()
+void Add_new_face_image_handler::cnn()
 {
     worker_thread.reset(new std::thread([this]()
     {
@@ -46,7 +41,7 @@ void Add_new_person_image_handler::cnn()
     worker_thread->detach();
 }
 
-void Add_new_person_image_handler::hog()
+void Add_new_face_image_handler::hog()
 {
     worker_thread.reset(new std::thread([this]()
     {
@@ -83,12 +78,12 @@ void Add_new_person_image_handler::hog()
     worker_thread->detach();
 }
 
-void Add_new_person_image_handler::set_current_individual_name(const QString &name)
+void Add_new_face_image_handler::set_current_individual_name(const QString &name)
 {
     individual_file_manager.set_name(name);
 }
 
-void Add_new_person_image_handler::extract_face()
+void Add_new_face_image_handler::extract_face()
 {
     // not thread safe.
     dlib::matrix<dlib::rgb_pixel> img;
@@ -106,7 +101,7 @@ void Add_new_person_image_handler::extract_face()
     update_processed_img(selected_img_path, processed_face, "extracted_face_");
 }
 
-void Add_new_person_image_handler::cancel()
+void Add_new_face_image_handler::cancel()
 {
     std::lock_guard<std::mutex> lock(worker_thread_mutex);
     worker_thread_id = std::thread::id{};

@@ -5,6 +5,7 @@ import QtQuick.Dialogs 1.2
 
 import Selected_images_model_qml 1.0
 //import Image_handler_qml 1.0
+import Face_recognition_image_handler_qml 1.0
 import "../../delegates"
 import "../../common"
 
@@ -25,8 +26,8 @@ Item {
                                                        "y": Qt.binding(function(){ return 0}),
                                                        "width": Qt.binding(function() { return root.width}),
                                                        "height": Qt.binding(function() { return root.height}),
-//                                                       image_handler: image_handler,
-//                                                       processed_img: processed_img
+                                                       face_recognition_image_handler: face_recognition_image_handler,
+                                                       processed_img: processed_img
                                                    });
 
     }
@@ -34,14 +35,14 @@ Item {
         console.log("Step_2.qml destroyed, id = " + root)
     }
 
-//    Image_handler {
-//        id: image_handler
-//        onImg_source_changed: {
-//            processed_img.source = ""
-//            processed_img.source = source
-//            wait_page.visible = false
-//        }
-//    }
+    Face_recognition_image_handler {
+        id: face_recognition_image_handler
+        onImg_source_changed: {
+            processed_img.source = ""
+            processed_img.source = source
+            wait_page.visible = false
+        }
+    }
 
     Shortcut {
         sequence: "Down"
@@ -157,7 +158,7 @@ Item {
             fillMode: Image.PreserveAspectFit
             source: selected_photos_list_view.currentItem === null ? "" : selected_photos_list_view.currentItem.selected_img_preview_src
             onSourceChanged: {
-//                image_handler.update_selected_img_path(source)
+                face_recognition_image_handler.update_selected_img_path(source)
             }
 
             MouseArea {
@@ -221,6 +222,10 @@ Item {
                 model: Selected_images_model { id: selected_images_model }
                 clip: true
                 currentIndex: -1
+                onCurrentIndexChanged: {
+                    face_recognition_image_handler.cancel()
+                    processed_img.source = ""
+                }
                 delegate: Selected_photos {
                     width: selected_photos_list_view.width - selected_photos_list_view_scroll_bar.implicitWidth
                     height: 50
@@ -343,8 +348,10 @@ Item {
                     text: "Pyr up"
                     border_width: 1
                     radius: 0
+                    enabled: current_img.source.toString() !== ""
                     onClicked: {
-//                        wait_page.visible = true
+                        wait_page.visible = true
+                        face_recognition_image_handler.pyr_up()
                     }
                 }
                 Custom_btn_2 {
@@ -354,8 +361,10 @@ Item {
                     text: "Pyr down"
                     border_width: 1
                     radius: 0
+                    enabled: current_img.source.toString() !== ""
                     onClicked: {
-//                        wait_page.visible = true
+                        wait_page.visible = true
+                        face_recognition_image_handler.pyr_down()
                     }
                 }
                 Custom_btn_2 {
@@ -365,6 +374,7 @@ Item {
                     text: "Resize"
                     border_width: 1
                     radius: 0
+                    enabled: current_img.source.toString() !== ""
                     onClicked: {
                         new_size_popup.open()
                     }
@@ -404,8 +414,9 @@ Item {
                                 text: "Ok"
                                 onClicked: {
                                     if(width_input.acceptableInput && height_input.acceptableInput) {
-//                                        wait_page.visible = true
-//                                        new_size_popup.close()
+                                        wait_page.visible = true
+                                        face_recognition_image_handler.resize(width_input.text, height_input.text)
+                                        new_size_popup.close()
                                     }
                                 }
                             }
@@ -419,8 +430,10 @@ Item {
                     text: "Cancel"
                     border_width: 1
                     radius: 0
+                    enabled: current_img.source.toString() !== ""
                     onClicked: {
-//                        processed_img.source = ""
+                        face_recognition_image_handler.cancel()
+                        processed_img.source = ""
                     }
                 }
             }
@@ -452,8 +465,10 @@ Item {
                     text: "HOG"
                     border_width: 1
                     radius: 0
+                    enabled: current_img.source.toString() !== ""
                     onClicked: {
                         wait_page.visible = true
+                        face_recognition_image_handler.hog()
                     }
                 }
                 Custom_btn_2 {
@@ -463,8 +478,10 @@ Item {
                     text: "CNN"
                     border_width: 1
                     radius: 0
+                    enabled: current_img.source.toString() !== ""
                     onClicked: {
-//                        wait_page.visible = true
+                        wait_page.visible = true
+                        face_recognition_image_handler.cnn()
                     }
                 }
             }
@@ -500,7 +517,8 @@ Item {
             wrapMode: Text.WordWrap
             width: parent.width
             height: current_img_frame_text.height
-            text: "Processed image"
+            text: "Processed image (" + String(processed_img.sourceSize.width + " x " + processed_img.sourceSize.height) + ")"
+            visible: processed_img.source.toString() === "" ? false : true
         }
         Image {
             id: processed_img
@@ -513,8 +531,20 @@ Item {
             width: parent.width
             mipmap: true
             asynchronous: true
+            cache: false
             fillMode: Image.PreserveAspectFit
             source: ""
+            MouseArea {
+                anchors.centerIn: parent
+                width: processed_img.paintedWidth
+                height: processed_img.paintedHeight
+                onClicked: {
+                    var comp = Qt.createComponent("qrc:/qml/common/Full_screen_img.qml")
+                    var win = comp.createObject(root, { img_source: processed_img.source, window_type: false })
+                    win.show()
+                }
+                enabled: processed_img.source.toString() !== ""
+            }
         }
         Custom_btn_2 {
             id: recognize_btn

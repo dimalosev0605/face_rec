@@ -5,7 +5,8 @@
 #include "individual_manager.h"
 #include "available_people_model.h"
 #include "selected_people_model.h"
-#include "add_new_person_image_handler.h"
+#include "add_new_face_image_handler.h"
+#include "face_recognition_image_handler.h"
 
 int main(int argc, char *argv[])
 {
@@ -16,7 +17,8 @@ int main(int argc, char *argv[])
     app.setOrganizationDomain("supernovaexplosion.ddns");
 
     qmlRegisterType<Selected_images_model>("Selected_images_model_qml", 1, 0, "Selected_images_model");
-    qmlRegisterType<Add_new_person_image_handler>("Add_new_person_image_handler_qml", 1, 0, "Add_new_person_image_handler");
+    qmlRegisterType<Add_new_face_image_handler>("Add_new_face_image_handler_qml", 1, 0, "Add_new_face_image_handler");
+    qmlRegisterType<Face_recognition_image_handler>("Face_recognition_image_handler_qml", 1, 0, "Face_recognition_image_handler");
     qmlRegisterType<Individual_manager>("Individual_manager_qml", 1, 0, "Individual_manager");
     qmlRegisterType<Available_people_model>("Available_people_model_qml", 1, 0, "Available_people_model");
     qmlRegisterType<Selected_people_model>("Selected_people_model_qml", 1, 0, "Selected_people_model");

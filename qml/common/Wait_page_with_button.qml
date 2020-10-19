@@ -2,12 +2,14 @@ import QtQuick 2.12
 import QtQuick.Controls 2.15
 
 //import Image_handler_qml 1.0
-import Add_new_person_image_handler_qml 1.0
+import Add_new_face_image_handler_qml 1.0
+import Face_recognition_image_handler_qml 1.0
 
 Rectangle {
     id: root
 
-    property Add_new_person_image_handler add_new_person_image_handler: null
+    property Add_new_face_image_handler add_new_face_image_handler: null
+    property Face_recognition_image_handler face_recognition_image_handler: null
     property Image processed_img
 
     Component.onDestruction: {
@@ -38,8 +40,11 @@ Rectangle {
         pressed_color: "#ff0000"
         text: "Cancel"
         m_area.onClicked: {
-            if(add_new_person_image_handler !== null) {
-                add_new_person_image_handler.cancel()
+            if(add_new_face_image_handler !== null) {
+                add_new_face_image_handler.cancel()
+            }
+            if(face_recognition_image_handler !== null) {
+                face_recognition_image_handler.cancel()
             }
             processed_img.source = ""
             root.visible = false

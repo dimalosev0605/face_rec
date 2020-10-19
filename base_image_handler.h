@@ -42,6 +42,7 @@ protected:
     std::thread::id worker_thread_id;
 
     net_type cnn_face_detector;
+    dlib::shape_predictor shape_predictor;
     Individual_file_manager individual_file_manager;
 
 protected:

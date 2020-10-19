@@ -6,6 +6,7 @@ Base_image_handler::Base_image_handler(QObject* parent)
     std::thread load_model_thread([this]()
     {
         dlib::deserialize("mmod_human_face_detector.dat") >> cnn_face_detector;
+        dlib::deserialize("shape_predictor_5_face_landmarks.dat") >> shape_predictor;
     });
     load_model_thread.detach();
 }
@@ -126,7 +127,7 @@ void Base_image_handler::resize(const int new_width, const int new_height)
         dlib::matrix<dlib::rgb_pixel> resized_img(new_height, new_width);
         dlib::resize_image(img, resized_img);
 
-        update_processed_img(processing_img_path, img, "resized_");
+        update_processed_img(processing_img_path, resized_img, "resized_");
 
     }));
     worker_thread->detach();
