@@ -23,6 +23,7 @@ int main(int argc, char *argv[])
     qmlRegisterType<Available_people_model>("Available_people_model_qml", 1, 0, "Available_people_model");
     qmlRegisterType<Selected_people_model>("Selected_people_model_qml", 1, 0, "Selected_people_model");
 
+
     QQmlApplicationEngine engine;
 
     const QUrl url(QStringLiteral("qrc:/qml/main/main.qml"));

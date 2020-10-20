@@ -29,7 +29,7 @@ Item {
                                                        face_recognition_image_handler: face_recognition_image_handler,
                                                        processed_img: processed_img
                                                    });
-
+        face_recognition_image_handler.accept_people_for_recognition(selected_people_model.get_selected_people_list())
     }
     Component.onDestruction: {
         console.log("Step_2.qml destroyed, id = " + root)
@@ -40,7 +40,11 @@ Item {
         onImg_source_changed: {
             processed_img.source = ""
             processed_img.source = source
+            recognition_img.source = ""
             wait_page.visible = false
+        }
+        onRecognition_finished: {
+            recognition_img.source = processed_img_path
         }
     }
 
@@ -225,6 +229,7 @@ Item {
                 onCurrentIndexChanged: {
                     face_recognition_image_handler.cancel()
                     processed_img.source = ""
+                    recognition_img.source = ""
                 }
                 delegate: Selected_photos {
                     width: selected_photos_list_view.width - selected_photos_list_view_scroll_bar.implicitWidth
@@ -434,6 +439,7 @@ Item {
                     onClicked: {
                         face_recognition_image_handler.cancel()
                         processed_img.source = ""
+                        recognition_img.source = ""
                     }
                 }
             }
@@ -558,6 +564,10 @@ Item {
             text: "Recognize"
             border_width: 1
             radius: 3
+            enabled: processed_img.source.toString() !== ""
+            onClicked: {
+                face_recognition_image_handler.recognize()
+            }
         }
         Slider {
             id: threshold_slider
@@ -565,6 +575,9 @@ Item {
                 bottom: parent.bottom
                 bottomMargin: buttons_2_frame.anchors.bottomMargin
                 horizontalCenter: parent.horizontalCenter
+            }
+            onValueChanged: {
+                face_recognition_image_handler.set_threshold(threshold_slider.value)
             }
             height: buttons_2_frame.height
             width: parent.width * 0.5
@@ -592,4 +605,30 @@ Item {
         }
     }
 
+    Image {
+        id: recognition_img
+        anchors {
+            top: curr_img_frame.bottom
+            topMargin: 5
+            bottom: parent.bottom
+            bottomMargin: 5
+        }
+        width: parent.width
+        mipmap: true
+        asynchronous: true
+        cache: false
+        source: ""
+        fillMode: Image.PreserveAspectFit
+        MouseArea {
+            anchors.centerIn: parent
+            width: recognition_img.paintedWidth
+            height: recognition_img.paintedHeight
+            enabled: parent.source.toString() !== ""
+            onClicked: {
+                var comp = Qt.createComponent("qrc:/qml/common/Full_screen_img.qml")
+                var win = comp.createObject(root, { img_source: recognition_img.source, window_type: false })
+                win.show()
+            }
+        }
+    }
 }

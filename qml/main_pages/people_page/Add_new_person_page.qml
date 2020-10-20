@@ -36,6 +36,7 @@ Item {
         main_qml.esc_sc.enabled = false
     }
 
+    property bool update_people_list_flag: true
     Component.onDestruction: {
         console.log("Add_new_person_page destroyed. id = " + root)
         if(processed_photos_list_view.count === 0 && new_person_nickname_input.text !== "") {
@@ -43,7 +44,9 @@ Item {
         }
         if(processed_photos_list_view.count !== 0 && new_person_nickname_input.text !== "") {
             // it works, but people_page destroyed firstly if user click on help page.
-            people_page_qml.available_people_model.update()
+            if(update_people_list_flag) {
+                people_page_qml.available_people_model.update()
+            }
         }
         if(people_page_qml.edit_page === null) {
             main_qml.esc_sc.enabled = true
@@ -197,6 +200,7 @@ Item {
                 visible: processed_photos_list_view.count === 0 ? false : true
                 m_area.onClicked: {
                     people_page_qml.available_people_model.update()
+                    update_people_list_flag = false
                     people_page_qml.add_new_person_page.object.visible = false
                     people_page_qml.add_new_person_page.object.destroy(1000)
                     people_page_qml.add_new_person_page = null
