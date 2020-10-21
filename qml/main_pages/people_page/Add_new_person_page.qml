@@ -4,7 +4,6 @@ import QtQuick.Dialogs 1.2
 import QtGraphicalEffects 1.0
 
 import Selected_images_model_qml 1.0
-//import Image_handler_qml 1.0
 import Add_new_face_image_handler_qml 1.0
 import Individual_manager_qml 1.0
 
@@ -85,7 +84,7 @@ Item {
         sequence: "Esc"
         onActivated: {
             console.log("Add_new_person_page.qml Short cut")
-            cancel_individual_creation_btn.m_area.clicked(null)
+            close_btn.m_area.clicked(null)
         }
     }
 
@@ -116,32 +115,32 @@ Item {
             TextField {
                 id: new_person_nickname_input
                 anchors {
-                    left: parent.left
-                    leftMargin: 10
                     top: parent.top
                     topMargin: 10
+                    left: parent.left
+                    leftMargin: 10
                 }
                 width: 200
                 height: 30
                 placeholderText: "Enter person nickname"
                 Keys.onReturnPressed: {
-                    add_new_person_btn.m_area.clicked(null)
+                    add_new_person_btn.clicked(null)
                 }
             }
 
             property int space_between_btns: 10
-            Custom_button {
+            Custom_btn_2 {
                 id: add_new_person_btn
                 anchors {
+                    top: new_person_nickname_input.top
                     left: new_person_nickname_input.right
                     leftMargin: parent.space_between_btns
-                    verticalCenter: new_person_nickname_input.verticalCenter
                 }
-                width: height * 4
+                width: height * 2
                 height: new_person_nickname_input.height
                 enabled: new_person_nickname_input.text === "" ? false : true
-                text: "Add new person"
-                m_area.onClicked: {
+                text: "Add"
+                onClicked: {
                     if(individual_manager.add_new(new_person_nickname_input.text)) {
                         add_new_person_btn.visible = false
                         new_person_nickname_input.enabled = false
@@ -149,58 +148,51 @@ Item {
                     }
                 }
             }
-            Custom_button {
+            Custom_btn_2 {
                 id: select_photos_btn
                 anchors {
+                    top: new_person_nickname_input.top
                     left: new_person_nickname_input.right
                     leftMargin: parent.space_between_btns
-                    top: new_person_nickname_input.top
                 }
                 visible: !add_new_person_btn.visible
-                width: height * 4
+                width: height * 2
                 height: new_person_nickname_input.height
-                text: "Select photos"
-                m_area.onClicked: {
+                text: "Open"
+                onClicked: {
                     file_dialog.open()
                 }
             }
-            Custom_button {
-                id: cancel_individual_creation_btn
+            Custom_btn_2 {
+                id: finish_person_creation_btn
                 anchors {
+                    top: new_person_nickname_input.top
                     left: select_photos_btn.right
                     leftMargin: parent.space_between_btns
-                    top: select_photos_btn.top
                 }
-                visible: true
-                width: height * 4
+                width: height * 2
                 height: new_person_nickname_input.height
-                default_color: "#ffaf99"
-                hovered_color: "#ff4000"
-                pressed_color: "#e63900"
-                border_pressed_color: "#661400"
-                text: "Cancel"
-                m_area.onClicked: {
-                    individual_manager.cancel_creation()
+                text: "Save"
+                visible: processed_photos_list_view.count === 0 ? false : true
+                onClicked: {
+                    people_page_qml.available_people_model.update()
+                    update_people_list_flag = false
                     people_page_qml.add_new_person_page.object.visible = false
                     people_page_qml.add_new_person_page.object.destroy(1000)
                     people_page_qml.add_new_person_page = null
                     people_page_qml.default_page.visible = true
                 }
             }
-            Custom_button {
-                id: finish_person_creation_btn
+            Close_btn {
+                id: close_btn
                 anchors {
-                    left: cancel_individual_creation_btn.right
-                    leftMargin: parent.space_between_btns
-                    verticalCenter: new_person_nickname_input.verticalCenter
+                    top: parent.top
+                    topMargin: new_person_nickname_input.anchors.topMargin
+                    right: parent.right
+                    rightMargin: new_person_nickname_input.anchors.leftMargin
                 }
-                width: height * 4
-                height: new_person_nickname_input.height
-                text: "Add person"
-                visible: processed_photos_list_view.count === 0 ? false : true
                 m_area.onClicked: {
-                    people_page_qml.available_people_model.update()
-                    update_people_list_flag = false
+                    individual_manager.cancel_creation()
                     people_page_qml.add_new_person_page.object.visible = false
                     people_page_qml.add_new_person_page.object.destroy(1000)
                     people_page_qml.add_new_person_page = null
@@ -235,7 +227,7 @@ Item {
                         processed_img.source = ""
                     }
                     delegate: Selected_photos {
-                        width: selected_photos_list_view.width
+                        width: selected_photos_list_view.width - selected_photos_list_view_scroll_bar.implicitWidth
                         color: (ListView.isCurrentItem ? highlighted_color :
                                                         delegate_body_m_area.containsMouse ?
                                                         delegate_body_m_area.pressed ?
@@ -251,6 +243,21 @@ Item {
                             extract_face_btn.enabled = false
                             processed_img.source = ""
                             selected_images_model.delete_image(index)
+                        }
+                    }
+                    ScrollBar.vertical: selected_photos_list_view_scroll_bar
+                    ScrollBar {
+                        id: selected_photos_list_view_scroll_bar
+                        active: true
+                        hoverEnabled: true
+                        orientation: Qt.Vertical
+                        size: 0.5
+                        contentItem: Rectangle {
+                            implicitWidth: 5
+                            radius: 2
+                            color: selected_photos_list_view_scroll_bar.hovered ?
+                                   selected_photos_list_view_scroll_bar.pressed ? "#000000" : "#999999" :
+                                   selected_photos_list_view_scroll_bar.pressed ? "#000000" : "#cccccc"
                         }
                     }
                 }
@@ -277,12 +284,27 @@ Item {
                     clip: true
                     currentIndex: -1
                     delegate: Processed_photos {
-                        width: processed_photos_list_view.width
+                        width: processed_photos_list_view.width - processed_photos_list_view_scroll_bar.implicitWidth
                         source_img_src: "file://" + String(model.src_img_path)
                         extracted_face_img_src: "file://" + String(model.extracted_face_img_path)
                         extracted_face_img_file_name: String(model.file_name)
                         delete_from_processed_imgs_btn_m_area.onClicked: {
                             individual_manager.delete_face(index)
+                        }
+                    }
+                    ScrollBar.vertical: processed_photos_list_view_scroll_bar
+                    ScrollBar {
+                        id: processed_photos_list_view_scroll_bar
+                        active: true
+                        hoverEnabled: true
+                        orientation: Qt.Vertical
+                        size: 0.5
+                        contentItem: Rectangle {
+                            implicitWidth: 5
+                            radius: 2
+                            color: processed_photos_list_view_scroll_bar.hovered ?
+                                   processed_photos_list_view_scroll_bar.pressed ? "#000000" : "#999999" :
+                                   processed_photos_list_view_scroll_bar.pressed ? "#000000" : "#cccccc"
                         }
                     }
                 }
@@ -369,24 +391,24 @@ Item {
                         height: parent.height
                         width: (parent.width - (selected_img_row_buttons.number_of_cols - 1) * parent.spacing) / selected_img_row_buttons.number_of_cols
                         spacing: 3
-                        Custom_button {
+                        Custom_btn_2 {
                             id: hog_btn
                             text: "HOG"
                             width: parent.width
                             height: (parent.height - parent.spacing) / selected_img_row_buttons.number_of_rows
                             enabled: selected_photos_list_view.currentItem === null ? false : save_btn.enabled ? false : true
-                            m_area.onClicked: {
+                            onClicked: {
                                 wait_page.visible = true
                                 add_new_face_image_handler.hog()
                             }
                         }
-                        Custom_button {
+                        Custom_btn_2 {
                             id: cnn_btn
                             text: "CNN"
                             width: parent.width
                             height: (parent.height - parent.spacing) / selected_img_row_buttons.number_of_rows
                             enabled: selected_photos_list_view.currentItem === null ? false : save_btn.enabled ? false : true
-                            m_area.onClicked: {
+                            onClicked: {
                                 wait_page.visible = true
                                 add_new_face_image_handler.cnn()
                             }
@@ -396,24 +418,24 @@ Item {
                         height: parent.height
                         width: (parent.width - (selected_img_row_buttons.number_of_cols - 1) * parent.spacing) / selected_img_row_buttons.number_of_cols
                         spacing: 3
-                        Custom_button {
+                        Custom_btn_2 {
                             id: pyr_up_btn
                             text: "Pyr up"
                             width: parent.width
                             height: (parent.height - parent.spacing) / selected_img_row_buttons.number_of_rows
                             enabled: selected_photos_list_view.currentItem === null ? false : save_btn.enabled ? false : true
-                            m_area.onClicked: {
+                            onClicked: {
                                 wait_page.visible = true
                                 add_new_face_image_handler.pyr_up()
                             }
                         }
-                        Custom_button {
+                        Custom_btn_2 {
                             id: pyr_down_btn
                             text: "Pyr down"
                             width: parent.width
                             height: (parent.height - parent.spacing) / selected_img_row_buttons.number_of_rows
                             enabled: selected_photos_list_view.currentItem === null ? false : save_btn.enabled ? false : true
-                            m_area.onClicked: {
+                            onClicked: {
                                 wait_page.visible = true
                                 add_new_face_image_handler.pyr_down()
                             }
@@ -423,13 +445,13 @@ Item {
                         height: parent.height
                         width: (parent.width - (selected_img_row_buttons.number_of_cols - 1) * parent.spacing) / selected_img_row_buttons.number_of_cols
                         spacing: 3
-                        Custom_button {
+                        Custom_btn_2 {
                             id: resize_btn
                             text: "Resize"
                             width: parent.width
                             height: (parent.height - parent.spacing) / selected_img_row_buttons.number_of_rows
                             enabled: selected_photos_list_view.currentItem === null ? false : save_btn.enabled ? false : true
-                            m_area.onClicked: {
+                            onClicked: {
                                 new_size_popup.open()
                             }
                             Popup {
@@ -464,11 +486,11 @@ Item {
                                         wrapMode: TextInput.WrapAnywhere
                                         validator: IntValidator{bottom: 1; top: 2160;}
                                     }
-                                    Custom_button {
+                                    Custom_btn_2 {
                                         height: col.item_h
                                         width: parent.width
                                         text: "Ok"
-                                        m_area.onClicked: {
+                                        onClicked: {
                                             if(width_input.acceptableInput && height_input.acceptableInput) {
                                                 wait_page.visible = true
                                                 add_new_face_image_handler.resize(width_input.text, height_input.text)
@@ -479,13 +501,13 @@ Item {
                                 }
                             }
                         }
-                        Custom_button {
+                        Custom_btn_2 {
                             id: cancel_btn
                             text: "Cancel"
                             width: parent.width
                             height: (parent.height - parent.spacing) / selected_img_row_buttons.number_of_rows
                             enabled: processed_img.source.toString() === "" ? false : true
-                            m_area.onClicked: {
+                            onClicked: {
                                 processed_img.source = ""
                                 add_new_face_image_handler.cancel()
                                 extract_face_btn.enabled = false
@@ -556,25 +578,25 @@ Item {
                     }
                     height: 60
                     spacing: 10
-                    Custom_button {
+                    Custom_btn_2 {
                         id: extract_face_btn
                         text: "Extract face"
                         height: parent.height
                         width: (parent.width - parent.spacing) / 2
                         enabled: false
-                        m_area.onClicked: {
+                        onClicked: {
                             wait_page.visible = true
                             add_new_face_image_handler.extract_face()
                             save_btn.enabled = true
                         }
                     }
-                    Custom_button {
+                    Custom_btn_2 {
                         id: save_btn
                         text: "Save"
                         height: parent.height
                         width: (parent.width - parent.spacing) / 2
                         enabled: false
-                        m_area.onClicked: {
+                        onClicked: {
                             if(individual_manager.add_face(selected_img.source.toString(),
                                                                processed_img.source.toString())) {
                                 add_new_face_image_handler.cancel()

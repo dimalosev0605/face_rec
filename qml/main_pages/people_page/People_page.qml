@@ -76,7 +76,7 @@ Item {
                 }
                 height: 30
                 property int space_between_items: 10
-                width: parent.width - anchors.leftMargin - add_new_people_btn_canvas.width - add_new_people_btn_canvas.anchors.rightMargin - space_between_items
+                width: parent.width - anchors.leftMargin - add_new_people_btn.width - add_new_people_btn.anchors.rightMargin - space_between_items
                 placeholderText: "Search"
                 background: Rectangle {
                     color: search_people_input.activeFocus ? "white" : "#e6e6e6"
@@ -85,45 +85,36 @@ Item {
                     radius: 5
                 }
             }
-            Canvas {
-                id: add_new_people_btn_canvas
+            Rectangle {
+                id: add_new_people_btn
                 anchors {
                     topMargin: search_people_input.anchors.topMargin
                     right: parent.right
                     rightMargin: 5
                     verticalCenter: search_people_input.verticalCenter
                 }
-                height: search_people_input.height * 0.9
+                height: search_people_input.height
                 width: height
-                onPaint: {
-                    var ctx = getContext("2d")
-                    var lw = 1.5;
-                    var delta = 3
-                    ctx.lineWidth = lw
-                    ctx.strokeStyle = add_new_people_btn_m_area.pressed ? people_list.color : "#000000"
-                    ctx.fillStyle = add_new_people_btn_m_area.containsMouse ?
-                                    add_new_people_btn_m_area.pressed ?
-                                    "#00ff00" : "#cccccc" : add_new_people_btn_m_area.pressed ? "#00ff00" : people_list.color
-                    ctx.beginPath()
-                    ctx.ellipse(lw, lw, width - lw * 2, height - lw * 2)
-                    ctx.moveTo(lw + (width - lw * 2) / 2, lw + delta)
-                    ctx.lineTo(lw + (width - lw * 2) / 2, lw + height - lw * 2 - delta)
-                    ctx.moveTo(lw + delta, lw + (height - lw * 2) / 2)
-                    ctx.lineTo(lw + width - lw * 2 - delta, lw + (height - lw * 2) / 2)
-                    ctx.fill()
-                    ctx.stroke()
+                border.width: 1
+                border.color: "#000000"
+                radius: 5
+                color: add_new_people_btn_m_area.containsMouse ? add_new_people_btn_m_area.pressed ? "#00ff00" : "#cfcfcf" : "transparent"
+                Image {
+                    anchors {
+                        fill: parent
+                        margins: 3
+                    }
+                    fillMode: Image.PreserveAspectFit
+                    mipmap: true
+                    asynchronous: true
+                    source: "qrc:/qml/icons/add.png"
                 }
                 MouseArea {
                     id: add_new_people_btn_m_area
                     anchors.fill: parent
                     hoverEnabled: true
-                    onContainsMouseChanged: {
-                        add_new_people_btn_canvas.requestPaint()
-                    }
-                    onPressedChanged: {
-                        add_new_people_btn_canvas.requestPaint()
-                    }
                     onClicked: {
+                        people_list_view.currentIndex = -1
                         if(edit_page !== null) {
                             edit_page.object.visible = false
                             edit_page.object.destroy(1000)
@@ -169,11 +160,18 @@ Item {
                 }
                 model: available_people_model
                 clip: true
+                currentIndex: -1
                 delegate: People_list {
                     width: people_list_view.width - people_list_view_scroll_bar.implicitWidth
                     avatar_path: "file://" + model.avatar_path
                     individual_name: model.individual_name
+                    color: (ListView.isCurrentItem ? highlighted_color :
+                                                    individual_avatar_m_area.containsMouse ?
+                                                    individual_avatar_m_area.pressed ?
+                                                    highlighted_color : hovered_color :
+                                                    default_color)
                     delete_individual_btn_m_area.onClicked: {
+                        var old_index = people_list_view.currentIndex
                         people_list_view.currentIndex = index
                         if(edit_page !== null) {
                             if(edit_page.object.edited_individual_name === people_list_view.currentItem.individual_name) {
@@ -181,9 +179,18 @@ Item {
                                 edit_page.object.destroy(1000)
                                 edit_page = null
                                 default_page.visible = true
+                                people_list_view.currentIndex = -1
+                                available_people_model.delete_individual(index)
+                                return
                             }
                         }
                         available_people_model.delete_individual(index)
+                        if(people_list_view.currentIndex < old_index) {
+                            people_list_view.currentIndex = old_index - 1
+                        }
+                        else {
+                            people_list_view.currentIndex = old_index
+                        }
                     }
                     individual_avatar_m_area.onDoubleClicked: {
 

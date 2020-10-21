@@ -6,7 +6,7 @@ import "../common"
 
 Rectangle {
     id: processed_imgs_delegate
-    height: 60
+    height: 50
     radius: 2
 
     property color hovered_color: "#d4d4d4"
