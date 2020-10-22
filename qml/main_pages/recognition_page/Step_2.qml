@@ -346,7 +346,7 @@ Item {
                 spacing: 0
                 property int btns_count: 4
                 property real btns_width: (width - (btns_count - 1) * spacing) / btns_count
-                Custom_btn_2 {
+                Custom_btn {
                     id: pyr_up_btn
                     height: parent.height
                     width: parent.btns_width
@@ -359,7 +359,7 @@ Item {
                         face_recognition_image_handler.pyr_up()
                     }
                 }
-                Custom_btn_2 {
+                Custom_btn {
                     id: pyr_down_btn
                     height: parent.height
                     width: parent.btns_width
@@ -372,7 +372,7 @@ Item {
                         face_recognition_image_handler.pyr_down()
                     }
                 }
-                Custom_btn_2 {
+                Custom_btn {
                     id: resize_btn
                     height: parent.height
                     width: parent.btns_width
@@ -413,7 +413,7 @@ Item {
                                 wrapMode: TextInput.WrapAnywhere
                                 validator: IntValidator{bottom: 1; top: 2160;}
                             }
-                            Custom_btn_2 {
+                            Custom_btn {
                                 height: col.item_h
                                 width: parent.width
                                 text: "Ok"
@@ -428,7 +428,7 @@ Item {
                         }
                     }
                 }
-                Custom_btn_2 {
+                Custom_btn {
                     id: cancel_btn
                     height: parent.height
                     width: parent.btns_width
@@ -464,7 +464,7 @@ Item {
                 spacing: buttons_1_row.spacing
                 property int btns_count: 2
                 property real btns_width: (width - (btns_count - 1) * spacing) / btns_count
-                Custom_btn_2 {
+                Custom_btn {
                     id: hog_face_rec
                     height: parent.height
                     width: parent.btns_width
@@ -477,7 +477,7 @@ Item {
                         face_recognition_image_handler.hog()
                     }
                 }
-                Custom_btn_2 {
+                Custom_btn {
                     id: cnn_face_rec
                     height: parent.height
                     width: parent.btns_width
@@ -552,7 +552,7 @@ Item {
                 enabled: processed_img.source.toString() !== ""
             }
         }
-        Custom_btn_2 {
+        Custom_btn {
             id: recognize_btn
             anchors {
                 bottom: threshold_slider.top

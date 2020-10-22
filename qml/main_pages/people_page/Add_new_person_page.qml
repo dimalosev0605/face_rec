@@ -129,7 +129,7 @@ Item {
             }
 
             property int space_between_btns: 10
-            Custom_btn_2 {
+            Custom_btn {
                 id: add_new_person_btn
                 anchors {
                     top: new_person_nickname_input.top
@@ -148,7 +148,7 @@ Item {
                     }
                 }
             }
-            Custom_btn_2 {
+            Custom_btn {
                 id: select_photos_btn
                 anchors {
                     top: new_person_nickname_input.top
@@ -163,7 +163,7 @@ Item {
                     file_dialog.open()
                 }
             }
-            Custom_btn_2 {
+            Custom_btn {
                 id: finish_person_creation_btn
                 anchors {
                     top: new_person_nickname_input.top
@@ -391,7 +391,7 @@ Item {
                         height: parent.height
                         width: (parent.width - (selected_img_row_buttons.number_of_cols - 1) * parent.spacing) / selected_img_row_buttons.number_of_cols
                         spacing: 3
-                        Custom_btn_2 {
+                        Custom_btn {
                             id: hog_btn
                             text: "HOG"
                             width: parent.width
@@ -402,7 +402,7 @@ Item {
                                 add_new_face_image_handler.hog()
                             }
                         }
-                        Custom_btn_2 {
+                        Custom_btn {
                             id: cnn_btn
                             text: "CNN"
                             width: parent.width
@@ -418,7 +418,7 @@ Item {
                         height: parent.height
                         width: (parent.width - (selected_img_row_buttons.number_of_cols - 1) * parent.spacing) / selected_img_row_buttons.number_of_cols
                         spacing: 3
-                        Custom_btn_2 {
+                        Custom_btn {
                             id: pyr_up_btn
                             text: "Pyr up"
                             width: parent.width
@@ -429,7 +429,7 @@ Item {
                                 add_new_face_image_handler.pyr_up()
                             }
                         }
-                        Custom_btn_2 {
+                        Custom_btn {
                             id: pyr_down_btn
                             text: "Pyr down"
                             width: parent.width
@@ -445,7 +445,7 @@ Item {
                         height: parent.height
                         width: (parent.width - (selected_img_row_buttons.number_of_cols - 1) * parent.spacing) / selected_img_row_buttons.number_of_cols
                         spacing: 3
-                        Custom_btn_2 {
+                        Custom_btn {
                             id: resize_btn
                             text: "Resize"
                             width: parent.width
@@ -486,7 +486,7 @@ Item {
                                         wrapMode: TextInput.WrapAnywhere
                                         validator: IntValidator{bottom: 1; top: 2160;}
                                     }
-                                    Custom_btn_2 {
+                                    Custom_btn {
                                         height: col.item_h
                                         width: parent.width
                                         text: "Ok"
@@ -501,12 +501,13 @@ Item {
                                 }
                             }
                         }
-                        Custom_btn_2 {
+                        Custom_btn {
                             id: cancel_btn
                             text: "Cancel"
                             width: parent.width
                             height: (parent.height - parent.spacing) / selected_img_row_buttons.number_of_rows
                             enabled: processed_img.source.toString() === "" ? false : true
+                            pressed_color: "#ff0000"
                             onClicked: {
                                 processed_img.source = ""
                                 add_new_face_image_handler.cancel()
@@ -578,7 +579,7 @@ Item {
                     }
                     height: 60
                     spacing: 10
-                    Custom_btn_2 {
+                    Custom_btn {
                         id: extract_face_btn
                         text: "Extract face"
                         height: parent.height
@@ -590,7 +591,7 @@ Item {
                             save_btn.enabled = true
                         }
                     }
-                    Custom_btn_2 {
+                    Custom_btn {
                         id: save_btn
                         text: "Save"
                         height: parent.height

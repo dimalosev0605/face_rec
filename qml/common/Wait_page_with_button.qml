@@ -1,7 +1,6 @@
 import QtQuick 2.12
 import QtQuick.Controls 2.15
 
-//import Image_handler_qml 1.0
 import Add_new_face_image_handler_qml 1.0
 import Face_recognition_image_handler_qml 1.0
 
@@ -28,7 +27,7 @@ Rectangle {
     MouseArea {
         anchors.fill: parent
     }
-    Custom_button {
+    Custom_btn {
         id: cancel_processing_btn
         anchors {
             top: busy_indicator.bottom
@@ -37,9 +36,9 @@ Rectangle {
         }
         height: 40
         width: 150
-        pressed_color: "#ff0000"
         text: "Cancel"
-        m_area.onClicked: {
+        pressed_color: "#ff0000"
+        onClicked: {
             if(add_new_face_image_handler !== null) {
                 add_new_face_image_handler.cancel()
             }

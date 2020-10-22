@@ -156,8 +156,7 @@ Window {
             }
         }
     }
-    Image {
-        id: img
+    Item {
         anchors {
             left: left_arrow_btn.right
             leftMargin: 5
@@ -168,11 +167,20 @@ Window {
             bottom: parent.bottom
             bottomMargin: 5
         }
-        cache: false
-//        asynchronous: true
-        mipmap: true
-        fillMode: Image.PreserveAspectFit
+        Image {
+            id: img
+            anchors {
+                centerIn: parent
+            }
+            width: sourceSize.width <= 150 ? 150 : parent.width
+            height: sourceSize.height <= 150 ? 150 : parent.height
+            cache: false
+            asynchronous: true
+            mipmap: true
+            fillMode: Image.PreserveAspectFit
+        }
     }
+
     Shortcut {
         sequence: "Esc"
         onActivated: {

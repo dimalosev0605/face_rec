@@ -120,7 +120,7 @@ Item {
                     selected_people_model.accept_item(individual_name, avatar_path)
                 }
             }
-            delegate: Recognition_people_list_delegate {
+            delegate: Recognition_people_list {
                 width: people_list_view.width - people_list_view_scroll_bar.implicitWidth
                 avatar_src: "file://" + model.avatar_path
                 nickname: model.individual_name
@@ -242,7 +242,7 @@ Item {
                     available_people_model.accept_item(individual_name, avatar_path)
                 }
             }
-            delegate: Recognition_people_list_delegate {
+            delegate: Recognition_people_list {
                 width: selected_people_list_view.width - selected_people_list_view_scroll_bar.implicitWidth
                 avatar_src: "file://" + model.avatar_path
                 nickname: model.individual_name
