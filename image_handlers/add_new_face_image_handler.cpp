@@ -1,4 +1,4 @@
-#include "add_new_face_image_handler.h"
+#include "image_handlers/add_new_face_image_handler.h"
 
 Add_new_face_image_handler::Add_new_face_image_handler(QObject* parent)
     : Base_image_handler(parent)

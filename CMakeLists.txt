@@ -21,35 +21,26 @@ include_directories(${OpenCV_INCLUDE_DIRS})
 add_executable(face_rec
     main.cpp
 
-    selected_images_model.h
-    selected_images_model.cpp
-    
-    image_handler.h
-    image_handler.cpp
+    other/selected_images_model.h
+    other/selected_images_model.cpp
+    other/individual_manager.h
+    other/individual_manager.cpp
+    other/individual_file_manager.h
+    other/individual_file_manager.cpp
 
-    individual_manager.h
-    individual_manager.cpp
+    people_models/base_people_model.h
+    people_models/base_people_model.cpp
+    people_models/available_people_model.h
+    people_models/available_people_model.cpp
+    people_models/selected_people_model.h
+    people_models/selected_people_model.cpp
 
-    individual_file_manager.h
-    individual_file_manager.cpp
-
-    base_people_model.h
-    base_people_model.cpp
-
-    available_people_model.h
-    available_people_model.cpp
-
-    selected_people_model.h
-    selected_people_model.cpp
-
-    base_image_handler.h
-    base_image_handler.cpp
-
-    add_new_face_image_handler.h
-    add_new_face_image_handler.cpp
-
-    face_recognition_image_handler.h
-    face_recognition_image_handler.cpp
+    image_handlers/base_image_handler.h
+    image_handlers/base_image_handler.cpp
+    image_handlers/add_new_face_image_handler.h
+    image_handlers/add_new_face_image_handler.cpp
+    image_handlers/face_recognition_image_handler.h
+    image_handlers/face_recognition_image_handler.cpp
 
     qml.qrc)
 

@@ -1,4 +1,4 @@
-#include "base_people_model.h"
+#include "people_models/base_people_model.h"
 
 Base_people_model::Base_people_model(QObject *parent):
     QAbstractListModel(parent)

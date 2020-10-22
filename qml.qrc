@@ -17,7 +17,6 @@
         <file>qml/icons/exit.png</file>
         <file>qml/icons/people.png</file>
         <file>qml/icons/recognition.png</file>
-        <file>qml/icons/trash.png</file>
         <file>qml/icons/cross.png</file>
         <file>qml/icons/edit.png</file>
         <file>qml/icons/ok.png</file>
@@ -26,7 +25,6 @@
         <file>qml/common/Close_btn.qml</file>
         <file>qml/delegates/Recognition_people_list_delegate.qml</file>
         <file>qml/icons/add.png</file>
-        <file>qml/icons/all.jpg</file>
         <file>qml/icons/double_left_arrow.png</file>
         <file>qml/icons/double_right_arrow.png</file>
         <file>qml/icons/remove.png</file>

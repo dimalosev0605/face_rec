@@ -20,7 +20,7 @@
 #include <thread>
 #include <utility>
 
-#include "individual_file_manager.h"
+#include "other/individual_file_manager.h"
 
 template <long num_filters, typename SUBNET> using con5d = dlib::con<num_filters,5,5,2,2,SUBNET>;
 template <long num_filters, typename SUBNET> using con5  = dlib::con<num_filters,5,5,1,1,SUBNET>;

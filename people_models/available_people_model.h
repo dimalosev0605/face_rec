@@ -2,7 +2,7 @@
 #define AVAILABLE_PEOPLE_MODEL_H
 
 #include "base_people_model.h"
-#include "individual_file_manager.h"
+#include "other/individual_file_manager.h"
 
 class Available_people_model: public Base_people_model
 {

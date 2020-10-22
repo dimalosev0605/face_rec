@@ -1,4 +1,4 @@
-#include "base_image_handler.h"
+#include "image_handlers/base_image_handler.h"
 
 Base_image_handler::Base_image_handler(QObject* parent)
     : QObject(parent)

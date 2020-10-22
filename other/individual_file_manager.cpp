@@ -1,4 +1,4 @@
-#include "individual_file_manager.h"
+#include "other/individual_file_manager.h"
 
 const QString Individual_file_manager::data_dir = "data";
 const QString Individual_file_manager::shared_dir = "shared_dir";

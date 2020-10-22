@@ -1,4 +1,4 @@
-#include "individual_manager.h"
+#include "other/individual_manager.h"
 
 Individual_manager::Individual_manager(QObject* parent)
     : QAbstractListModel(parent)

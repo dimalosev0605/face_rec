@@ -1,4 +1,4 @@
-#include "selected_images_model.h"
+#include "other/selected_images_model.h"
 
 Selected_images_model::Selected_images_model(QObject* parent)
     : QAbstractListModel(parent)

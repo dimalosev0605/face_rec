@@ -1,4 +1,4 @@
-#include "face_recognition_image_handler.h"
+#include "image_handlers/face_recognition_image_handler.h"
 
 Face_recognition_image_handler::Face_recognition_image_handler(QObject* parent)
     : Base_image_handler(parent)

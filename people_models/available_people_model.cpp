@@ -1,4 +1,4 @@
-#include "available_people_model.h"
+#include "people_models/available_people_model.h"
 
 
 Available_people_model::Available_people_model(QObject *parent)
