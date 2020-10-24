@@ -47,6 +47,7 @@ class Face_recognition_image_handler: public Base_image_handler
 
 private:
     void fill_known_people_map();
+    void clear_data_structures();
 
 public:
     explicit Face_recognition_image_handler(QObject* parent = nullptr);

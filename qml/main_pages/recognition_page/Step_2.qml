@@ -44,7 +44,9 @@ Item {
             wait_page.visible = false
         }
         onRecognition_finished: {
+            recognition_img.source = ""
             recognition_img.source = processed_img_path
+            wait_page.visible = false
         }
     }
 
@@ -566,6 +568,7 @@ Item {
             radius: 3
             enabled: processed_img.source.toString() !== ""
             onClicked: {
+                wait_page.visible = true
                 face_recognition_image_handler.recognize()
             }
         }
