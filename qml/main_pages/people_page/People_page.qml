@@ -5,6 +5,7 @@ import QtGraphicalEffects 1.0
 import Available_people_model_qml 1.0
 
 import "../../delegates"
+import "../../common"
 
 Item {
     id: people_page_qml
@@ -239,21 +240,7 @@ Item {
                         }
                     }
                 }
-                ScrollBar.vertical: people_list_view_scroll_bar
-                ScrollBar {
-                    id: people_list_view_scroll_bar
-                    active: true
-                    hoverEnabled: true
-                    orientation: Qt.Vertical
-                    size: 0.5
-                    contentItem: Rectangle {
-                        implicitWidth: 5
-                        radius: 2
-                        color: people_list_view_scroll_bar.hovered ?
-                               people_list_view_scroll_bar.pressed ? "#000000" : "#999999" :
-                               people_list_view_scroll_bar.pressed ? "#000000" : "#cccccc"
-                    }
-                }
+                ScrollBar.vertical: Scroll_bar { id: people_list_view_scroll_bar }
             }
         }
     }

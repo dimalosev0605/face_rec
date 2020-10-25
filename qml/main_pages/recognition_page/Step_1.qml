@@ -112,7 +112,6 @@ Item {
                 right: parent.right
                 rightMargin: people_list_frame.border.width
             }
-//            width: parent.width - people_list_frame.border.width
             clip: true
             model: Available_people_model {
                 id: available_people_model
@@ -129,21 +128,7 @@ Item {
                     available_people_model.pass_item(index)
                 }
             }
-            ScrollBar.vertical: people_list_view_scroll_bar
-            ScrollBar {
-                id: people_list_view_scroll_bar
-                active: true
-                hoverEnabled: true
-                orientation: Qt.Vertical
-                size: 0.5
-                contentItem: Rectangle {
-                    implicitWidth: 5
-                    radius: 2
-                    color: people_list_view_scroll_bar.hovered ?
-                           people_list_view_scroll_bar.pressed ? "#000000" : "#999999" :
-                           people_list_view_scroll_bar.pressed ? "#000000" : "#cccccc"
-                }
-            }
+            ScrollBar.vertical: Scroll_bar { id: people_list_view_scroll_bar }
         }
     }
     Column {
@@ -251,21 +236,7 @@ Item {
                     selected_people_model.pass_item(index)
                 }
             }
-            ScrollBar.vertical: selected_people_list_view_scroll_bar
-            ScrollBar {
-                id: selected_people_list_view_scroll_bar
-                active: true
-                hoverEnabled: true
-                orientation: Qt.Vertical
-                size: 0.5
-                contentItem: Rectangle {
-                    implicitWidth: 5
-                    radius: 2
-                    color: selected_people_list_view_scroll_bar.hovered ?
-                           selected_people_list_view_scroll_bar.pressed ? "#000000" : "#999999" :
-                           selected_people_list_view_scroll_bar.pressed ? "#000000" : "#cccccc"
-                }
-            }
+            ScrollBar.vertical: Scroll_bar { id: selected_people_list_view_scroll_bar }
         }
     }
     Button {

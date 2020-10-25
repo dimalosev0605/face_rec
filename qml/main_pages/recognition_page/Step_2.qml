@@ -250,21 +250,7 @@ Item {
                         selected_images_model.delete_image(index)
                     }
                 }
-                ScrollBar.vertical: selected_photos_list_view_scroll_bar
-                ScrollBar {
-                    id: selected_photos_list_view_scroll_bar
-                    active: true
-                    hoverEnabled: true
-                    orientation: Qt.Vertical
-                    size: 0.5
-                    contentItem: Rectangle {
-                        implicitWidth: 5
-                        radius: 2
-                        color: selected_photos_list_view_scroll_bar.hovered ?
-                               selected_photos_list_view_scroll_bar.pressed ? "#000000" : "#999999" :
-                               selected_photos_list_view_scroll_bar.pressed ? "#000000" : "#cccccc"
-                    }
-                }
+                ScrollBar.vertical: Scroll_bar { id: selected_photos_list_view_scroll_bar }
                 Text {
                     verticalAlignment: Text.AlignVCenter
                     horizontalAlignment: Text.AlignHCenter
@@ -273,7 +259,7 @@ Item {
                     font.pointSize: 15
                     elide: Text.ElideRight
                     wrapMode: Text.WordWrap
-                    width: parent.width - selected_photos_list_view_scroll_bar.implicitBackgroundWidth
+                    width: parent.width - selected_photos_list_view_scroll_bar.implicitWidth
                     height: parent.height
                     text: "List is empty."
                     visible: selected_photos_list_view.count === 0

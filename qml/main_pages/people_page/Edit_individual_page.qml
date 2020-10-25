@@ -253,21 +253,7 @@ Item {
                             selected_images_model.delete_image(index)
                         }
                     }
-                    ScrollBar.vertical: selected_photos_list_view_scroll_bar
-                    ScrollBar {
-                        id: selected_photos_list_view_scroll_bar
-                        active: true
-                        hoverEnabled: true
-                        orientation: Qt.Vertical
-                        size: 0.5
-                        contentItem: Rectangle {
-                            implicitWidth: 5
-                            radius: 2
-                            color: selected_photos_list_view_scroll_bar.hovered ?
-                                   selected_photos_list_view_scroll_bar.pressed ? "#000000" : "#999999" :
-                                   selected_photos_list_view_scroll_bar.pressed ? "#000000" : "#cccccc"
-                        }
-                    }
+                    ScrollBar.vertical: Scroll_bar { id: selected_photos_list_view_scroll_bar }
                 }
             }
             Item {
@@ -299,21 +285,7 @@ Item {
                             individual_manager.delete_face(index)
                         }
                     }
-                    ScrollBar.vertical: processed_photos_list_view_scroll_bar
-                    ScrollBar {
-                        id: processed_photos_list_view_scroll_bar
-                        active: true
-                        hoverEnabled: true
-                        orientation: Qt.Vertical
-                        size: 0.5
-                        contentItem: Rectangle {
-                            implicitWidth: 5
-                            radius: 2
-                            color: processed_photos_list_view_scroll_bar.hovered ?
-                                   processed_photos_list_view_scroll_bar.pressed ? "#000000" : "#999999" :
-                                   processed_photos_list_view_scroll_bar.pressed ? "#000000" : "#cccccc"
-                        }
-                    }
+                    ScrollBar.vertical: Scroll_bar { id: processed_photos_list_view_scroll_bar }
                 }
             }
         }
