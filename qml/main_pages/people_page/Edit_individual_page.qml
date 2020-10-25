@@ -235,7 +235,7 @@ Item {
                         processed_img.source = ""
                     }
                     delegate: Selected_photos {
-                        width: selected_photos_list_view.width
+                        width: selected_photos_list_view.width - selected_photos_list_view_scroll_bar.implicitWidth
                         color: (ListView.isCurrentItem ? highlighted_color :
                                                         delegate_body_m_area.containsMouse ?
                                                         delegate_body_m_area.pressed ?
@@ -251,6 +251,21 @@ Item {
                             extract_face_btn.enabled = false
                             processed_img.source = ""
                             selected_images_model.delete_image(index)
+                        }
+                    }
+                    ScrollBar.vertical: selected_photos_list_view_scroll_bar
+                    ScrollBar {
+                        id: selected_photos_list_view_scroll_bar
+                        active: true
+                        hoverEnabled: true
+                        orientation: Qt.Vertical
+                        size: 0.5
+                        contentItem: Rectangle {
+                            implicitWidth: 5
+                            radius: 2
+                            color: selected_photos_list_view_scroll_bar.hovered ?
+                                   selected_photos_list_view_scroll_bar.pressed ? "#000000" : "#999999" :
+                                   selected_photos_list_view_scroll_bar.pressed ? "#000000" : "#cccccc"
                         }
                     }
                 }
@@ -276,12 +291,27 @@ Item {
                     clip: true
                     currentIndex: -1
                     delegate: Processed_photos {
-                        width: processed_photos_list_view.width
+                        width: processed_photos_list_view.width - processed_photos_list_view_scroll_bar.implicitWidth
                         source_img_src: "file://" + String(model.src_img_path)
                         extracted_face_img_src: "file://" + String(model.extracted_face_img_path)
                         extracted_face_img_file_name: String(model.file_name)
                         delete_from_processed_imgs_btn_m_area.onClicked: {
                             individual_manager.delete_face(index)
+                        }
+                    }
+                    ScrollBar.vertical: processed_photos_list_view_scroll_bar
+                    ScrollBar {
+                        id: processed_photos_list_view_scroll_bar
+                        active: true
+                        hoverEnabled: true
+                        orientation: Qt.Vertical
+                        size: 0.5
+                        contentItem: Rectangle {
+                            implicitWidth: 5
+                            radius: 2
+                            color: processed_photos_list_view_scroll_bar.hovered ?
+                                   processed_photos_list_view_scroll_bar.pressed ? "#000000" : "#999999" :
+                                   processed_photos_list_view_scroll_bar.pressed ? "#000000" : "#cccccc"
                         }
                     }
                 }
