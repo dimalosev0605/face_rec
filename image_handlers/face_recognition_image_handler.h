@@ -37,16 +37,14 @@ class Face_recognition_image_handler: public Base_image_handler
     Q_OBJECT
 
     double threshold = 0.5;
-    QVector<QString> known_people_names;
-    anet_type anet;
-    std::map<dlib::matrix<float, 0, 1>, std::string> known_people;
+    std::shared_ptr<anet_type> anet = std::make_shared<anet_type>();
+    std::shared_ptr<std::map<dlib::matrix<float, 0, 1>, std::string>> known_people = std::make_shared<std::map<dlib::matrix<float, 0, 1>, std::string>>();
 
     std::vector<dlib::rectangle> faces;
     std::vector<dlib::matrix<dlib::rgb_pixel>> detected_processed_faces;
     std::vector<dlib::matrix<float, 0, 1>> detected_face_descriptors;
 
 private:
-    void fill_known_people_map();
     void clear_data_structures();
 
 public:

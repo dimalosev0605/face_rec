@@ -41,9 +41,11 @@ protected:
     std::mutex worker_thread_mutex;
     std::thread::id worker_thread_id;
 
-    net_type cnn_face_detector;
-    dlib::shape_predictor shape_predictor;
+    std::shared_ptr<net_type> cnn_face_detector = std::make_shared<net_type>();
+    std::shared_ptr<dlib::shape_predictor> shape_predictor = std::make_shared<dlib::shape_predictor>();
     Individual_file_manager individual_file_manager;
+
+    std::thread load_models_thread;
 
 protected:
     bool check_img_existense(const QString& path);
@@ -56,6 +58,7 @@ protected:
 
 public:
     explicit Base_image_handler(QObject* parent = nullptr);
+    ~Base_image_handler();
 
 public slots:
     void pyr_up();

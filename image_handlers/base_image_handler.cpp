@@ -3,12 +3,11 @@
 Base_image_handler::Base_image_handler(QObject* parent)
     : QObject(parent)
 {
-    std::thread load_model_thread([this]()
-    {
-        dlib::deserialize("mmod_human_face_detector.dat") >> cnn_face_detector;
-        dlib::deserialize("shape_predictor_5_face_landmarks.dat") >> shape_predictor;
-    });
-    load_model_thread.detach();
+}
+
+Base_image_handler::~Base_image_handler()
+{
+    load_models_thread.detach();
 }
 
 bool Base_image_handler::check_img_existense(const QString& path)

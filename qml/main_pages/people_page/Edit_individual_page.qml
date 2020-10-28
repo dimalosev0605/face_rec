@@ -28,6 +28,7 @@ Item {
             if(processed_photos_list_view.count === 0) {
                 individual_manager.cancel_creation()
                 people_page_qml.available_people_model.update()
+                people_page_qml.available_people_model.currentIndex = -1
             }
             individual_manager.set_edited_individual_name(edited_individual_name)
             selected_images_model.clear()
@@ -186,7 +187,9 @@ Item {
                                 individual_nickname_input.readOnly = true
                                 individual_nickname_input.focus = false
                                 add_new_face_image_handler.set_current_individual_name(individual_nickname_input.text)
+                                var curr_people_list_view_index = people_page_qml.people_list_view.currentIndex
                                 people_page_qml.available_people_model.update()
+                                people_page_qml.people_list_view.currentIndex = curr_people_list_view_index
                             }
                         }
                     }

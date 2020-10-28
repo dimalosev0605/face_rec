@@ -3,6 +3,15 @@
 Add_new_face_image_handler::Add_new_face_image_handler(QObject* parent)
     : Base_image_handler(parent)
 {
+    auto load_models_lambda = [](std::shared_ptr<net_type> cnn_face_det_sp, std::shared_ptr<dlib::shape_predictor> shape_predictor_sp) {
+        auto local_cnn_face_det_sp = cnn_face_det_sp;
+        auto local_shape_predictor_sp = shape_predictor_sp;
+
+        dlib::deserialize("mmod_human_face_detector.dat") >> (*local_cnn_face_det_sp.get());
+        dlib::deserialize("shape_predictor_5_face_landmarks.dat") >> (*local_shape_predictor_sp.get());
+    };
+
+    load_models_thread = std::thread(load_models_lambda, cnn_face_detector, shape_predictor);
 }
 
 void Add_new_face_image_handler::cnn()
@@ -19,7 +28,7 @@ void Add_new_face_image_handler::cnn()
         dlib::matrix<dlib::rgb_pixel> img;
         load_processing_image(img, processing_img_path, "resized_");
 
-        const auto rects_around_faces = cnn_face_detector(img);
+        const auto rects_around_faces = cnn_face_detector->operator()(img);
         for(const auto& rect : rects_around_faces) {
             dlib::draw_rectangle(img, rect, dlib::rgb_pixel{0, 255, 0}, 2);
         }
@@ -94,7 +103,7 @@ void Add_new_face_image_handler::extract_face()
     }
     load_processing_image(img, selected_img_path, "resized_");
 
-    auto face_shape = shape_predictor(img, rect_around_face);
+    auto face_shape = shape_predictor->operator()(img, rect_around_face);
     dlib::matrix<dlib::rgb_pixel> processed_face;
     dlib::extract_image_chip(img, dlib::get_face_chip_details(face_shape, 150, 0.25), processed_face);
     worker_thread_id = std::this_thread::get_id();

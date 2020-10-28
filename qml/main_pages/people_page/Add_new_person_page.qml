@@ -45,6 +45,7 @@ Item {
             // it works, but people_page destroyed firstly if user click on help page.
             if(update_people_list_flag) {
                 people_page_qml.available_people_model.update()
+                people_page_qml.people_list_view.currentIndex = -1
             }
         }
         if(people_page_qml.edit_page === null) {

@@ -12,6 +12,7 @@ Item {
     objectName: "qrc:/qml/main_pages/people_page/People_page.qml"
 
     property alias available_people_model: available_people_model
+    property alias people_list_view: people_list_view
 
     property var default_page: null
     property var default_page_comp: Qt.createComponent("qrc:/qml/main/Default_page.qml", people_page_qml);
