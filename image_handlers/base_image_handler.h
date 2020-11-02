@@ -30,6 +30,8 @@ template <typename SUBNET> using rcon5  = dlib::relu<dlib::affine<con5<45,SUBNET
 
 using net_type = dlib::loss_mmod<dlib::con<1,9,9,1,1,rcon5<rcon5<rcon5<downsampler<dlib::input_rgb_image_pyramid<dlib::pyramid_down<6>>>>>>>>;
 
+using hog_face_detector_type = dlib::object_detector<dlib::scan_fhog_pyramid<dlib::pyramid_down<6>, dlib::default_fhog_feature_extractor>>;
+
 class Base_image_handler: public QObject
 {
     Q_OBJECT
@@ -41,11 +43,12 @@ protected:
     std::mutex worker_thread_mutex;
     std::thread::id worker_thread_id;
 
+    std::shared_ptr<hog_face_detector_type> hog_face_detector = std::make_shared<hog_face_detector_type>();
     std::shared_ptr<net_type> cnn_face_detector = std::make_shared<net_type>();
     std::shared_ptr<dlib::shape_predictor> shape_predictor = std::make_shared<dlib::shape_predictor>();
-    Individual_file_manager individual_file_manager;
+    std::thread initializer_thread;
 
-    std::thread load_models_thread;
+    Individual_file_manager individual_file_manager;
 
 protected:
     bool check_img_existense(const QString& path);

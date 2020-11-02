@@ -7,7 +7,7 @@ Base_image_handler::Base_image_handler(QObject* parent)
 
 Base_image_handler::~Base_image_handler()
 {
-    load_models_thread.detach();
+    initializer_thread.detach();
 }
 
 bool Base_image_handler::check_img_existense(const QString& path)

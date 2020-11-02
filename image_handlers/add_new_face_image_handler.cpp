@@ -3,15 +3,18 @@
 Add_new_face_image_handler::Add_new_face_image_handler(QObject* parent)
     : Base_image_handler(parent)
 {
-    auto load_models_lambda = [](std::shared_ptr<net_type> cnn_face_det_sp, std::shared_ptr<dlib::shape_predictor> shape_predictor_sp) {
+    auto initializer_thread_lambda = [](std::shared_ptr<net_type> cnn_face_det_sp, std::shared_ptr<dlib::shape_predictor> shape_predictor_sp,
+                                        std::shared_ptr<hog_face_detector_type> hog_face_detector_sp)
+    {
         auto local_cnn_face_det_sp = cnn_face_det_sp;
         auto local_shape_predictor_sp = shape_predictor_sp;
 
         dlib::deserialize("mmod_human_face_detector.dat") >> (*local_cnn_face_det_sp.get());
         dlib::deserialize("shape_predictor_5_face_landmarks.dat") >> (*local_shape_predictor_sp.get());
-    };
 
-    load_models_thread = std::thread(load_models_lambda, cnn_face_detector, shape_predictor);
+        *hog_face_detector_sp.get() = dlib::get_frontal_face_detector();
+    };
+    initializer_thread = std::thread(initializer_thread_lambda, cnn_face_detector, shape_predictor, hog_face_detector);
 }
 
 void Add_new_face_image_handler::cnn()
@@ -64,8 +67,16 @@ void Add_new_face_image_handler::hog()
         dlib::matrix<dlib::rgb_pixel> img;
         load_processing_image(img, processing_img_path, "resized_");
 
-        auto hog_face_detector = dlib::get_frontal_face_detector();
-        const auto rects_around_faces = hog_face_detector(img);
+        std::vector<dlib::rectangle> rects_around_faces;
+        if(hog_face_detector_mtx.try_lock()) {
+            rects_around_faces = hog_face_detector->operator()(img);
+            hog_face_detector_mtx.unlock();
+        }
+        else {
+            auto thread_local_hog_face_detector = dlib::get_frontal_face_detector();
+            rects_around_faces = thread_local_hog_face_detector(img);
+        }
+
         for(const auto& rect : rects_around_faces) {
             dlib::draw_rectangle(img, rect, dlib::rgb_pixel{255, 0, 0}, 2);
         }

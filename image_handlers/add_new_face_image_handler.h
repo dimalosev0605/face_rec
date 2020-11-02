@@ -7,6 +7,7 @@ class Add_new_face_image_handler: public Base_image_handler
 {
     Q_OBJECT
     dlib::rectangle rect_around_face;
+    std::mutex hog_face_detector_mtx;
 
 public:
     explicit Add_new_face_image_handler(QObject* parent = nullptr);

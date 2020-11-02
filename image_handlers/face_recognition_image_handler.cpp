@@ -18,7 +18,7 @@ Face_recognition_image_handler::Face_recognition_image_handler(QObject* parent)
         dlib::deserialize("dlib_face_recognition_resnet_model_v1.dat") >> (*anet_sp.get());
     };
 
-    load_models_thread = std::thread(load_models_lambda, cnn_face_detector, shape_predictor, anet);
+    initializer_thread = std::thread(load_models_lambda, cnn_face_detector, shape_predictor, anet);
 }
 
 
