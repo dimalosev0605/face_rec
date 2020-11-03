@@ -66,22 +66,17 @@ Item {
             individual_manager.cancel_creation()
         }
     }
-    FileDialog {
-        id: file_dialog
-        title: "Please choose files"
-        folder: shortcuts.home
-        visible: false
-        selectMultiple: true
-        nameFilters: [ "Image files (*.jpg *.png *.jpeg)", "All files (*)" ]
-        onAccepted: {
+    Connections {
+        id: file_dialog_connections
+        target: main_qml.file_dialog
+        function onAccepted(fileUrls) {
             selected_images_model.accept_images(file_dialog.fileUrls)
             file_dialog.close()
         }
-        onRejected: {
+        function onRejected() {
             file_dialog.close()
         }
     }
-
     Shortcut {
         sequence: "Down"
         onActivated: {
@@ -208,7 +203,7 @@ Item {
                 height: individual_nickname_input.height
                 text: "Select photos"
                 onClicked: {
-                    file_dialog.open()
+                    main_qml.file_dialog.open()
                 }
             }
 

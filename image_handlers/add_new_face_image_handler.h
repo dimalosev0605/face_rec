@@ -7,17 +7,17 @@ class Add_new_face_image_handler: public Base_image_handler
 {
     Q_OBJECT
     dlib::rectangle rect_around_face;
-    std::mutex hog_face_detector_mtx;
 
 public:
     explicit Add_new_face_image_handler(QObject* parent = nullptr);
 
 public slots:
-    void cnn();
-    void hog();
+    void cnn() override;
+    void hog() override;
+    void cancel() override;
+
     void set_current_individual_name(const QString& name);
     void extract_face();
-    void cancel();
 
 signals:
     void enable_extract_face_btn();

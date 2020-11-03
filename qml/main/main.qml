@@ -1,7 +1,7 @@
 import QtQuick 2.12
 import QtQuick.Window 2.12
 import QtQuick.Controls 2.15
-
+import QtQuick.Dialogs 1.2
 
 Window {
     id: main_qml
@@ -10,6 +10,7 @@ Window {
     height: 800
 
     property alias esc_sc: esc_sc
+    property alias file_dialog: file_dialog
 //    property alias left_vertical_menu_bar: left_vertical_menu_bar
 
     property var default_page: null
@@ -34,6 +35,14 @@ Window {
                                                          "width": Qt.binding(function(){ return main_qml.width - left_vertical_menu_bar.width}),
                                                          "height": Qt.binding(function(){ return main_qml.height})
                                                      });
+    }
+    FileDialog {
+        id: file_dialog
+        title: "Please choose files"
+        folder: shortcuts.home
+        visible: false
+        selectMultiple: true
+        nameFilters: [ "Image files (*.jpg *.png *.jpeg)", "All files (*)" ]
     }
     Shortcut {
         id: esc_sc

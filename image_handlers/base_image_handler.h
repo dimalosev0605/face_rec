@@ -28,7 +28,7 @@ template <long num_filters, typename SUBNET> using con5  = dlib::con<num_filters
 template <typename SUBNET> using downsampler  = dlib::relu<dlib::affine<con5d<32, dlib::relu<dlib::affine<con5d<32, dlib::relu<dlib::affine<con5d<16,SUBNET>>>>>>>>>;
 template <typename SUBNET> using rcon5  = dlib::relu<dlib::affine<con5<45,SUBNET>>>;
 
-using net_type = dlib::loss_mmod<dlib::con<1,9,9,1,1,rcon5<rcon5<rcon5<downsampler<dlib::input_rgb_image_pyramid<dlib::pyramid_down<6>>>>>>>>;
+using cnn_face_detector_type = dlib::loss_mmod<dlib::con<1,9,9,1,1,rcon5<rcon5<rcon5<downsampler<dlib::input_rgb_image_pyramid<dlib::pyramid_down<6>>>>>>>>;
 
 using hog_face_detector_type = dlib::object_detector<dlib::scan_fhog_pyramid<dlib::pyramid_down<6>, dlib::default_fhog_feature_extractor>>;
 
@@ -44,7 +44,8 @@ protected:
     std::thread::id worker_thread_id;
 
     std::shared_ptr<hog_face_detector_type> hog_face_detector = std::make_shared<hog_face_detector_type>();
-    std::shared_ptr<net_type> cnn_face_detector = std::make_shared<net_type>();
+    std::mutex hog_face_detector_mtx;
+    std::shared_ptr<cnn_face_detector_type> cnn_face_detector = std::make_shared<cnn_face_detector_type>();
     std::shared_ptr<dlib::shape_predictor> shape_predictor = std::make_shared<dlib::shape_predictor>();
     std::thread initializer_thread;
 
@@ -67,6 +68,10 @@ public slots:
     void pyr_up();
     void pyr_down();
     void resize(const int new_width, const int new_height);
+
+    virtual void hog() = 0;
+    virtual void cnn() = 0;
+    virtual void cancel() = 0;
 
     void update_selected_img_path(const QString& new_path);
 

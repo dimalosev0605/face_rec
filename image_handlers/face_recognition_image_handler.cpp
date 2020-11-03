@@ -4,9 +4,10 @@ Face_recognition_image_handler::Face_recognition_image_handler(QObject* parent)
     : Base_image_handler(parent)
 {
     auto load_models_lambda = [](
-            std::shared_ptr<net_type> cnn_face_det_sp,
+            std::shared_ptr<cnn_face_detector_type> cnn_face_det_sp,
             std::shared_ptr<dlib::shape_predictor> shape_predictor_sp,
-            std::shared_ptr<anet_type> anet_sp
+            std::shared_ptr<anet_type> anet_sp,
+            std::shared_ptr<hog_face_detector_type> hog_face_detector_sp
             )
     {
         auto local_cnn_face_det_sp = cnn_face_det_sp;
@@ -16,9 +17,11 @@ Face_recognition_image_handler::Face_recognition_image_handler(QObject* parent)
         dlib::deserialize("mmod_human_face_detector.dat") >> (*cnn_face_det_sp.get());
         dlib::deserialize("shape_predictor_5_face_landmarks.dat") >> (*shape_predictor_sp.get());
         dlib::deserialize("dlib_face_recognition_resnet_model_v1.dat") >> (*anet_sp.get());
+
+        *hog_face_detector_sp.get() = dlib::get_frontal_face_detector();
     };
 
-    initializer_thread = std::thread(load_models_lambda, cnn_face_detector, shape_predictor, anet);
+    initializer_thread = std::thread(load_models_lambda, cnn_face_detector, shape_predictor, anet, hog_face_detector);
 }
 
 
@@ -38,8 +41,15 @@ void Face_recognition_image_handler::hog()
         dlib::matrix<dlib::rgb_pixel> img;
         load_processing_image(img, processing_img_path, "resized_");
 
-        auto hog_face_detector = dlib::get_frontal_face_detector();
-        const auto rects_around_faces = hog_face_detector(img);
+        std::vector<dlib::rectangle> rects_around_faces;
+        if(hog_face_detector_mtx.try_lock()) {
+            rects_around_faces = hog_face_detector->operator()(img);
+            hog_face_detector_mtx.unlock();
+        }
+        else {
+            auto thread_local_hog_face_detector = dlib::get_frontal_face_detector();
+            rects_around_faces = thread_local_hog_face_detector(img);
+        }
 
         {
             std::lock_guard<std::mutex> lock(worker_thread_mutex);

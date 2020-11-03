@@ -64,15 +64,10 @@ Item {
         }
         enabled: !selected_photos_popup.opened
     }
-
-    FileDialog {
-        id: file_dialog
-        title: "Please choose files"
-        folder: shortcuts.home
-        visible: false
-        selectMultiple: true
-        nameFilters: [ "Image files (*.jpg *.png *.jpeg)", "All files (*)" ]
-        onAccepted: {
+    Connections {
+        id: file_dialog_connections
+        target: main_qml.file_dialog
+        function onAccepted(fileUrls) {
             if(selected_photos_list_view.count === 0) {
                 selected_images_model.accept_images(file_dialog.fileUrls)
                 selected_photos_list_view.currentIndex = 0
@@ -82,7 +77,7 @@ Item {
             }
             file_dialog.close()
         }
-        onRejected: {
+        function onRejected() {
             file_dialog.close()
         }
     }
@@ -203,7 +198,7 @@ Item {
                 fillMode: Image.PreserveAspectFit
             }
             onClicked: {
-                file_dialog.open()
+                main_qml.file_dialog.open()
             }
             hoverEnabled: true
             ToolTip.visible: hovered

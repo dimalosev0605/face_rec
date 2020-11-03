@@ -3,7 +3,7 @@
 Add_new_face_image_handler::Add_new_face_image_handler(QObject* parent)
     : Base_image_handler(parent)
 {
-    auto initializer_thread_lambda = [](std::shared_ptr<net_type> cnn_face_det_sp, std::shared_ptr<dlib::shape_predictor> shape_predictor_sp,
+    auto initializer_thread_lambda = [](std::shared_ptr<cnn_face_detector_type> cnn_face_det_sp, std::shared_ptr<dlib::shape_predictor> shape_predictor_sp,
                                         std::shared_ptr<hog_face_detector_type> hog_face_detector_sp)
     {
         auto local_cnn_face_det_sp = cnn_face_det_sp;

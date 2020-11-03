@@ -51,9 +51,9 @@ public:
     explicit Face_recognition_image_handler(QObject* parent = nullptr);
 
 public slots:
-    void hog();
-    void cnn();
-    void cancel();
+    void hog() override;
+    void cnn() override;
+    void cancel() override;
 
     void set_threshold(const double new_threshold);
     void accept_people_for_recognition(const QVector<QString>& people_list);
