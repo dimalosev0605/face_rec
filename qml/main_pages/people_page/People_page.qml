@@ -15,7 +15,7 @@ Item {
     property alias people_list_view: people_list_view
 
     property var default_page: null
-    property var default_page_comp: Qt.createComponent("qrc:/qml/main/Default_page.qml", people_page_qml);
+    property var default_page_comp: Qt.createComponent("qrc:/qml/common/Default_page.qml", people_page_qml);
 
     property var edit_page: null
     property var edit_page_comp: Qt.createComponent("qrc:/qml/main_pages/people_page/Edit_individual_page.qml", people_page_qml)

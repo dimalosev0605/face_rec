@@ -29,7 +29,6 @@ Item {
                                                        face_recognition_image_handler: face_recognition_image_handler,
                                                        processed_img: processed_img
                                                    });
-        face_recognition_image_handler.accept_people_for_recognition(selected_people_model.get_selected_people_list())
     }
     Component.onDestruction: {
         console.log("Step_2.qml destroyed, id = " + root)
@@ -37,6 +36,7 @@ Item {
 
     Face_recognition_image_handler {
         id: face_recognition_image_handler
+        selected_people_list: selected_people_model.get_selected_people_list()
         onImg_source_changed: {
             processed_img.source = ""
             processed_img.source = source

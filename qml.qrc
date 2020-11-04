@@ -2,12 +2,12 @@
     <qresource prefix="/">
         <file>qml/main/main.qml</file>
         <file>qml/main/Left_vertical_menu_bar_model.qml</file>
-        <file>qml/main/Default_page.qml</file>
         <file>qml/common/Full_screen_img.qml</file>
         <file>qml/common/Wait_page.qml</file>
         <file>qml/common/Wait_page_with_button.qml</file>
         <file>qml/common/Close_btn.qml</file>
         <file>qml/common/Custom_btn.qml</file>
+        <file>qml/common/Default_page.qml</file>
         <file>qml/main_pages/help_page/Help_page.qml</file>
         <file>qml/main_pages/people_page/People_page.qml</file>
         <file>qml/main_pages/people_page/Add_new_person_page.qml</file>

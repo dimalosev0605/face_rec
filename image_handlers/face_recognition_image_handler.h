@@ -3,7 +3,6 @@
 
 #include "base_image_handler.h"
 
-
 template <template <int,template<typename>class,int,typename> class block, int N, template<typename>class BN, typename SUBNET>
 using residual = dlib::add_prev1<block<N,BN,1,dlib::tag1<SUBNET>>>;
 
@@ -35,6 +34,8 @@ using anet_type = dlib::loss_metric<dlib::fc_no_bias<128,dlib::avg_pool_everythi
 class Face_recognition_image_handler: public Base_image_handler
 {
     Q_OBJECT
+    Q_PROPERTY(QVector<QString> selected_people_list WRITE set_selected_people_list)
+    std::shared_ptr<QVector<QString>> selected_peoplet_list;
 
     double threshold = 0.5;
     std::shared_ptr<anet_type> anet = std::make_shared<anet_type>();
@@ -49,6 +50,7 @@ private:
 
 public:
     explicit Face_recognition_image_handler(QObject* parent = nullptr);
+    void set_selected_people_list(const QVector<QString>& list);
 
 public slots:
     void hog() override;
@@ -56,8 +58,6 @@ public slots:
     void cancel() override;
 
     void set_threshold(const double new_threshold);
-    void accept_people_for_recognition(const QVector<QString>& people_list);
-
     void recognize();
 
 signals:

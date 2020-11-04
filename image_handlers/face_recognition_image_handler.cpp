@@ -3,27 +3,81 @@
 Face_recognition_image_handler::Face_recognition_image_handler(QObject* parent)
     : Base_image_handler(parent)
 {
-    auto load_models_lambda = [](
+    auto initializer_thread_lambda = [](
             std::shared_ptr<cnn_face_detector_type> cnn_face_det_sp,
             std::shared_ptr<dlib::shape_predictor> shape_predictor_sp,
-            std::shared_ptr<anet_type> anet_sp,
             std::shared_ptr<hog_face_detector_type> hog_face_detector_sp
             )
     {
         auto local_cnn_face_det_sp = cnn_face_det_sp;
         auto local_shape_predictor_sp = shape_predictor_sp;
-        auto local_anet_sp = anet_sp;
 
         dlib::deserialize("mmod_human_face_detector.dat") >> (*cnn_face_det_sp.get());
         dlib::deserialize("shape_predictor_5_face_landmarks.dat") >> (*shape_predictor_sp.get());
-        dlib::deserialize("dlib_face_recognition_resnet_model_v1.dat") >> (*anet_sp.get());
 
         *hog_face_detector_sp.get() = dlib::get_frontal_face_detector();
     };
 
-    initializer_thread = std::thread(load_models_lambda, cnn_face_detector, shape_predictor, anet, hog_face_detector);
+    initializer_thread = std::thread(initializer_thread_lambda, cnn_face_detector, shape_predictor, hog_face_detector);
 }
 
+void Face_recognition_image_handler::set_selected_people_list(const QVector<QString>& list)
+{
+    selected_peoplet_list = std::make_shared<QVector<QString>>(list);
+    qDebug() << "In set:";
+    for(const auto& elem : *selected_peoplet_list.get()) {
+        qDebug() << elem;
+    }
+
+    auto fill_known_people_lambda = [](
+            std::shared_ptr<QVector<QString>> known_people_list_sp,
+            std::shared_ptr<std::map<dlib::matrix<float, 0, 1>, std::string>> known_people_sp,
+            std::shared_ptr<anet_type> anet_sp)
+    {
+        auto local_known_people_list_sp = known_people_list_sp;
+        auto local_known_people_sp = known_people_sp;
+        auto local_anet_sp = anet_sp;
+
+        dlib::deserialize("dlib_face_recognition_resnet_model_v1.dat") >> (*anet_sp.get());
+
+        std::vector<dlib::matrix<dlib::rgb_pixel>> imgs;
+        std::vector<std::string> names;
+
+        Individual_file_manager individual_file_manager;
+
+        for(int i = 0; i < local_known_people_list_sp->size(); ++i) {
+            individual_file_manager.set_name(local_known_people_list_sp->operator[](i));
+
+            const auto extr_faces_dir_path = individual_file_manager.get_path_to_extracted_faces_dir();
+            dlib::directory extr_faces_dir(extr_faces_dir_path.toStdString());
+
+            auto files = extr_faces_dir.get_files();
+            for(const auto& file: files) {
+                dlib::matrix<dlib::rgb_pixel> img;
+                dlib::load_image(img, file.full_name());
+                imgs.push_back(std::move(img));
+                names.push_back(local_known_people_list_sp->operator[](i).toStdString());
+                qDebug() << "Loaded: "
+                         << QString(file.full_name().c_str())
+                         << local_known_people_list_sp->operator[](i);
+            }
+
+        }
+
+        if(imgs.size() != names.size()) {
+            qDebug() << "Error.";
+            return;
+        }
+
+        std::vector<dlib::matrix<float, 0, 1>> face_descriptors = local_anet_sp->operator()(imgs);
+        for(std::size_t i = 0; i < names.size(); ++i) {
+            local_known_people_sp->operator[](face_descriptors[i]) = names[i];
+        }
+        qDebug() << "fill_known_people_map() finised.";
+    };
+    std::thread fill_known_people_thread = std::thread(fill_known_people_lambda, selected_peoplet_list, known_people, anet);
+    fill_known_people_thread.detach();
+}
 
 void Face_recognition_image_handler::hog()
 {
@@ -143,58 +197,6 @@ void Face_recognition_image_handler::set_threshold(const double new_threshold)
 {
     std::lock_guard<std::mutex> lock(worker_thread_mutex);
     threshold = new_threshold;
-}
-
-void Face_recognition_image_handler::accept_people_for_recognition(const QVector<QString>& people_list)
-{
-    auto known_people_list = std::make_shared<QVector<QString>>(people_list);
-
-    auto fill_known_people_lambda = [](
-            std::shared_ptr<QVector<QString>> known_people_list_sp,
-            std::shared_ptr<std::map<dlib::matrix<float, 0, 1>, std::string>> known_people_sp,
-            std::shared_ptr<anet_type> anet_sp)
-    {
-        auto local_known_people_list_sp = known_people_list_sp;
-        auto local_known_people_sp = known_people_sp;
-        auto local_anet_sp = anet_sp;
-
-        std::vector<dlib::matrix<dlib::rgb_pixel>> imgs;
-        std::vector<std::string> names;
-
-        Individual_file_manager individual_file_manager;
-
-        for(int i = 0; i < local_known_people_list_sp->size(); ++i) {
-            individual_file_manager.set_name(local_known_people_list_sp->operator[](i));
-
-            const auto extr_faces_dir_path = individual_file_manager.get_path_to_extracted_faces_dir();
-            dlib::directory extr_faces_dir(extr_faces_dir_path.toStdString());
-
-            auto files = extr_faces_dir.get_files();
-            for(const auto& file: files) {
-                dlib::matrix<dlib::rgb_pixel> img;
-                dlib::load_image(img, file.full_name());
-                imgs.push_back(std::move(img));
-                names.push_back(local_known_people_list_sp->operator[](i).toStdString());
-                qDebug() << "Loaded: "
-                         << QString(file.full_name().c_str())
-                         << local_known_people_list_sp->operator[](i);
-            }
-
-        }
-
-        if(imgs.size() != names.size()) {
-            qDebug() << "Error.";
-            return;
-        }
-
-        std::vector<dlib::matrix<float, 0, 1>> face_descriptors = local_anet_sp->operator()(imgs);
-        for(std::size_t i = 0; i < names.size(); ++i) {
-            local_known_people_sp->operator[](face_descriptors[i]) = names[i];
-        }
-        qDebug() << "fill_known_people_map() finised.";
-    };
-    std::thread fill_known_people_map_thread = std::thread(fill_known_people_lambda, known_people_list, known_people, anet);
-    fill_known_people_map_thread.detach();
 }
 
 void Face_recognition_image_handler::clear_data_structures()

@@ -11,14 +11,13 @@ Window {
 
     property alias esc_sc: esc_sc
     property alias file_dialog: file_dialog
-//    property alias left_vertical_menu_bar: left_vertical_menu_bar
 
     property var default_page: null
     property var page: null
     property var wait_page: null
 
     Component.onCompleted: {
-        var default_page_component = Qt.createComponent("qrc:/qml/main/Default_page.qml");
+        var default_page_component = Qt.createComponent("qrc:/qml/common/Default_page.qml");
         default_page = default_page_component.createObject(main_qml,
                                                            {
                                                                "x": Qt.binding(function(){return left_vertical_menu_bar.width}),
