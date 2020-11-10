@@ -37,16 +37,26 @@ class Face_recognition_image_handler: public Base_image_handler
     Q_PROPERTY(QVector<QString> selected_people_list WRITE set_selected_people_list)
     std::shared_ptr<QVector<QString>> selected_peoplet_list;
 
-    double threshold = 0.5;
-    std::shared_ptr<anet_type> anet = std::make_shared<anet_type>();
-    std::shared_ptr<std::map<dlib::matrix<float, 0, 1>, std::string>> known_people = std::make_shared<std::map<dlib::matrix<float, 0, 1>, std::string>>();
+    std::shared_ptr<double> threshold = std::make_shared<double>(0.5);
+    std::shared_ptr<std::mutex> threshold_mtx = std::make_shared<std::mutex>();
 
-    std::vector<dlib::rectangle> faces;
-    std::vector<dlib::matrix<dlib::rgb_pixel>> detected_processed_faces;
-    std::vector<dlib::matrix<float, 0, 1>> detected_face_descriptors;
+    std::shared_ptr<anet_type> anet = std::make_shared<anet_type>();
+    std::shared_ptr<std::mutex> anet_mtx = std::make_shared<std::mutex>();
+
+    std::shared_ptr<std::map<dlib::matrix<float, 0, 1>, std::string>> known_people = std::make_shared<std::map<dlib::matrix<float, 0, 1>, std::string>>();
+    std::shared_ptr<std::mutex> known_people_mtx = std::make_shared<std::mutex>();
+
+    struct Detected_faces_stuff {
+        std::vector<dlib::rectangle> faces;
+        std::vector<dlib::matrix<dlib::rgb_pixel>> detected_processed_faces;
+        std::vector<dlib::matrix<float, 0, 1>> detected_face_descriptors;
+    };
+
+    std::shared_ptr<Detected_faces_stuff> detected_faces_stuff = std::make_shared<Detected_faces_stuff>();
+    std::shared_ptr<std::mutex> detected_faces_stuff_mtx = std::make_shared<std::mutex>();
 
 private:
-    void clear_data_structures();
+    void clear_detected_faces_stuff(std::shared_ptr<Shared_data> shared_data_sp, std::shared_ptr<Detected_faces_stuff> detected_faces_stuff_sp, std::shared_ptr<std::mutex> detected_faces_stuff_mtx_sp);
 
 public:
     explicit Face_recognition_image_handler(QObject* parent = nullptr);
@@ -62,6 +72,7 @@ public slots:
 
 signals:
     void recognition_finished(const QString& processed_img_path);
+    void enable_btns();
 };
 
 #endif // FACE_RECOGNITION_IMAGE_HANDLER_H

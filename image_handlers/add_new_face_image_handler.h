@@ -6,7 +6,8 @@
 class Add_new_face_image_handler: public Base_image_handler
 {
     Q_OBJECT
-    dlib::rectangle rect_around_face;
+    std::shared_ptr<dlib::rectangle> rect_around_face = std::make_shared<dlib::rectangle>();
+    std::shared_ptr<std::mutex> rect_around_face_mtx = std::make_shared<std::mutex>();
 
 public:
     explicit Add_new_face_image_handler(QObject* parent = nullptr);

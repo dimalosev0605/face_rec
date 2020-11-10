@@ -159,7 +159,7 @@ Item {
             fillMode: Image.PreserveAspectFit
             source: selected_photos_list_view.currentItem === null ? "" : selected_photos_list_view.currentItem.selected_img_preview_src
             onSourceChanged: {
-                face_recognition_image_handler.update_selected_img_path(source)
+                face_recognition_image_handler.set_selected_img_path(source)
             }
 
             MouseArea {

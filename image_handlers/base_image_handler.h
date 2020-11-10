@@ -37,32 +37,42 @@ class Base_image_handler: public QObject
     Q_OBJECT
 
 protected:
-    QString selected_img_path;
+    struct Shared_data {
+        QString selected_img_path;
+        std::mutex selected_img_path_mtx;
+
+        std::thread::id worker_thread_id;
+        std::mutex worker_thread_id_mtx;
+
+        // need mtx?
+        Individual_file_manager individual_file_manager;
+
+        hog_face_detector_type hog_face_detector;
+        std::mutex hog_face_detector_mtx;
+
+        cnn_face_detector_type cnn_face_detector;
+        std::mutex cnn_face_detector_mtx;
+
+        dlib::shape_predictor shape_predictor;
+        std::mutex shape_predictor_mtx;
+    };
+
+    std::shared_ptr<Shared_data> shared_data = std::make_shared<Shared_data>();
 
     std::unique_ptr<std::thread> worker_thread;
-    std::mutex worker_thread_mutex;
-    std::thread::id worker_thread_id;
-
-    std::shared_ptr<hog_face_detector_type> hog_face_detector = std::make_shared<hog_face_detector_type>();
-    std::mutex hog_face_detector_mtx;
-    std::shared_ptr<cnn_face_detector_type> cnn_face_detector = std::make_shared<cnn_face_detector_type>();
-    std::shared_ptr<dlib::shape_predictor> shape_predictor = std::make_shared<dlib::shape_predictor>();
     std::thread initializer_thread;
-
-    Individual_file_manager individual_file_manager;
 
 protected:
     bool check_img_existense(const QString& path);
-    QString copy_selected_img_path();
-    void set_worker_thread_id();
+    QString copy_selected_img_path(std::shared_ptr<Shared_data> shared_data_sp);
+    void set_worker_thread_id(std::shared_ptr<Shared_data> shared_data_sp);
 
-    void load_processing_image(dlib::matrix<dlib::rgb_pixel>& img, const QString& path, const QString& prefix);
-    QString save_processed_image(dlib::matrix<dlib::rgb_pixel>& img, const QString& path, const QString& prefix);
-    void update_processed_img(const QString& processing_img_path, dlib::matrix<dlib::rgb_pixel>& img, const QString& prefix);
+    void load_processing_image(std::shared_ptr<Shared_data> shared_data_sp, dlib::matrix<dlib::rgb_pixel>& img, const QString& path, const QString& prefix);
+    QString save_processed_image(std::shared_ptr<Shared_data> shared_data_sp, dlib::matrix<dlib::rgb_pixel>& img, const QString& path, const QString& prefix);
+    void update_processed_img(std::shared_ptr<Shared_data> shared_data_sp, const QString& processing_img_path, dlib::matrix<dlib::rgb_pixel>& img, const QString& prefix);
 
 public:
     explicit Base_image_handler(QObject* parent = nullptr);
-    ~Base_image_handler();
 
 public slots:
     void pyr_up();
@@ -73,7 +83,7 @@ public slots:
     virtual void cnn() = 0;
     virtual void cancel() = 0;
 
-    void update_selected_img_path(const QString& new_path);
+    void set_selected_img_path(const QString& new_path);
 
 signals:
     void img_source_changed(const QString& source);
