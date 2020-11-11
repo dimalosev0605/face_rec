@@ -54,17 +54,27 @@ void Available_people_model::delete_individual(const int index)
     endRemoveRows();
 }
 
-void Available_people_model::search_individual(const QString& nickname)
+void Available_people_model::search_individual(const QString& input)
 {
-    if(nickname.isEmpty()) return;
+    if(input.isEmpty()) return;
     if(available_people == nullptr) {
         available_people = std::unique_ptr<QVector<std::tuple<QString, QString>>>(new QVector<std::tuple<QString, QString>>(model_data));
     }
 
     QVector<std::tuple<QString, QString>> results;
     for(int i = 0; i < available_people->size(); ++i) {
-        if(std::get<0>(available_people->operator[](i)).contains(nickname)) {
-            results.push_back(available_people->operator[](i));
+        if(std::get<0>(available_people->operator[](i)).contains(input)) {
+            const QString str = std::get<0>(available_people->operator[](i));
+            int start = str.indexOf(input);
+            QString bold_str;
+            for(int j = 0; j < start; ++j) {
+                bold_str.push_back(str[j]);
+            }
+            bold_str += "<b>" + input + "</b>";
+            for(int j = start + input.size(); j < str.size(); ++j) {
+                bold_str.push_back(str[j]);
+            }
+            results.push_back(std::make_tuple(bold_str, std::get<1>(available_people->operator[](i))));
         }
     }
     clear();

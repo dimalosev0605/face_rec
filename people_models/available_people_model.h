@@ -18,7 +18,7 @@ public:
 public slots:
     void update();
     void delete_individual(const int index);
-    void search_individual(const QString& nickname);
+    void search_individual(const QString& input);
     void cancel_search();
 };
 
