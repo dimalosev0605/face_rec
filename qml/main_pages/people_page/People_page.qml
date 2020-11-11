@@ -10,6 +10,7 @@ import "../../common"
 Item {
     id: people_page_qml
     objectName: "qrc:/qml/main_pages/people_page/People_page.qml"
+    visible: false
 
     property alias available_people_model: available_people_model
     property alias people_list_view: people_list_view

@@ -8,6 +8,8 @@ Window {
     visible: true
     width: 1400
     height: 800
+    minimumWidth: 600
+    minimumHeight: 600
 
     property alias esc_sc: esc_sc
     property alias file_dialog: file_dialog
@@ -55,13 +57,14 @@ Window {
             }
             wait_page.visible = false
             default_page.visible = true
+            left_vertical_menu_list_view.currentIndex = -1
         }
     }
     Rectangle {
         id: left_vertical_menu_bar
         property color default_color: "#756c62"
         property color mouse_hovered_color: "#959595"
-        property color highlighted_color: "#3c3c3c"
+        property color highlighted_color: "#c8bdbd"
         anchors {
             left: parent.left
         }
@@ -86,7 +89,7 @@ Window {
                 height: width * 0.8
                 Rectangle {
                     id: left_solid_line
-                    property color highlighted_color: "#dcdcdc"
+                    property color highlighted_color: "#000000"
 
                     height: menu_delegate_body.height
                     width: 2.5
@@ -173,7 +176,7 @@ Window {
                             page.onStatusChanged = function(status) {
                                 if(status === Component.Ready) {
                                     wait_page.visible = false
-                                    page.visible = true
+                                    page.object.visible = true
                                 }
                             }
                         }
