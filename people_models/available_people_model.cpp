@@ -43,14 +43,19 @@ void Available_people_model::delete_individual(const int index)
     if(index < 0 || index >= model_data.size()) return;
 
     Individual_file_manager individual_file_manager;
-
     beginRemoveRows(QModelIndex(), index, index);
-    individual_file_manager.set_name(std::get<0>(model_data[index]));
+    QString nickname_for_removal = std::get<0>(model_data[index]).remove("<b>").remove("</b>");
+    individual_file_manager.set_name(nickname_for_removal);
     individual_file_manager.delete_dir();
-    model_data.remove(index);
     if(available_people != nullptr) {
-        available_people->remove(index);
+        for(int i = 0; i < available_people->size(); ++i) {
+            if(nickname_for_removal == std::get<0>(available_people->operator[](i))) {
+                available_people->remove(i);
+                break;
+            }
+        }
     }
+    model_data.remove(index);
     endRemoveRows();
 }
 
