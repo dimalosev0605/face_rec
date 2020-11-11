@@ -87,6 +87,34 @@ Item {
                     border.width: 2
                     radius: 5
                 }
+                onTextChanged: {
+                    people_list_view.currentIndex = -1
+                    if(search_people_input.text.length === 0) {
+                        available_people_model.cancel_search()
+                        return
+                    }
+                    available_people_model.search_individual(search_people_input.text)
+                }
+                rightPadding: cancel_search.width + cancel_search.anchors.rightMargin * 2
+                Close_btn {
+                    id: cancel_search
+                    anchors {
+                        right: parent.right
+                        rightMargin: 5
+                        top: parent.top
+                        topMargin: 6
+                        bottom: parent.bottom
+                        bottomMargin: anchors.topMargin
+                    }
+                    pressed_color: "#ff0000"
+                    width: height
+                    visible: search_people_input.text.length > 0
+                    m_area.onClicked: {
+                        people_list_view.currentIndex = -1
+                        search_people_input.clear()
+                        available_people_model.cancel_search()
+                    }
+                }
             }
             Button {
                 id: add_new_person_btn

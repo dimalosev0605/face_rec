@@ -33,6 +33,9 @@ void Available_people_model::update()
 {
     clear();
     load_data();
+    if(available_people != nullptr) {
+        available_people = std::unique_ptr<QVector<std::tuple<QString, QString>>>(new QVector<std::tuple<QString, QString>>(model_data));
+    }
 }
 
 void Available_people_model::delete_individual(const int index)
@@ -45,5 +48,38 @@ void Available_people_model::delete_individual(const int index)
     individual_file_manager.set_name(std::get<0>(model_data[index]));
     individual_file_manager.delete_dir();
     model_data.remove(index);
+    if(available_people != nullptr) {
+        available_people->remove(index);
+    }
     endRemoveRows();
+}
+
+void Available_people_model::search_individual(const QString& nickname)
+{
+    if(nickname.isEmpty()) return;
+    if(available_people == nullptr) {
+        available_people = std::unique_ptr<QVector<std::tuple<QString, QString>>>(new QVector<std::tuple<QString, QString>>(model_data));
+    }
+
+    QVector<std::tuple<QString, QString>> results;
+    for(int i = 0; i < available_people->size(); ++i) {
+        if(std::get<0>(available_people->operator[](i)).contains(nickname)) {
+            results.push_back(available_people->operator[](i));
+        }
+    }
+    clear();
+    if(results.isEmpty()) return;
+    beginInsertRows(QModelIndex(), 0, results.size() - 1);
+    model_data = results;
+    endInsertRows();
+}
+
+void Available_people_model::cancel_search()
+{
+    clear();
+    if(available_people == nullptr) return;
+    if(available_people->isEmpty()) return;
+    beginInsertRows(QModelIndex(), 0, available_people->size() - 1);
+    model_data = *available_people;
+    endInsertRows();
 }
