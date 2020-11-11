@@ -8,7 +8,7 @@ Window {
     visible: true
     width: 1400
     height: 800
-    minimumWidth: 600
+    minimumWidth: 1000
     minimumHeight: 600
 
     property alias esc_sc: esc_sc

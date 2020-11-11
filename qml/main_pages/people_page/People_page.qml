@@ -79,7 +79,7 @@ Item {
                 }
                 height: 30
                 property int space_between_items: 10
-                width: parent.width - anchors.leftMargin - add_new_people_btn.width - add_new_people_btn.anchors.rightMargin - space_between_items
+                width: parent.width - anchors.leftMargin - add_new_person_btn.width - add_new_person_btn.anchors.rightMargin - space_between_items
                 placeholderText: "Search"
                 background: Rectangle {
                     color: search_people_input.activeFocus ? "white" : "#e6e6e6"
@@ -88,8 +88,8 @@ Item {
                     radius: 5
                 }
             }
-            Rectangle {
-                id: add_new_people_btn
+            Button {
+                id: add_new_person_btn
                 anchors {
                     topMargin: search_people_input.anchors.topMargin
                     right: parent.right
@@ -98,59 +98,48 @@ Item {
                 }
                 height: search_people_input.height
                 width: height
-                border.width: 1
-                border.color: "#000000"
-                radius: 5
-                color: add_new_people_btn_m_area.containsMouse ? add_new_people_btn_m_area.pressed ? "#00ff00" : "#cfcfcf" : "transparent"
-                Image {
-                    anchors {
-                        fill: parent
-                        margins: 3
-                    }
-                    fillMode: Image.PreserveAspectFit
-                    mipmap: true
-                    asynchronous: true
-                    source: "qrc:/qml/icons/add.png"
+                icon.source: "qrc:/qml/icons/add.png"
+                display: AbstractButton.IconOnly
+                hoverEnabled: true
+                background: Rectangle {
+                    radius: 5
+                    color: add_new_person_btn.hovered ? add_new_person_btn.pressed ? "#00ff00" : "#bbbbbb" : "#cfcfcf"
                 }
-                MouseArea {
-                    id: add_new_people_btn_m_area
-                    anchors.fill: parent
-                    hoverEnabled: true
-                    onClicked: {
-                        people_list_view.currentIndex = -1
-                        if(edit_page !== null) {
-                            edit_page.object.visible = false
-                            edit_page.object.destroy(1000)
-                            edit_page = null
-                            default_page.visible = true
-                        }
-                        if(add_new_person_page !== null) {
-                            return
-                        }
-                        else {
-                            default_page.visible = false
-                            wait_page.visible = true
+                onClicked: {
+                    people_list_view.currentIndex = -1
+                    if(edit_page !== null) {
+                        edit_page.object.visible = false
+                        edit_page.object.destroy(1000)
+                        edit_page = null
+                        default_page.visible = true
+                    }
+                    if(add_new_person_page !== null) {
+                        return
+                    }
+                    else {
+                        default_page.visible = false
+                        wait_page.visible = true
 
-                            add_new_person_page = add_new_person_page_comp.incubateObject(split_view,
-                                                                          {
-                                                                              "x": Qt.binding(function(){ return people_list.width}),
-                                                                              "y": Qt.binding(function(){ return 0}),
-                                                                              "width": Qt.binding(function(){ return people_page_qml.width - people_list.width}),
-                                                                              "height": Qt.binding(function(){ return people_page_qml.height})
-                                                                          });
-                            if(add_new_person_page.status !== Component.Ready) {
-                                add_new_person_page.onStatusChanged = function(status) {
-                                    if(status === Component.Ready) {
-                                        wait_page.visible = false
-                                        add_new_person_page.object.visible = true
-                                        esc_sc.enabled = false
-                                    }
+                        add_new_person_page = add_new_person_page_comp.incubateObject(split_view,
+                                                                      {
+                                                                          "x": Qt.binding(function(){ return people_list.width}),
+                                                                          "y": Qt.binding(function(){ return 0}),
+                                                                          "width": Qt.binding(function(){ return people_page_qml.width - people_list.width}),
+                                                                          "height": Qt.binding(function(){ return people_page_qml.height})
+                                                                      });
+                        if(add_new_person_page.status !== Component.Ready) {
+                            add_new_person_page.onStatusChanged = function(status) {
+                                if(status === Component.Ready) {
+                                    wait_page.visible = false
+                                    add_new_person_page.object.visible = true
+                                    esc_sc.enabled = false
                                 }
                             }
                         }
                     }
                 }
             }
+
             ListView {
                 id: people_list_view
                 anchors {
