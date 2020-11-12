@@ -156,28 +156,109 @@ Window {
             }
         }
     }
+    Row {
+        id: zoom_btns_row
+        anchors {
+            top: parent.top
+            topMargin: close_window_btn.anchors.topMargin
+            horizontalCenter: parent.horizontalCenter
+        }
+        width: 240
+        height: 30
+        Custom_btn {
+            id: zoom_out_btn
+            pressed_color: "gray"
+            border_width: 0
+            height: parent.height
+            width: parent.width / 3
+            onClicked: {
+                if(img.zoom > img.min_zoom) {
+                    img.zoom = Number((img.zoom - img.zoomStep).toFixed(1))
+                }
+            }
+            icon.source: "qrc:/qml/icons/remove.png"
+        }
+        Custom_btn {
+            id: set_default_zoom_btn
+            pressed_color: "gray"
+            border_width: 0
+            height: parent.height
+            width: parent.width / 3
+            onClicked: {
+                img.zoom = 0.0
+            }
+            text: "Default"
+        }
+        Custom_btn {
+            id: zoom_in_btn
+            pressed_color: "gray"
+            border_width: 0
+            height: parent.height
+            width: parent.width / 3
+            onClicked: {
+                if(img.zoom < img.max_zoom) {
+                    img.zoom = Number((img.zoom + img.zoomStep).toFixed(1))
+                }
+            }
+            icon.source: "qrc:/qml/icons/add.png"
+        }
+    }
+
     Item {
+        id: img_display
         anchors {
             left: left_arrow_btn.right
             leftMargin: 5
             right: right_arrow_btn.left
             rightMargin: 5
-            top: parent.top
+            top: zoom_btns_row.bottom
             topMargin: 5
             bottom: parent.bottom
             bottomMargin: 5
         }
-        Image {
-            id: img
-            anchors {
-                centerIn: parent
+        Flickable {
+            id: img_flikable
+            anchors.fill: parent
+            contentWidth: Math.max(img.width * img.scale, img_display.width)
+            contentHeight: Math.max(img.height * img.scale, img_display.height)
+            clip: true
+            Image {
+                id: img
+                property real zoom: 0.0
+                property real zoomStep: 0.1
+                property real max_zoom: 5.0
+                property real min_zoom: -0.5
+                anchors {
+                    centerIn: parent
+                }
+                asynchronous: true
+                cache: false
+                smooth: true
+                antialiasing: true
+                mipmap: true
+                fillMode: Image.PreserveAspectFit
+                scale: Math.min(img_display.width / width, img_display.height / height, 1) + zoom
+                onSourceChanged: {
+                    zoom = 0.0
+                }
             }
-            width: sourceSize.width <= 150 ? 150 : parent.width
-            height: sourceSize.height <= 150 ? 150 : parent.height
-            cache: false
-            asynchronous: true
-            mipmap: true
-            fillMode: Image.PreserveAspectFit
+        }
+        MouseArea {
+            anchors.fill: parent
+            acceptedButtons: Qt.NoButton
+            onWheel: {
+                if(Math.abs(wheel.angleDelta.y) < 30) return;
+                if(wheel.angleDelta.y > 0) {
+                    if(img.zoom < img.max_zoom) {
+                        img.zoom = Number((img.zoom + img.zoomStep).toFixed(1))
+                    }
+                }
+                else {
+                    if(img.zoom > img.min_zoom) {
+                        img.zoom = Number((img.zoom - img.zoomStep).toFixed(1))
+                    }
+                }
+            }
         }
     }
 
