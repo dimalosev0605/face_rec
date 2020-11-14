@@ -1,5 +1,6 @@
 import QtQuick.Window 2.12
 import QtQuick 2.12
+import QtQuick.Controls 2.15
 
 Window {
     id: full_screen_window
@@ -163,7 +164,7 @@ Window {
             topMargin: close_window_btn.anchors.topMargin
             horizontalCenter: parent.horizontalCenter
         }
-        width: 240
+        width: 180
         height: 30
         Custom_btn {
             id: zoom_out_btn
@@ -172,11 +173,10 @@ Window {
             height: parent.height
             width: parent.width / 3
             onClicked: {
-                if(img.zoom > img.min_zoom) {
-                    img.zoom = Number((img.zoom - img.zoomStep).toFixed(1))
-                }
+                img_flickable.zoomOut()
             }
-            icon.source: "qrc:/qml/icons/remove.png"
+            text: "Out"
+            palette.buttonText: pressed ? "#000000" : "#ffffff"
         }
         Custom_btn {
             id: set_default_zoom_btn
@@ -185,9 +185,10 @@ Window {
             height: parent.height
             width: parent.width / 3
             onClicked: {
-                img.zoom = 0.0
+                img_flickable.fit_to_screen()()
             }
-            text: "Default"
+            text: "Fit"
+            palette.buttonText: pressed ? "#000000" : "#ffffff"
         }
         Custom_btn {
             id: zoom_in_btn
@@ -196,11 +197,10 @@ Window {
             height: parent.height
             width: parent.width / 3
             onClicked: {
-                if(img.zoom < img.max_zoom) {
-                    img.zoom = Number((img.zoom + img.zoomStep).toFixed(1))
-                }
+                img_flickable.zoomIn()
             }
-            icon.source: "qrc:/qml/icons/add.png"
+            text: "In"
+            palette.buttonText: pressed ? "#000000" : "#ffffff"
         }
     }
 
@@ -217,47 +217,86 @@ Window {
             bottomMargin: 5
         }
         Flickable {
-            id: img_flikable
+            id: img_flickable
             anchors.fill: parent
-            contentWidth: Math.max(img.width * img.scale, img_display.width)
-            contentHeight: Math.max(img.height * img.scale, img_display.height)
+            boundsBehavior: Flickable.StopAtBounds
+            contentHeight: img_container.height
+            contentWidth: img_container.width
             clip: true
-            Image {
-                id: img
-                property real zoom: 0.0
-                property real zoomStep: 0.1
-                property real max_zoom: 5.0
-                property real min_zoom: -0.5
-                anchors {
-                    centerIn: parent
-                }
-                asynchronous: true
-                cache: false
-                smooth: true
-                antialiasing: true
-                mipmap: true
-                fillMode: Image.PreserveAspectFit
-                scale: Math.min(img_display.width / width, img_display.height / height, 1) + zoom
-                onSourceChanged: {
-                    zoom = 0.0
+
+            property bool fit_to_screen_active: true
+            property real zoom_step: 0.1
+
+            ScrollBar.vertical: ScrollBar{}
+            ScrollBar.horizontal: ScrollBar{}
+
+            onWidthChanged: { if(fit_to_screen_active) fit_to_screen() }
+            onHeightChanged: { if(fit_to_screen_active) fit_to_screen() }
+            MouseArea {
+                anchors.fill: parent
+                acceptedButtons: Qt.NoButton
+                onWheel: {
+                    if(Math.abs(wheel.angleDelta.y) < 30) return
+                    if(wheel.angleDelta.y > 0) {
+                        img_flickable.zoomIn()
+                    }
+                    else {
+                        img_flickable.zoomOut()
+                    }
                 }
             }
-        }
-        MouseArea {
-            anchors.fill: parent
-            acceptedButtons: Qt.NoButton
-            onWheel: {
-                if(Math.abs(wheel.angleDelta.y) < 30) return;
-                if(wheel.angleDelta.y > 0) {
-                    if(img.zoom < img.max_zoom) {
-                        img.zoom = Number((img.zoom + img.zoomStep).toFixed(1))
+            Item {
+                id: img_container
+                width: Math.max(img.width * img.scale, img_flickable.width)
+                height: Math.max(img.height * img.scale, img_flickable.height)
+
+                Image {
+                    id: img
+                    property real prev_scale: 1.0
+                    asynchronous: true
+                    cache: false
+                    smooth: img_flickable.moving
+                    anchors.centerIn: parent
+                    fillMode: Image.PreserveAspectFit
+                    onWidthChanged: console.debug(width)
+                    onHeightChanged: console.debug(height)
+                    transformOrigin: Item.Center
+                    onScaleChanged: {
+                        if ((width * scale) > img_flickable.width) {
+                            var xoff = (img_flickable.width / 2 + img_flickable.contentX) * scale / prev_scale
+                            img_flickable.contentX = xoff - img_flickable.width / 2
+                        }
+                        if ((height * scale) > img_flickable.height) {
+                            var yoff = (img_flickable.height / 2 + img_flickable.contentY) * scale / prev_scale
+                            img_flickable.contentY = yoff - img_flickable.height / 2
+                        }
+                        prev_scale = scale
+                    }
+                    onStatusChanged: {
+                        if (status === Image.Ready) {
+                            img_flickable.fit_to_screen()
+                        }
                     }
                 }
-                else {
-                    if(img.zoom > img.min_zoom) {
-                        img.zoom = Number((img.zoom - img.zoomStep).toFixed(1))
-                    }
-                }
+            }
+            function fit_to_screen() {
+                var s = Math.min(img_flickable.width / img.width, img_flickable.height / img.height, 1)
+                img.scale = s
+                img.prev_scale = scale
+                fit_to_screen_active = true
+                img_flickable.returnToBounds()
+            }
+            function zoomIn() {
+                img.scale *= (1.0 + zoom_step)
+                img_flickable.returnToBounds()
+                fit_to_screen_active = false
+                img_flickable.returnToBounds()
+            }
+            function zoomOut() {
+                img.scale *= (1.0 - zoom_step)
+                img_flickable.returnToBounds()
+                fit_to_screen_active = false
+                img_flickable.returnToBounds()
             }
         }
     }
